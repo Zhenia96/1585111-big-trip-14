@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Yauheni Kirychenka](https://up.htmlacademy.ru/ecmascript/14/user/1585111).
-* Наставник: `Неизвестно`.
+* Наставник: [Дмитрий Гуляев](https://htmlacademy.ru/profile/dima).
 
 ---
 
