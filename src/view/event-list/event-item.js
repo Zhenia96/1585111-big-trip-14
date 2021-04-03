@@ -1,3 +1,3 @@
-export const getEventItem = (content) => {
+export const getEventItemTemplate = (content) => {
   return `<li class="trip-events__item">${content}</li>`;
 };

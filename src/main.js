@@ -1,12 +1,12 @@
-import { getEventEditor } from './view/event-editor/event-editor.js';
-import { getOffer } from './view/event-editor/offer.js';
-import { getEventList } from './view/event-list/event-list.js';
-import { getEventItem } from './view/event-list/event-item.js';
-import { getEvent } from './view/event.js';
-import { getFilter } from './view/filter.js';
-import { getMenu } from './view/menu.js';
-import { getSortForm } from './view/sort-form.js';
-import { getTripInfo } from './view/trip-info.js';
+import { getEventEditorTemplate } from './view/event-editor/event-editor.js';
+import { getOfferTemplate } from './view/event-editor/offer.js';
+import { getEventListTemplate } from './view/event-list/event-list.js';
+import { getEventItemTemplate } from './view/event-list/event-item.js';
+import { getEventTemplate } from './view/event.js';
+import { getFilterTemplate } from './view/filter.js';
+import { getMenuTemplate } from './view/menu.js';
+import { getSortFormTemplate } from './view/sort-form.js';
+import { getTripInfoTemplate } from './view/trip-info.js';
 
 const tripMainElement = document.querySelector('.trip-main');
 const navigationElement = tripMainElement.querySelector('.trip-controls__navigation');
@@ -19,22 +19,22 @@ const pasteComponent = (component, container, position = 'beforeend') => {
 
 const addOffer = () => {
   const offersContainer = eventsContainerElement.querySelector('.event__available-offers');
-  pasteComponent(getOffer(), offersContainer);
+  pasteComponent(getOfferTemplate(), offersContainer);
 };
 
 const addEvent = (content) => {
   const eventList = eventsContainerElement.querySelector('.trip-events__list');
-  const eventItem = getEventItem(content);
+  const eventItem = getEventItemTemplate(content);
   pasteComponent(eventItem, eventList);
 };
 
-pasteComponent(getTripInfo(), tripMainElement, 'afterbegin');
-pasteComponent(getMenu(), navigationElement);
-pasteComponent(getFilter(), filterElement);
-pasteComponent(getSortForm(), eventsContainerElement, 'afterbegin');
-pasteComponent(getEventList(), eventsContainerElement);
-addEvent(getEventEditor(true, true));
+pasteComponent(getTripInfoTemplate(), tripMainElement, 'afterbegin');
+pasteComponent(getMenuTemplate(), navigationElement);
+pasteComponent(getFilterTemplate(), filterElement);
+pasteComponent(getSortFormTemplate(), eventsContainerElement, 'afterbegin');
+pasteComponent(getEventListTemplate(), eventsContainerElement);
+addEvent(getEventEditorTemplate(true, true));
 addOffer();
-addEvent(getEvent());
-addEvent(getEvent());
-addEvent(getEvent());
+addEvent(getEventTemplate());
+addEvent(getEventTemplate());
+addEvent(getEventTemplate());

@@ -1,4 +1,4 @@
-export const getEventEditor = (hasOffers = false, hasDestination = false) => {
+export const getEventEditorTemplate = (hasOffers = false, hasDestination = false) => {
   const detailsHiddenAttribute = hasOffers || hasDestination ? '' : 'hidden';
   const offersHiddenAttribute = hasOffers ? '' : 'hidden';
   const destinationHiddenAttribute = hasDestination ? '' : 'hidden';
