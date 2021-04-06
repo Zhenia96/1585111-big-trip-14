@@ -7,6 +7,8 @@ import { getFilterTemplate } from './view/filter.js';
 import { getMenuTemplate } from './view/menu.js';
 import { getSortFormTemplate } from './view/sort-form.js';
 import { getTripInfoTemplate } from './view/trip-info.js';
+import { } from './mock/event-editor.js';
+import { } from './util.js';
 
 const tripMainElement = document.querySelector('.trip-main');
 const navigationElement = tripMainElement.querySelector('.trip-controls__navigation');
