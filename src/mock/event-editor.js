@@ -25,10 +25,19 @@ const generateTime = () => {
   };
 };
 
+const generatePictures = (count) => {
+  const pictures = new Array(count);
+  pictures.fill();
+  pictures.forEach((value, index, array) => {
+    array[index] = `http://picsum.photos/248/152?r=${getRandomIntegerRange(1, 100)}`;
+  });
+  return pictures;
+};
+
 const generateDescription = () => {
   return {
     title: getRandomText(getRandomIntegerRange(2, 15)),
-    pictures: `http://picsum.photos/248/152?r=${getRandomIntegerRange(2, 15)}`,
+    pictures: generatePictures(getRandomIntegerRange(0, 5)),
   };
 };
 
