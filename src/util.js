@@ -1,7 +1,12 @@
-export const getRandomIntegerRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const getRandomIntegerRange = (min = 0, max = 10) => Math.floor(Math.random() * (max - min + 1)) + min;
 
+const getRandomArrayElement = (array) => {
+  const lastIndex = array.length - 1;
+  const randomIndex = getRandomIntegerRange(0, lastIndex);
+  return array[randomIndex];
+};
 
-export const getRandomText = (sentencesCount) => {
+const getRandomText = (sentencesCount) => {
   const PLACEHOLDER = [
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     'Cras aliquet varius magna,',
@@ -23,3 +28,11 @@ export const getRandomText = (sentencesCount) => {
   }
   return text;
 };
+
+const formatDate = (date) => {
+  return date.format('DD/MM/YY HH:mm');
+};
+
+const hasData = (object) => Boolean(Object.keys(object).length || object.length);
+
+export { formatDate, getRandomText, getRandomIntegerRange, getRandomArrayElement, hasData };

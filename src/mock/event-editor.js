@@ -1,60 +1,81 @@
 import dayjs from 'dayjs';
-import { getRandomIntegerRange, getRandomText } from './../util.js';
-
+import { getRandomIntegerRange, getRandomText, getRandomArrayElement } from './../util.js';
 
 const EVENT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 const EVENT_DESTINATIONS = ['Amsterdam', 'Geneva', 'Chamonix'];
 
-const getRandomArrayElement = (array) => {
-  const lastIndex = array.length - 1;
-  const randomIndex = getRandomIntegerRange(0, lastIndex);
-  return array[randomIndex];
-};
+const generateTimeData = () => {
+  const MIN_DAYS_COUNT = 1;
+  const MAX_DAYS_COUNT = 31;
+  const MIN_MINUTES_COUNT = 30;
+  const MAX_MINUTES_COUNT = 3000;
+  const daysCount = getRandomIntegerRange(MIN_DAYS_COUNT, MAX_DAYS_COUNT);
+  const minutesCount = getRandomIntegerRange(MIN_MINUTES_COUNT, MAX_MINUTES_COUNT);
+  const start = dayjs().set('d', daysCount);
+  const end = start.clone().set('m', start.$m + minutesCount);
 
-/*const formatDate = (date) => {
-  return date.format('DD/MM/YY HH:mm');
-};
-*/
-
-const generateTime = () => {
-  const start = dayjs().set('d', getRandomIntegerRange(1, 31));
-  const end = start.clone().set('m', start.$m + getRandomIntegerRange(30, 3000));
   return {
     start,
     end,
   };
 };
 
-const generatePictures = (count) => {
+const generatePicturesData = (count) => {
   const pictures = new Array(count);
+
   pictures.fill();
-  pictures.forEach((value, index, array) => {
-    array[index] = `http://picsum.photos/248/152?r=${getRandomIntegerRange(1, 100)}`;
+  pictures.forEach((value, index, pictures) => {
+    pictures[index] = `http://picsum.photos/248/152?r=${getRandomIntegerRange()}`;
   });
   return pictures;
 };
 
-const generateDescription = () => {
+const generateDescriptionsData = () => {
+  const MIN_SENTENCES_COUNT = 0;
+  const MAX_SENTENCES_COUNT = 5;
+  const MIN_PICTURES_COUNT = 0;
+  const MAX_PICTURES_COUNT = 5;
+  const picturesCount = getRandomIntegerRange(MIN_PICTURES_COUNT, MAX_PICTURES_COUNT);
+  const sentencesCount = getRandomIntegerRange(MIN_SENTENCES_COUNT, MAX_SENTENCES_COUNT);
+
   return {
-    title: getRandomText(getRandomIntegerRange(2, 15)),
-    pictures: generatePictures(getRandomIntegerRange(0, 5)),
+    title: getRandomText(sentencesCount),
+    pictures: generatePicturesData(picturesCount),
   };
 };
 
-const generateOffers = () => {
-  return {
-    title: getRandomText(1),
-    price: getRandomIntegerRange(1, 1000),
-  };
+const generateOffersData = (count) => {
+  const SENTENCES_COUNT = 1;
+  const MIN_PRICE = 30;
+  const MAX_PRICE = 300;
+  const offers = new Array(count);
+
+  offers.fill();
+  offers.forEach((value, index, offers) => {
+    offers[index] = {
+      title: getRandomText(SENTENCES_COUNT),
+      price: getRandomIntegerRange(MIN_PRICE, MAX_PRICE),
+      isChecked: Boolean(getRandomIntegerRange(0, 1)),
+    };
+  });
+  return offers;
 };
 
-const generateEventEditor = () => {
+const generateEventEditorData = () => {
+  const MIN_PRICE = 200;
+  const MAX_PRICE = 2000;
+  const MIN_OFFERS_COUNT = 0;
+  const MAX_OFFERS_COUNT = 5;
+  const offersCount = getRandomIntegerRange(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT);
+
   return {
     type: getRandomArrayElement(EVENT_TYPES),
     destination: getRandomArrayElement(EVENT_DESTINATIONS),
-    time: generateTime(),
-    price: getRandomIntegerRange(1, 1000),
-    offers: generateOffers(),
-    description: generateDescription(),
+    time: generateTimeData(),
+    price: getRandomIntegerRange(MIN_PRICE, MAX_PRICE),
+    offers: generateOffersData(offersCount),
+    description: generateDescriptionsData(),
   };
 };
+
+export { generateEventEditorData };
