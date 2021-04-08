@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getRandomIntegerRange, getRandomText, getRandomArrayElement } from './../util.js';
+import { getRandomIntegerRange, getRandomText, getRandomArrayElement } from '../util.js';
 
 const EVENT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 const EVENT_DESTINATIONS = ['Amsterdam', 'Geneva', 'Chamonix'];
@@ -61,7 +61,7 @@ const generateOffersData = (count) => {
   return offers;
 };
 
-const generateEventEditorData = () => {
+const generateEventData = () => {
   const MIN_PRICE = 200;
   const MAX_PRICE = 2000;
   const MIN_OFFERS_COUNT = 0;
@@ -75,7 +75,8 @@ const generateEventEditorData = () => {
     price: getRandomIntegerRange(MIN_PRICE, MAX_PRICE),
     offers: generateOffersData(offersCount),
     description: generateDescriptionsData(),
+    isFavorite: Boolean(getRandomIntegerRange(0, 1)),
   };
 };
 
-export { generateEventEditorData };
+export { generateEventData };
