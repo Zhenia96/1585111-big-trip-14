@@ -1,12 +1,12 @@
 import { getEventEditorTemplate } from './view/event-editor/event-editor.js';
 import { getEventListTemplate } from './view/event-list/event-list.js';
-import { getEventItemTemplate } from './view/event-list/event-item.js';
+import { getEventContainerTemplate } from './view/event-list/event-container.js';
 import { getPointTemplate } from './view/point.js';
 import { getFilterTemplate } from './view/filter.js';
 import { getMenuTemplate } from './view/menu.js';
 import { getSortFormTemplate } from './view/sort-form.js';
 import { getTripInfoTemplate } from './view/trip-info.js';
-import { generateEventData } from './mock/event.js';
+import { generateEventData, generateEventDataList } from './mock/event.js';
 
 const tripMainElement = document.querySelector('.trip-main');
 const navigationElement = tripMainElement.querySelector('.trip-controls__navigation');
@@ -19,8 +19,18 @@ const pasteComponent = (component, container, position = 'beforeend') => {
 
 const addEvent = (content) => {
   const eventList = eventsContainerElement.querySelector('.trip-events__list');
-  const eventItem = getEventItemTemplate(content);
+  const eventItem = getEventContainerTemplate(content);
   pasteComponent(eventItem, eventList);
+};
+
+const addPoints = (eventDataList) => {
+  const eventList = eventsContainerElement.querySelector('.trip-events__list');
+  let eventsFtagment = '';
+  eventDataList.forEach((eventData) => {
+    const eventItem = getEventContainerTemplate(getPointTemplate(eventData));
+    eventsFtagment += eventItem;
+  });
+  pasteComponent(eventsFtagment, eventList);
 };
 
 pasteComponent(getTripInfoTemplate(), tripMainElement, 'afterbegin');
@@ -29,6 +39,4 @@ pasteComponent(getFilterTemplate(), filterElement);
 pasteComponent(getSortFormTemplate(), eventsContainerElement, 'afterbegin');
 pasteComponent(getEventListTemplate(), eventsContainerElement);
 addEvent(getEventEditorTemplate(generateEventData()));
-addEvent(getPointTemplate(generateEventData()));
-addEvent(getPointTemplate(generateEventData()));
-addEvent(getPointTemplate(generateEventData()));
+addPoints(generateEventDataList(20));

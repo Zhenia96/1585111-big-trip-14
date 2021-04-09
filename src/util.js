@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-
 const MINUTES_IN_HOUR = 60;
 const HOURS_IN_DAY = 24;
 const MIN_TWO_DICIT_NUMBER = 10;

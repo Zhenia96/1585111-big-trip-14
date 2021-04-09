@@ -79,4 +79,9 @@ const generateEventData = () => {
   };
 };
 
-export { generateEventData };
+const generateEventDataList = (count) => {
+  const eventDataList = new Array(count);
+  return eventDataList.fill().map(() => generateEventData());
+};
+
+export { generateEventData, generateEventDataList };
