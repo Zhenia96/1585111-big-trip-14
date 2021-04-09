@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getRandomIntegerRange, getRandomText, getRandomArrayElement } from '../util.js';
+import { getRandomIntegerRange, getRandomText, getRandomArrayValue } from '../util.js';
 
 const EVENT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 const EVENT_DESTINATIONS = ['Amsterdam', 'Geneva', 'Chamonix'];
@@ -20,15 +20,14 @@ const generateTimeData = () => {
   };
 };
 
-const generatePicturesData = (count) => {
-  const pictures = new Array(count);
-
-  pictures.fill();
-  pictures.forEach((value, index, pictures) => {
-    pictures[index] = `http://picsum.photos/248/152?r=${getRandomIntegerRange()}`;
-  });
-  return pictures;
+const generatePictureData = () => {
+  return {
+    src: `http://picsum.photos/248/152?r=${getRandomIntegerRange()}`,
+    description: getRandomText(1),
+  };
 };
+
+const generatePictureDataList = (count) => Array(count).fill().map(() => generatePictureData());
 
 const generateDescriptionsData = () => {
   const MIN_SENTENCES_COUNT = 0;
@@ -40,25 +39,21 @@ const generateDescriptionsData = () => {
 
   return {
     title: getRandomText(sentencesCount),
-    pictures: generatePicturesData(picturesCount),
+    pictures: generatePictureDataList(picturesCount),
   };
 };
 
-const generateOffersData = (count) => {
+const generateOfferDataList = (count) => {
   const SENTENCES_COUNT = 1;
   const MIN_PRICE = 30;
   const MAX_PRICE = 300;
-  const offers = new Array(count);
-
-  offers.fill();
-  offers.forEach((value, index, offers) => {
-    offers[index] = {
+  return Array(count).fill().map(() => {
+    return {
       title: getRandomText(SENTENCES_COUNT),
       price: getRandomIntegerRange(MIN_PRICE, MAX_PRICE),
       isChecked: Boolean(getRandomIntegerRange(0, 1)),
     };
   });
-  return offers;
 };
 
 const generateEventData = () => {
@@ -69,19 +64,18 @@ const generateEventData = () => {
   const offersCount = getRandomIntegerRange(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT);
 
   return {
-    type: getRandomArrayElement(EVENT_TYPES),
-    destination: getRandomArrayElement(EVENT_DESTINATIONS),
+    type: getRandomArrayValue(EVENT_TYPES),
+    destination: getRandomArrayValue(EVENT_DESTINATIONS),
     time: generateTimeData(),
     price: getRandomIntegerRange(MIN_PRICE, MAX_PRICE),
-    offers: generateOffersData(offersCount),
+    offers: generateOfferDataList(offersCount),
     description: generateDescriptionsData(),
     isFavorite: Boolean(getRandomIntegerRange(0, 1)),
   };
 };
 
 const generateEventDataList = (count) => {
-  const eventDataList = new Array(count);
-  return eventDataList.fill().map(() => generateEventData());
+  return Array(count).fill().map(() => generateEventData());
 };
 
 export { generateEventData, generateEventDataList };

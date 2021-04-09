@@ -1,7 +1,8 @@
 import { formatDate, hasData } from '../../util.js';
+import { DateFormat } from '../../constant';
 import { getDetailsTemplate } from './details.js';
 
-const EDITOR_TIME_FORMAT = 'DD/MM/YY HH:mm';
+const { FULL } = DateFormat;
 
 const typeStatus = {
   'taxi': '',
@@ -112,10 +113,10 @@ export const getEventEditorTemplate = (data) => {
 
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDate(start, EDITOR_TIME_FORMAT)}">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDate(start, FULL)}">
       &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatDate(end, EDITOR_TIME_FORMAT)}">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatDate(end, FULL)}">
       </div>
 
       <div class="event__field-group  event__field-group--price">

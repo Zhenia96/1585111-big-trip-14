@@ -1,23 +1,7 @@
 import { formatDate, getDuration } from '../util.js';
+import { DateFormat, FAVORITE_EVENT_CLASS, PATH_TO_ICONS, typeIcon } from '../constant';
 
-const FAVORITE_EVENT_CLASS = 'event__favorite-btn--active';
-const EVENT_DATE_FORMAT = 'MMM DD';
-const EVENT_TIME_FORMAT = 'HH:mm';
-const DATE_TIME_ATTRIBUTE_LONG_FORMAT = 'YYYY-MM-DDTHH:mm';
-const DATE_TIME_ATTRIBUTE_SHORT_FORMAT = 'YYYY-MM-DD';
-const PATH_TO_ICONS = 'img/icons/';
-const typeIcon = {
-  'Taxi': 'taxi.png',
-  'Bus': 'bus.png',
-  'Train': 'train.png',
-  'Ship': 'ship.png',
-  'Transport': 'transport.png',
-  'Drive': 'drive.png',
-  'Flight': 'flight.png',
-  'Check-in': 'check-in.png',
-  'Sightseeing': 'sightseeing.png',
-  'Restaurant': 'restaurant.png',
-};
+const { MONTH_DAY, HOUR_MINUTE, SPECIAL_FULL, YEAR_MONTH_DAY } = DateFormat;
 
 const getOfferTemplate = ({ title, price }) => {
   return `
@@ -44,23 +28,23 @@ const getOffersListTemplate = (offersData) => {
 export const getPointTemplate = (data) => {
   const { type, destination, time, price, offers, isFavorite } = data;
   const { start, end } = time;
-  const eventDate = formatDate(start, EVENT_DATE_FORMAT);
+  const eventDate = formatDate(start, MONTH_DAY);
   const icon = typeIcon[type];
   const favoriteEvent = isFavorite ? FAVORITE_EVENT_CLASS : '';
   const duration = getDuration(start, end);
 
   return `
     <div class="event">
-      <time class="event__date" datetime="${formatDate(start, DATE_TIME_ATTRIBUTE_SHORT_FORMAT)}">${eventDate}</time>
+      <time class="event__date" datetime="${formatDate(start, YEAR_MONTH_DAY)}">${eventDate}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="${PATH_TO_ICONS}${icon}" alt="${type} icon">
                 </div>
         <h3 class="event__title">${type} ${destination}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${formatDate(start, DATE_TIME_ATTRIBUTE_LONG_FORMAT)}">${formatDate(start, EVENT_TIME_FORMAT)}</time>
+            <time class="event__start-time" datetime="${formatDate(start, SPECIAL_FULL)}">${formatDate(start, HOUR_MINUTE)}</time>
                     &mdash;
-                    <time class="event__end-time" datetime="${formatDate(end, DATE_TIME_ATTRIBUTE_LONG_FORMAT)}">${formatDate(end, EVENT_TIME_FORMAT)}</time>
+                    <time class="event__end-time" datetime="${formatDate(end, SPECIAL_FULL)}">${formatDate(end, HOUR_MINUTE)}</time>
           </p>
           <p class="event__duration">${duration}</p>
         </div>

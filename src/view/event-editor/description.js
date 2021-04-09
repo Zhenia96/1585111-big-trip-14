@@ -1,35 +1,35 @@
 import { hasData } from '../../util.js';
 
-const getPictureTemplate = (pictureData) => {
+const getPictureTemplate = ({ src, description }) => {
   return `
-    <img class="event__photo" src="${pictureData}" alt="Event photo">`;
+    <img class="event__photo" src="${src}" alt="${description}">`;
 };
 
-const getPicturesTemplate = (picturesData) => {
-  let picturesList = '';
+const getPicturesFragment = (picturesData) => {
+  let picturesFragment = '';
   picturesData.forEach((pictureData) => {
-    picturesList += getPictureTemplate(pictureData);
+    picturesFragment += getPictureTemplate(pictureData);
   });
-  return picturesList;
+  return picturesFragment;
 };
 
 const getPictureContainerTemplate = (pictures) => {
   return `
     <div class="event__photos-container">
       <div class="event__photos-tape">
-        ${getPicturesTemplate(pictures)}
+        ${getPicturesFragment(pictures)}
       </div>
     </div>`;
 };
 
 export const getDescriptionTemplate = ({ title, pictures }) => {
-  const photoContainerTemplate = hasData(pictures) ? getPictureContainerTemplate(pictures) : '';
+  const pictureContainerTemplate = hasData(pictures) ? getPictureContainerTemplate(pictures) : '';
 
   return `
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${title}</p>
 
-      ${photoContainerTemplate}
+      ${pictureContainerTemplate}
     </section>`;
 };

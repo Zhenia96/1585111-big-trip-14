@@ -11,20 +11,21 @@ import { generateEventData, generateEventDataList } from './mock/event.js';
 const tripMainElement = document.querySelector('.trip-main');
 const navigationElement = tripMainElement.querySelector('.trip-controls__navigation');
 const filterElement = tripMainElement.querySelector('.trip-controls__filters');
-const eventsContainerElement = document.querySelector('.trip-events');
+const eventContainerElement = document.querySelector('.trip-events');
+const eventDataList = generateEventDataList(20);
 
 const pasteComponent = (component, container, position = 'beforeend') => {
   container.insertAdjacentHTML(position, component);
 };
 
 const addEvent = (content) => {
-  const eventList = eventsContainerElement.querySelector('.trip-events__list');
+  const eventList = eventContainerElement.querySelector('.trip-events__list');
   const eventItem = getEventContainerTemplate(content);
   pasteComponent(eventItem, eventList);
 };
 
 const addPoints = (eventDataList) => {
-  const eventList = eventsContainerElement.querySelector('.trip-events__list');
+  const eventList = eventContainerElement.querySelector('.trip-events__list');
   let eventsFtagment = '';
   eventDataList.forEach((eventData) => {
     const eventItem = getEventContainerTemplate(getPointTemplate(eventData));
@@ -33,10 +34,10 @@ const addPoints = (eventDataList) => {
   pasteComponent(eventsFtagment, eventList);
 };
 
-pasteComponent(getTripInfoTemplate(), tripMainElement, 'afterbegin');
+pasteComponent(getTripInfoTemplate(eventDataList), tripMainElement, 'afterbegin');
 pasteComponent(getMenuTemplate(), navigationElement);
 pasteComponent(getFilterTemplate(), filterElement);
-pasteComponent(getSortFormTemplate(), eventsContainerElement, 'afterbegin');
-pasteComponent(getEventListTemplate(), eventsContainerElement);
+pasteComponent(getSortFormTemplate(), eventContainerElement, 'afterbegin');
+pasteComponent(getEventListTemplate(), eventContainerElement);
 addEvent(getEventEditorTemplate(generateEventData()));
-addPoints(generateEventDataList(20));
+addPoints(eventDataList);

@@ -1,10 +1,8 @@
-const MINUTES_IN_HOUR = 60;
-const HOURS_IN_DAY = 24;
-const MIN_TWO_DICIT_NUMBER = 10;
+import { MINUTES_IN_HOUR, HOURS_IN_DAY, MIN_TWO_DICIT_NUMBER } from './constant';
 
 const getRandomIntegerRange = (min = 0, max = 10) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-const getRandomArrayElement = (array) => {
+const getRandomArrayValue = (array) => {
   const lastIndex = array.length - 1;
   const randomIndex = getRandomIntegerRange(0, lastIndex);
   return array[randomIndex];
@@ -60,4 +58,4 @@ const getDuration = (start, end) => {
 
 const hasData = (object) => Boolean(Object.keys(object).length || object.length);
 
-export { formatDate, getDuration, getRandomText, getRandomIntegerRange, getRandomArrayElement, hasData };
+export { formatDate, getDuration, getRandomText, getRandomIntegerRange, getRandomArrayValue, hasData };
