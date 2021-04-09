@@ -1,10 +1,10 @@
-const getOfferTemplate = ({ title, price, isChecked }) => {
+const getOfferTemplate = ({ title, price, id, isChecked }) => {
   const status = isChecked ? 'checked' : '';
 
   return `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${status}>
-      <label class="event__offer-label" for="event-offer-luggage-1">
+      <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="event-offer-luggage" ${status}>
+      <label class="event__offer-label" for="${id}">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>

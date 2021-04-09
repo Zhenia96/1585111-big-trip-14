@@ -4,6 +4,9 @@ import { getRandomIntegerRange, getRandomText, getRandomArrayValue } from '../ut
 const EVENT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 const EVENT_DESTINATIONS = ['Amsterdam', 'Geneva', 'Chamonix'];
 
+let offerIdCount = 0;
+let eventIdCount = 0;
+
 const generateTimeData = () => {
   const MIN_DAYS_COUNT = 1;
   const MAX_DAYS_COUNT = 31;
@@ -43,6 +46,9 @@ const generateDescriptionsData = () => {
   };
 };
 
+const generateOfferId = () => offerIdCount++;
+const generateEventId = () => eventIdCount++;
+
 const generateOfferDataList = (count) => {
   const SENTENCES_COUNT = 1;
   const MIN_PRICE = 30;
@@ -51,6 +57,7 @@ const generateOfferDataList = (count) => {
     return {
       title: getRandomText(SENTENCES_COUNT),
       price: getRandomIntegerRange(MIN_PRICE, MAX_PRICE),
+      id: generateOfferId(),
       isChecked: Boolean(getRandomIntegerRange(0, 1)),
     };
   });
@@ -68,6 +75,7 @@ const generateEventData = () => {
     destination: getRandomArrayValue(EVENT_DESTINATIONS),
     time: generateTimeData(),
     price: getRandomIntegerRange(MIN_PRICE, MAX_PRICE),
+    id: generateEventId(),
     offers: generateOfferDataList(offersCount),
     description: generateDescriptionsData(),
     isFavorite: Boolean(getRandomIntegerRange(0, 1)),
