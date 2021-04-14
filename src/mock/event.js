@@ -1,11 +1,8 @@
 import dayjs from 'dayjs';
-import { getRandomIntegerRange, getRandomText, getRandomArrayValue } from '../util.js';
+import { getRandomIntegerRange, getRandomText, getRandomArrayValue, generateId } from '../util.js';
 
 const EVENT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 const EVENT_DESTINATIONS = ['Amsterdam', 'Geneva', 'Chamonix'];
-
-let offerIdCount = 0;
-let eventIdCount = 0;
 
 const generateTimeData = () => {
   const MIN_DAYS_COUNT = 1;
@@ -46,9 +43,6 @@ const generateDescriptionsData = () => {
   };
 };
 
-const generateOfferId = () => offerIdCount++;
-const generateEventId = () => eventIdCount++;
-
 const generateOfferDataList = (count) => {
   const SENTENCES_COUNT = 1;
   const MIN_PRICE = 30;
@@ -57,7 +51,7 @@ const generateOfferDataList = (count) => {
     return {
       title: getRandomText(SENTENCES_COUNT),
       price: getRandomIntegerRange(MIN_PRICE, MAX_PRICE),
-      id: generateOfferId(),
+      id: generateId(),
       isChecked: Boolean(getRandomIntegerRange(0, 1)),
     };
   });
@@ -75,7 +69,7 @@ const generateEventData = () => {
     destination: getRandomArrayValue(EVENT_DESTINATIONS),
     time: generateTimeData(),
     price: getRandomIntegerRange(MIN_PRICE, MAX_PRICE),
-    id: generateEventId(),
+    id: generateId(),
     offers: generateOfferDataList(offersCount),
     description: generateDescriptionsData(),
     isFavorite: Boolean(getRandomIntegerRange(0, 1)),
