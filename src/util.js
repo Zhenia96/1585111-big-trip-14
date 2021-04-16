@@ -1,4 +1,5 @@
-import { MINUTES_IN_HOUR, HOURS_IN_DAY, MIN_TWO_DICIT_NUMBER } from './constant';
+import { MINUTES_IN_HOUR, HOURS_IN_DAY } from './constant';
+import { nanoid } from 'nanoid';
 
 const getRandomIntegerRange = (min = 0, max = 10) => Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -35,8 +36,6 @@ const formatDate = (date, format) => {
   return date.format(format);
 };
 
-const addZero = (number) => number < MIN_TWO_DICIT_NUMBER ? `0${number}` : number;
-
 const getDuration = (start, end) => {
   const durationInDays = end.diff(start, 'day');
   const durationInHours = end.diff(start, 'hour');
@@ -46,11 +45,14 @@ const getDuration = (start, end) => {
   const hoursCount = durationInHours - (durationInDays * HOURS_IN_DAY);
   const minutesCount = durationInMinutes - (durationInHours * MINUTES_IN_HOUR);
 
-  const formatedDay = daysCount > 0 ? `${addZero(daysCount)}D ` : '';
-  const formatedMinute = `${addZero(minutesCount)}M`;
-  let formatedHour = `${addZero(hoursCount)}H `;
+  let formatedDay = `${String(daysCount).padStart(2, '0')}D `;
+  const formatedMinute = `${String(minutesCount).padStart(2, '0')}M`;
+  let formatedHour = `${String(hoursCount).padStart(2, '0')}H `;
   if (daysCount === 0 && hoursCount === 0) {
     formatedHour = '';
+  }
+  if (daysCount === 0) {
+    formatedDay = '';
   }
 
   return `${formatedDay}${formatedHour}${formatedMinute}`;
@@ -58,4 +60,31 @@ const getDuration = (start, end) => {
 
 const hasData = (object) => Boolean(Object.keys(object).length || object.length);
 
-export { formatDate, getDuration, getRandomText, getRandomIntegerRange, getRandomArrayValue, hasData };
+const generateId = () => nanoid();
+
+const createElement = (template) => {
+  const container = document.createElement('div');
+  container.innerHTML = template;
+  return container.firstChild;
+};
+
+const render = (element, container, position = 'beforeend') => {
+  if (position === 'beforeend') {
+    container.append(element);
+  }
+  if (position === 'afterbegin') {
+    container.prepend(element);
+  }
+};
+
+export {
+  generateId,
+  formatDate,
+  getDuration,
+  getRandomText,
+  getRandomIntegerRange,
+  getRandomArrayValue,
+  hasData,
+  createElement,
+  render
+};

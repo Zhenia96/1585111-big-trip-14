@@ -2,7 +2,6 @@ const FAVORITE_EVENT_CLASS = 'event__favorite-btn--active';
 const PATH_TO_ICONS = 'img/icons/';
 const MINUTES_IN_HOUR = 60;
 const HOURS_IN_DAY = 24;
-const MIN_TWO_DICIT_NUMBER = 10;
 const DASH = '&mdash;';
 const NON_BREAKING_SPACE = '&nbsp;';
 const ELLIPSIS = '...';
@@ -37,6 +36,5 @@ export {
   NON_BREAKING_SPACE,
   ELLIPSIS,
   MINUTES_IN_HOUR,
-  HOURS_IN_DAY,
-  MIN_TWO_DICIT_NUMBER
+  HOURS_IN_DAY
 };

@@ -1,43 +1,91 @@
-import { getEventEditorTemplate } from './view/event-editor/event-editor.js';
-import { getEventListTemplate } from './view/event-list/event-list.js';
-import { getEventContainerTemplate } from './view/event-list/event-container.js';
-import { getPointTemplate } from './view/point.js';
-import { getFilterTemplate } from './view/filter.js';
-import { getMenuTemplate } from './view/menu.js';
-import { getSortFormTemplate } from './view/sort-form.js';
-import { getTripInfoTemplate } from './view/trip-info.js';
-import { generateEventData, generateEventDataList } from './mock/event.js';
+import EventEditorView from './view/event-editor/event-editor.js';
+import EventListView from './view/event-list/event-list.js';
+import EventItemView from './view/event-list/event-container.js';
+import PointView from './view/point.js';
+import FilterView from './view/filter.js';
+import MenuView from './view/menu.js';
+import SortFormView from './view/sort-form.js';
+import TripInfoView from './view/trip-info.js';
+import { generateEventDataList } from './mock/event.js';
+import { render } from './util.js';
 
 const tripMainElement = document.querySelector('.trip-main');
 const navigationElement = tripMainElement.querySelector('.trip-controls__navigation');
-const filterElement = tripMainElement.querySelector('.trip-controls__filters');
-const eventContainerElement = document.querySelector('.trip-events');
+const filterContainer = tripMainElement.querySelector('.trip-controls__filters');
+const contentContainer = document.querySelector('.trip-events');
 const eventDataList = generateEventDataList(20);
 
-const pasteComponent = (component, container, position = 'beforeend') => {
-  container.insertAdjacentHTML(position, component);
+const renderTripInfo = () => {
+  const tripInfo = new TripInfoView(eventDataList);
+  const tripInfoElement = tripInfo.getElement();
+  render(tripInfoElement, tripMainElement, 'afterbegin');
 };
 
-const addEvent = (content) => {
-  const eventList = eventContainerElement.querySelector('.trip-events__list');
-  const eventItem = getEventContainerTemplate(content);
-  pasteComponent(eventItem, eventList);
+const renderMenu = () => {
+  const menu = new MenuView();
+  const menuElement = menu.getElement();
+  render(menuElement, navigationElement, 'afterbegin');
 };
 
-const addPoints = (eventDataList) => {
-  const eventList = eventContainerElement.querySelector('.trip-events__list');
-  let eventsFtagment = '';
-  eventDataList.forEach((eventData) => {
-    const eventItem = getEventContainerTemplate(getPointTemplate(eventData));
-    eventsFtagment += eventItem;
+const renderFilter = () => {
+  const filter = new FilterView();
+  const filterElement = filter.getElement();
+  render(filterElement, filterContainer, 'afterbegin');
+};
+
+const renderSortForm = () => {
+  const sortForm = new SortFormView();
+  const sortFormElement = sortForm.getElement();
+  render(sortFormElement, contentContainer, 'afterbegin');
+};
+
+const addPointButtonClickHandler = (eventItemElement, pointElement, eventEditorElement) => {
+  const eventButton = pointElement.querySelector('.event__rollup-btn');
+  eventButton.addEventListener('click', () => {
+    eventItemElement.replaceChild(eventEditorElement, pointElement);
   });
-  pasteComponent(eventsFtagment, eventList);
 };
 
-pasteComponent(getTripInfoTemplate(eventDataList), tripMainElement, 'afterbegin');
-pasteComponent(getMenuTemplate(), navigationElement);
-pasteComponent(getFilterTemplate(), filterElement);
-pasteComponent(getSortFormTemplate(), eventContainerElement, 'afterbegin');
-pasteComponent(getEventListTemplate(), eventContainerElement);
-addEvent(getEventEditorTemplate(generateEventData()));
-addPoints(eventDataList);
+const addEventEditorSaveButtonSubmitHandler = (eventItemElement, pointElement, eventEditorElement) => {
+  const saveButton = eventEditorElement.querySelector('.event__save-btn');
+  saveButton.addEventListener('Submit', () => {
+
+    // ...Что-то добавиться в будущем :))))))
+
+    eventItemElement.replaceChild(pointElement, eventEditorElement);
+  });
+};
+
+const renderPoint = (data) => {
+  const eventList = contentContainer.querySelector('.trip-events__list');
+  const eventItem = new EventItemView();
+  const eventItemElement = eventItem.getElement();
+  const point = new PointView(data);
+  const pointElement = point.getElement();
+  const eventEditor = new EventEditorView(data);
+  const eventEditorElement = eventEditor.getElement();
+  addPointButtonClickHandler(eventItemElement, pointElement, eventEditorElement);
+  addEventEditorSaveButtonSubmitHandler(eventItemElement, pointElement, eventEditorElement);
+  render(pointElement, eventItemElement, 'afterbegin');
+
+  if (!eventList) {
+    const eventList = new EventListView();
+    const eventListElement = eventList.getElement();
+    render(eventItemElement, eventListElement, 'afterbegin');
+    render(eventListElement, contentContainer, 'beforeend');
+  } else {
+    render(eventItemElement, eventList, 'afterbegin');
+  }
+};
+
+const renderAllPoints = (dataList) => {
+  dataList.forEach((data) => {
+    renderPoint(data);
+  });
+};
+
+renderTripInfo();
+renderMenu();
+renderFilter();
+renderSortForm();
+renderAllPoints(eventDataList);

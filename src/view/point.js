@@ -1,11 +1,10 @@
-import { formatDate, getDuration } from '../util.js';
+import { formatDate, getDuration, createElement } from '../util.js';
 import { DateFormat, FAVORITE_EVENT_CLASS, PATH_TO_ICONS, typeIcon } from '../constant';
 
 const { MONTH_DAY, HOUR_MINUTE, SPECIAL_FULL, YEAR_MONTH_DAY } = DateFormat;
 
 const getOfferTemplate = ({ title, price }) => {
-  return `
-    <li class="event__offer">
+  return `<li class="event__offer">
       <span class="event__offer-title">${title}</span>
               &plus;&euro;&nbsp;
       <span class="event__offer-price">${price}</span>
@@ -19,13 +18,12 @@ const getOffersListTemplate = (offersData) => {
     offersFragment += getOfferTemplate(offerData);
   });
 
-  return `
-    <ul class="event__selected-offers">
+  return `<ul class="event__selected-offers">
      ${offersFragment}
     </ul>`;
 };
 
-export const getPointTemplate = (data) => {
+const getPointTemplate = (data) => {
   const { type, destination, time, price, offers, isFavorite } = data;
   const { start, end } = time;
   const eventDate = formatDate(start, MONTH_DAY);
@@ -33,8 +31,7 @@ export const getPointTemplate = (data) => {
   const favoriteEvent = isFavorite ? FAVORITE_EVENT_CLASS : '';
   const duration = getDuration(start, end);
 
-  return `
-    <div class="event">
+  return `<div class="event">
       <time class="event__date" datetime="${formatDate(start, YEAR_MONTH_DAY)}">${eventDate}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="${PATH_TO_ICONS}${icon}" alt="${type} icon">
@@ -64,4 +61,26 @@ export const getPointTemplate = (data) => {
         </button>
       </div>`;
 };
+
+export default class Point {
+  constructor(data) {
+    this._data = data;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return getPointTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
 

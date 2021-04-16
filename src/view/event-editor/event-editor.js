@@ -1,6 +1,6 @@
-import { formatDate, hasData } from '../../util.js';
+import { formatDate, hasData, createElement } from '../../util.js';
 import { DateFormat, typeIcon, PATH_TO_ICONS } from '../../constant';
-import { getDetailsTemplate } from './details.js';
+import DetailsView from './details.js';
 
 const { FULL } = DateFormat;
 
@@ -25,15 +25,16 @@ const changeTypeStatus = (type) => {
   typeStatus[type] = 'checked';
 };
 
-export const getEventEditorTemplate = (data) => {
+const getEventEditorTemplate = (data) => {
   const { type, destination, time, price, offers, description } = data;
   const { start, end } = time;
   const { title, pictures } = description;
   changeTypeStatus(type.toLowerCase());
-  const detailsTemplate = hasData(offers) || hasData(title) || hasData(pictures) ? getDetailsTemplate(data) : '';
+  const detailsTemplate = hasData(offers) || hasData(title) || hasData(pictures) ?
+    new DetailsView(data).getTemplate() :
+    '';
 
-  return `
-    <form class="event event--edit" action="#" method="post">
+  return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -133,3 +134,25 @@ export const getEventEditorTemplate = (data) => {
     ${detailsTemplate}
   </form>`;
 };
+
+export default class EventEditor {
+  constructor(data) {
+    this._data = data;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return getEventEditorTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

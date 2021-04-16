@@ -1,8 +1,7 @@
 const getOfferTemplate = ({ title, price, id, isChecked }) => {
   const status = isChecked ? 'checked' : '';
 
-  return `
-    <div class="event__offer-selector">
+  return `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="event-offer-luggage" ${status}>
       <label class="event__offer-label" for="${id}">
         <span class="event__offer-title">${title}</span>
@@ -21,9 +20,8 @@ const getOfferListTemplate = (offersData) => {
   return offersList;
 };
 
-export const getOffersTemplate = (offersData) => {
-  return `
-    <section class="event__section  event__section--offers">
+const getOffersTemplate = (offersData) => {
+  return `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
       <div class="event__available-offers">
@@ -31,3 +29,14 @@ export const getOffersTemplate = (offersData) => {
       </div>
     </section>`;
 };
+
+export default class Offers {
+  constructor(offersData) {
+    this._offersData = offersData;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return getOffersTemplate(this._offersData);
+  }
+}

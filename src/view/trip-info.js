@@ -1,5 +1,5 @@
 import { DASH, NON_BREAKING_SPACE, ELLIPSIS, DateFormat } from '../constant.js';
-import { formatDate } from '../util.js';
+import { formatDate, createElement } from '../util.js';
 
 
 const calcOffersPrice = (offers) => {
@@ -56,12 +56,11 @@ const getDistance = (dataList) => {
   return distance;
 };
 
-export const getTripInfoTemplate = (dataList) => {
+const getTripInfoTemplate = (dataList) => {
   const totalPrice = getTotalPrice(dataList);
   const route = getRoute(dataList);
   const distance = getDistance(dataList);
-  return `
-    <section class="trip-main__trip-info  trip-info">
+  return `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
         <h1 class="trip-info__title">${route}</h1>
 
@@ -73,3 +72,25 @@ export const getTripInfoTemplate = (dataList) => {
       </p>
     </section>`;
 };
+
+export default class TripInfo {
+  constructor(dataList) {
+    this._dataList = dataList;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return getTripInfoTemplate(this._dataList);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
