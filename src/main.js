@@ -56,6 +56,28 @@ const addEventEditorSaveButtonSubmitHandler = (eventItemElement, pointElement, e
   });
 };
 
+const addEventEditorKeydownHandler = (eventItemElement, pointElement, eventEditorElement) => {
+  document.addEventListener('keydown', (evt) => {
+    if (evt.code === 'Escape') {
+      eventItemElement.replaceChild(pointElement, eventEditorElement);
+    }
+  });
+};
+
+const addEventEditorCloseButtonClickHandler = (eventItemElement, pointElement, eventEditorElement) => {
+  const closeButton = eventEditorElement.querySelector('.event__reset-btn');
+  closeButton.addEventListener('click', () => {
+    eventItemElement.replaceChild(pointElement, eventEditorElement);
+  });
+};
+
+const addAllEventEditorHandlers = (eventItemElement, pointElement, eventEditorElement) => {
+  addEventEditorSaveButtonSubmitHandler(eventItemElement, pointElement, eventEditorElement);
+  addEventEditorKeydownHandler(eventItemElement, pointElement, eventEditorElement);
+  addEventEditorCloseButtonClickHandler(eventItemElement, pointElement, eventEditorElement);
+};
+
+
 const renderPoint = (data) => {
   const eventList = contentContainer.querySelector('.trip-events__list');
   const eventItem = new EventItemView();
@@ -65,7 +87,7 @@ const renderPoint = (data) => {
   const eventEditor = new EventEditorView(data);
   const eventEditorElement = eventEditor.getElement();
   addPointButtonClickHandler(eventItemElement, pointElement, eventEditorElement);
-  addEventEditorSaveButtonSubmitHandler(eventItemElement, pointElement, eventEditorElement);
+  addAllEventEditorHandlers(eventItemElement, pointElement, eventEditorElement);
   render(pointElement, eventItemElement, 'afterbegin');
 
   if (!eventList) {
