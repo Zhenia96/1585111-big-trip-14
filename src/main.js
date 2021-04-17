@@ -6,49 +6,58 @@ import FilterView from './view/filter.js';
 import MenuView from './view/menu.js';
 import SortFormView from './view/sort-form.js';
 import TripInfoView from './view/trip-info.js';
+import EmptyEventListMessageView from './view/empty-event-list-message.js';
 import { generateEventDataList } from './mock/event.js';
 import { render } from './util.js';
+import { Position, EventName, ESCAPE_BUTTON, ElementClass } from './constant.js';
 
-const tripMainElement = document.querySelector('.trip-main');
-const navigationElement = tripMainElement.querySelector('.trip-controls__navigation');
-const filterContainer = tripMainElement.querySelector('.trip-controls__filters');
-const contentContainer = document.querySelector('.trip-events');
+const tripMainElement = document.querySelector(ElementClass.TRIP_MAIN);
+const navigationElement = tripMainElement.querySelector(ElementClass.NAVIGATION);
+const filterContainer = tripMainElement.querySelector(ElementClass.FILTER);
+const contentContainer = document.querySelector(ElementClass.CONTENT);
 const eventDataList = generateEventDataList(20);
 
+const emptyEventListMessage = new EmptyEventListMessageView();
+const tripInfo = new TripInfoView(eventDataList);
+const menu = new MenuView();
+const filter = new FilterView();
+const sortForm = new SortFormView();
+
+const renderEventListEmpty = () => {
+  const eventListEmptyElement = emptyEventListMessage.getElement();
+  render(eventListEmptyElement, contentContainer, Position.BEFORE_END);
+};
+
 const renderTripInfo = () => {
-  const tripInfo = new TripInfoView(eventDataList);
   const tripInfoElement = tripInfo.getElement();
-  render(tripInfoElement, tripMainElement, 'afterbegin');
+  render(tripInfoElement, tripMainElement, Position.AFTER_BEGIN);
 };
 
 const renderMenu = () => {
-  const menu = new MenuView();
   const menuElement = menu.getElement();
-  render(menuElement, navigationElement, 'afterbegin');
+  render(menuElement, navigationElement, Position.AFTER_BEGIN);
 };
 
 const renderFilter = () => {
-  const filter = new FilterView();
   const filterElement = filter.getElement();
-  render(filterElement, filterContainer, 'afterbegin');
+  render(filterElement, filterContainer, Position.AFTER_BEGIN);
 };
 
 const renderSortForm = () => {
-  const sortForm = new SortFormView();
   const sortFormElement = sortForm.getElement();
-  render(sortFormElement, contentContainer, 'afterbegin');
+  render(sortFormElement, contentContainer, Position.AFTER_BEGIN);
 };
 
 const addPointButtonClickHandler = (eventItemElement, pointElement, eventEditorElement) => {
-  const eventButton = pointElement.querySelector('.event__rollup-btn');
-  eventButton.addEventListener('click', () => {
+  const openEventEditorButton = pointElement.querySelector(ElementClass.OPEN_EVENT_EDITOR_BUTTON);
+  openEventEditorButton.addEventListener(EventName.CLICK, () => {
     eventItemElement.replaceChild(eventEditorElement, pointElement);
   });
 };
 
 const addEventEditorSaveButtonSubmitHandler = (eventItemElement, pointElement, eventEditorElement) => {
-  const saveButton = eventEditorElement.querySelector('.event__save-btn');
-  saveButton.addEventListener('Submit', () => {
+  const saveButton = eventEditorElement.querySelector(ElementClass.SAVE_CHANGES_BUTTON);
+  saveButton.addEventListener(EventName.SUBMIT, () => {
 
     // ...Что-то добавиться в будущем :))))))
 
@@ -57,16 +66,16 @@ const addEventEditorSaveButtonSubmitHandler = (eventItemElement, pointElement, e
 };
 
 const addEventEditorKeydownHandler = (eventItemElement, pointElement, eventEditorElement) => {
-  document.addEventListener('keydown', (evt) => {
-    if (evt.code === 'Escape') {
+  document.addEventListener(EventName.KEYDOWN, (evt) => {
+    if (evt.code === ESCAPE_BUTTON && eventItemElement.querySelector(ElementClass.EVENT_EDITOR)) {
       eventItemElement.replaceChild(pointElement, eventEditorElement);
     }
   });
 };
 
 const addEventEditorCloseButtonClickHandler = (eventItemElement, pointElement, eventEditorElement) => {
-  const closeButton = eventEditorElement.querySelector('.event__reset-btn');
-  closeButton.addEventListener('click', () => {
+  const closeButton = eventEditorElement.querySelector(ElementClass.CLOSE_EVENT_EDITOR_BUTTON);
+  closeButton.addEventListener(EventName.CLICK, () => {
     eventItemElement.replaceChild(pointElement, eventEditorElement);
   });
 };
@@ -77,9 +86,8 @@ const addAllEventEditorHandlers = (eventItemElement, pointElement, eventEditorEl
   addEventEditorCloseButtonClickHandler(eventItemElement, pointElement, eventEditorElement);
 };
 
-
 const renderPoint = (data) => {
-  const eventList = contentContainer.querySelector('.trip-events__list');
+  const eventList = contentContainer.querySelector(ElementClass.EVENT_LIST);
   const eventItem = new EventItemView();
   const eventItemElement = eventItem.getElement();
   const point = new PointView(data);
@@ -88,15 +96,16 @@ const renderPoint = (data) => {
   const eventEditorElement = eventEditor.getElement();
   addPointButtonClickHandler(eventItemElement, pointElement, eventEditorElement);
   addAllEventEditorHandlers(eventItemElement, pointElement, eventEditorElement);
-  render(pointElement, eventItemElement, 'afterbegin');
+  render(pointElement, eventItemElement, Position.AFTER_BEGIN);
 
   if (!eventList) {
     const eventList = new EventListView();
     const eventListElement = eventList.getElement();
-    render(eventItemElement, eventListElement, 'afterbegin');
-    render(eventListElement, contentContainer, 'beforeend');
+    contentContainer.removeChild(emptyEventListMessage.getElement());
+    render(eventItemElement, eventListElement, Position.AFTER_BEGIN);
+    render(eventListElement, contentContainer, Position.BEFORE_END);
   } else {
-    render(eventItemElement, eventList, 'afterbegin');
+    render(eventItemElement, eventList, Position.AFTER_BEGIN);
   }
 };
 
@@ -106,6 +115,7 @@ const renderAllPoints = (dataList) => {
   });
 };
 
+renderEventListEmpty();
 renderTripInfo();
 renderMenu();
 renderFilter();
