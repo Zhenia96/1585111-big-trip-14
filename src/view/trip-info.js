@@ -28,7 +28,7 @@ const getRoute = (dataList) => {
   });
 
   if (routeTemporary.length <= 3) {
-    route = routeTemporary.join(' &mdash; ');
+    route = routeTemporary.join(` ${DASH} `);
   } else {
     const firstPoint = routeTemporary[0];
     const lastPoint = routeTemporary[routeTemporary.length - 1];
