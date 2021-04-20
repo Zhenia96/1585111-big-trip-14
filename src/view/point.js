@@ -1,4 +1,4 @@
-import { formatDate, getDuration } from '../util.js';
+import { formatDate, getDuration } from '../utils/common.js';
 import { DateFormat, ElementClass, PATH_TO_ICONS, typeIcon } from '../constant';
 import AbstractComponentView from './abstract/companent.js';
 

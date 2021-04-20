@@ -1,4 +1,4 @@
-import { formatDate, hasData } from '../../util.js';
+import { formatDate, hasData } from '../../utils/common.js';
 import { DateFormat, typeIcon, PATH_TO_ICONS } from '../../constant';
 import DetailsView from './details.js';
 import AbstractComponentView from '../abstract/companent.js';

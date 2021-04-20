@@ -1,7 +1,7 @@
 import OffersView from './offer.js';
 import DescriptionView from './description.js';
 import AbstractComponentView from '../abstract/companent.js';
-import { hasData } from '../../util.js';
+import { hasData } from '../../utils/common.js';
 
 const getDetailsTemplate = ({ offers, description }) => {
   const { title, pictures } = description;

@@ -1,16 +1,15 @@
-import { MINUTES_IN_HOUR, HOURS_IN_DAY } from './constant';
+import { MINUTES_IN_HOUR, HOURS_IN_DAY } from '../constant';
 import { nanoid } from 'nanoid';
-import AbstractComponentView from './view/abstract/companent.js';
 
-const getRandomIntegerRange = (min = 0, max = 10) => Math.floor(Math.random() * (max - min + 1)) + min;
+export const getRandomIntegerRange = (min = 0, max = 10) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-const getRandomArrayValue = (array) => {
+export const getRandomArrayValue = (array) => {
   const lastIndex = array.length - 1;
   const randomIndex = getRandomIntegerRange(0, lastIndex);
   return array[randomIndex];
 };
 
-const getRandomText = (sentencesCount) => {
+export const getRandomText = (sentencesCount) => {
   const PLACEHOLDER = [
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     'Cras aliquet varius magna,',
@@ -33,11 +32,11 @@ const getRandomText = (sentencesCount) => {
   return text;
 };
 
-const formatDate = (date, format) => {
+export const formatDate = (date, format) => {
   return date.format(format);
 };
 
-const getDuration = (start, end) => {
+export const getDuration = (start, end) => {
   const durationInDays = end.diff(start, 'day');
   const durationInHours = end.diff(start, 'hour');
   const durationInMinutes = end.diff(start, 'minute');
@@ -59,41 +58,6 @@ const getDuration = (start, end) => {
   return `${formatedDay}${formatedHour}${formatedMinute}`;
 };
 
-const hasData = (object) => Boolean(Object.keys(object).length || object.length);
+export const hasData = (object) => Boolean(Object.keys(object).length || object.length);
 
-const generateId = () => nanoid();
-
-const createElement = (template) => {
-  const container = document.createElement('div');
-  container.innerHTML = template;
-  return container.firstChild;
-};
-
-const render = (component, container, position = 'beforeend') => {
-  if (component instanceof AbstractComponentView) {
-    component = component.getElement();
-  }
-
-  if (container instanceof AbstractComponentView) {
-    container = container.getElement();
-  }
-
-  if (position === 'beforeend') {
-    container.append(component);
-  }
-  if (position === 'afterbegin') {
-    container.prepend(component);
-  }
-};
-
-export {
-  generateId,
-  formatDate,
-  getDuration,
-  getRandomText,
-  getRandomIntegerRange,
-  getRandomArrayValue,
-  hasData,
-  createElement,
-  render
-};
+export const generateId = () => nanoid();

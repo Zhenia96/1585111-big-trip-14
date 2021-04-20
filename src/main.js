@@ -8,7 +8,7 @@ import SortFormView from './view/sort-form.js';
 import TripInfoView from './view/trip-info.js';
 import EmptyEventListMessageView from './view/empty-event-list-message.js';
 import { generateEventDataList } from './mock/event.js';
-import { render } from './util.js';
+import { render } from './utils/component.js';
 import { Position, EventName, ESCAPE_BUTTON, ElementClass } from './constant.js';
 
 const tripMainElement = document.querySelector(ElementClass.TRIP_MAIN);
@@ -22,7 +22,6 @@ const tripInfo = new TripInfoView(eventDataList);
 const menu = new MenuView();
 const filter = new FilterView();
 const sortForm = new SortFormView();
-
 
 const addPointButtonClickHandler = (eventItemElement, pointElement, eventEditorElement) => {
   const openEventEditorButton = pointElement.querySelector(ElementClass.OPEN_EVENT_EDITOR_BUTTON);
@@ -58,7 +57,6 @@ const addEventEditorCloseButtonClickHandler = (eventItemElement, pointElement, e
 
 const addAllEventEditorHandlers = (eventItemElement, pointElement, eventEditorElement) => {
   addEventEditorSaveButtonSubmitHandler(eventItemElement, pointElement, eventEditorElement);
-  addEventEditorKeydownHandler(eventItemElement, pointElement, eventEditorElement);
   addEventEditorCloseButtonClickHandler(eventItemElement, pointElement, eventEditorElement);
 };
 

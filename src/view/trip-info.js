@@ -1,5 +1,5 @@
 import { DASH, NON_BREAKING_SPACE, ELLIPSIS, DateFormat } from '../constant.js';
-import { formatDate } from '../util.js';
+import { formatDate } from '../utils/common.js';
 import AbstractComponentView from './abstract/companent.js';
 
 const calcOffersPrice = (offers) => {

@@ -1,4 +1,4 @@
-import { hasData } from '../../util.js';
+import { hasData } from '../../utils/common.js';
 import AbstractComponentView from '../abstract/companent.js';
 
 const getPictureTemplate = ({ src, description }) => {
