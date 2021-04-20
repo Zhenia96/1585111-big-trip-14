@@ -1,5 +1,6 @@
 import { MINUTES_IN_HOUR, HOURS_IN_DAY } from './constant';
 import { nanoid } from 'nanoid';
+import AbstractComponentView from './view/abstract/companent.js';
 
 const getRandomIntegerRange = (min = 0, max = 10) => Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -68,12 +69,20 @@ const createElement = (template) => {
   return container.firstChild;
 };
 
-const render = (element, container, position = 'beforeend') => {
+const render = (component, container, position = 'beforeend') => {
+  if (component instanceof AbstractComponentView) {
+    component = component.getElement();
+  }
+
+  if (container instanceof AbstractComponentView) {
+    container = container.getElement();
+  }
+
   if (position === 'beforeend') {
-    container.append(element);
+    container.append(component);
   }
   if (position === 'afterbegin') {
-    container.prepend(element);
+    container.prepend(component);
   }
 };
 

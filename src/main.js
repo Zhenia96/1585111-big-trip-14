@@ -23,30 +23,6 @@ const menu = new MenuView();
 const filter = new FilterView();
 const sortForm = new SortFormView();
 
-const renderEventListEmpty = () => {
-  const eventListEmptyElement = emptyEventListMessage.getElement();
-  render(eventListEmptyElement, contentContainer, Position.BEFORE_END);
-};
-
-const renderTripInfo = () => {
-  const tripInfoElement = tripInfo.getElement();
-  render(tripInfoElement, tripMainElement, Position.AFTER_BEGIN);
-};
-
-const renderMenu = () => {
-  const menuElement = menu.getElement();
-  render(menuElement, navigationElement, Position.AFTER_BEGIN);
-};
-
-const renderFilter = () => {
-  const filterElement = filter.getElement();
-  render(filterElement, filterContainer, Position.AFTER_BEGIN);
-};
-
-const renderSortForm = () => {
-  const sortFormElement = sortForm.getElement();
-  render(sortFormElement, contentContainer, Position.AFTER_BEGIN);
-};
 
 const addPointButtonClickHandler = (eventItemElement, pointElement, eventEditorElement) => {
   const openEventEditorButton = pointElement.querySelector(ElementClass.OPEN_EVENT_EDITOR_BUTTON);
@@ -96,16 +72,15 @@ const renderPoint = (data) => {
   const eventEditorElement = eventEditor.getElement();
   addPointButtonClickHandler(eventItemElement, pointElement, eventEditorElement);
   addAllEventEditorHandlers(eventItemElement, pointElement, eventEditorElement);
-  render(pointElement, eventItemElement, Position.AFTER_BEGIN);
+  render(point, eventItem, Position.AFTER_BEGIN);
 
   if (!eventList) {
     const eventList = new EventListView();
-    const eventListElement = eventList.getElement();
     contentContainer.removeChild(emptyEventListMessage.getElement());
-    render(eventItemElement, eventListElement, Position.AFTER_BEGIN);
-    render(eventListElement, contentContainer, Position.BEFORE_END);
+    render(eventItem, eventList, Position.AFTER_BEGIN);
+    render(eventList, contentContainer, Position.BEFORE_END);
   } else {
-    render(eventItemElement, eventList, Position.AFTER_BEGIN);
+    render(eventItem, eventList, Position.AFTER_BEGIN);
   }
 };
 
@@ -115,9 +90,9 @@ const renderAllPoints = (dataList) => {
   });
 };
 
-renderEventListEmpty();
-renderTripInfo();
-renderMenu();
-renderFilter();
-renderSortForm();
+render(emptyEventListMessage, contentContainer, Position.BEFORE_END);
+render(tripInfo, tripMainElement, Position.AFTER_BEGIN);
+render(menu, navigationElement, Position.AFTER_BEGIN);
+render(filter, filterContainer, Position.AFTER_BEGIN);
+render(sortForm, contentContainer, Position.AFTER_BEGIN);
 renderAllPoints(eventDataList);
