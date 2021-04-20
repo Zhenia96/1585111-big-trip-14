@@ -25,11 +25,9 @@ export const render = (element, container, position = 'beforeend') => {
   }
 };
 
-export const remove = (element) => {
-  if (element instanceof AbstractComponentView) {
-    element = element.getElement();
-  }
-  element.removeElement();
+export const remove = (component) => {
+  const element = component.getElement();
+  component.removeElement();
   element.parentNode.removeChild(element);
 };
 

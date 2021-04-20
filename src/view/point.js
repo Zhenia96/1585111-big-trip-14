@@ -1,5 +1,5 @@
 import { formatDate, getDuration } from '../utils/common.js';
-import { DateFormat, ElementClass, PATH_TO_ICONS, typeIcon } from '../constant';
+import { DateFormat, CssClass, PATH_TO_ICONS, typeIcon, EventName } from '../constant';
 import AbstractComponentView from './abstract/companent.js';
 
 const { MONTH_DAY, HOUR_MINUTE, SPECIAL_FULL, YEAR_MONTH_DAY } = DateFormat;
@@ -29,7 +29,7 @@ const getPointTemplate = (data) => {
   const { start, end } = time;
   const eventDate = formatDate(start, MONTH_DAY);
   const icon = typeIcon[type];
-  const favoriteEventButtonClass = isFavorite ? ElementClass.FAVORITE_EVENT_BUTTON_ACTIVE : '';
+  const favoriteEventButtonClass = isFavorite ? CssClass.FAVORITE_EVENT_BUTTON_ACTIVE : '';
   const duration = getDuration(start, end);
 
   return `<div class="event">
@@ -67,10 +67,20 @@ export default class Point extends AbstractComponentView {
   constructor(data) {
     super();
     this._data = data;
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
   getTemplate() {
     return getPointTemplate(this._data);
+  }
+
+  _clickHandler() {
+    this._callback.click();
+  }
+
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().addEventListener(EventName.CLICK, this._clickHandler);
   }
 }
 

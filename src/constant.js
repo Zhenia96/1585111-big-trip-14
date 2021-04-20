@@ -6,7 +6,7 @@ const NON_BREAKING_SPACE = '&nbsp;';
 const ELLIPSIS = '...';
 const ESCAPE_BUTTON = 'Escape';
 
-const ElementClass = {
+const CssClass = {
   FAVORITE_EVENT_BUTTON_ACTIVE: 'event__favorite-btn--active',
   OPEN_EVENT_EDITOR_BUTTON: '.event__rollup-btn',
   SAVE_CHANGES_BUTTON: '.event__save-btn',
@@ -63,5 +63,5 @@ export {
   Position,
   EventName,
   ESCAPE_BUTTON,
-  ElementClass
+  CssClass
 };

@@ -7,6 +7,7 @@ export default class Companent {
     }
 
     this._element = null;
+    this._callback = {};
   }
 
   getTemplate() {
