@@ -1,6 +1,6 @@
 import { DASH, NON_BREAKING_SPACE, ELLIPSIS, DateFormat } from '../constant.js';
-import { formatDate, createElement } from '../util.js';
-
+import { formatDate } from '../util.js';
+import AbstractComponentView from './abstract/companent.js';
 
 const calcOffersPrice = (offers) => {
   let result = 0;
@@ -73,24 +73,13 @@ const getTripInfoTemplate = (dataList) => {
     </section>`;
 };
 
-export default class TripInfo {
+export default class TripInfo extends AbstractComponentView {
   constructor(dataList) {
+    super();
     this._dataList = dataList;
-    this._element = null;
   }
 
   getTemplate() {
     return getTripInfoTemplate(this._dataList);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

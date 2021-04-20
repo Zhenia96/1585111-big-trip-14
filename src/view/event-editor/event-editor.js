@@ -1,6 +1,7 @@
-import { formatDate, hasData, createElement } from '../../util.js';
+import { formatDate, hasData } from '../../util.js';
 import { DateFormat, typeIcon, PATH_TO_ICONS } from '../../constant';
 import DetailsView from './details.js';
+import AbstractComponentView from '../abstract/companent.js';
 
 const { FULL } = DateFormat;
 
@@ -135,24 +136,13 @@ const getEventEditorTemplate = (data) => {
   </form>`;
 };
 
-export default class EventEditor {
+export default class EventEditor extends AbstractComponentView {
   constructor(data) {
+    super();
     this._data = data;
-    this._element = null;
   }
 
   getTemplate() {
     return getEventEditorTemplate(this._data);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

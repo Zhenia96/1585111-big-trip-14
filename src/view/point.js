@@ -1,5 +1,6 @@
-import { formatDate, getDuration, createElement } from '../util.js';
+import { formatDate, getDuration } from '../util.js';
 import { DateFormat, ElementClass, PATH_TO_ICONS, typeIcon } from '../constant';
+import AbstractComponentView from './abstract/companent.js';
 
 const { MONTH_DAY, HOUR_MINUTE, SPECIAL_FULL, YEAR_MONTH_DAY } = DateFormat;
 
@@ -62,25 +63,14 @@ const getPointTemplate = (data) => {
       </div>`;
 };
 
-export default class Point {
+export default class Point extends AbstractComponentView {
   constructor(data) {
+    super();
     this._data = data;
-    this._element = null;
   }
 
   getTemplate() {
     return getPointTemplate(this._data);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

@@ -1,6 +1,6 @@
-import { createElement } from '../util.js';
+import { createElement } from '../../util.js';
 
-export default class AbstractCompanent {
+export default class Companent {
   constructor() {
     if (new.target === 'AbstarctCompanent') {
       throw new Error('The class is not for instantiate. Create extended class by this class and use it');
