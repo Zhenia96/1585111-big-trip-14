@@ -1,6 +1,7 @@
-import { formatDate, hasData, createElement } from '../../util.js';
-import { DateFormat, typeIcon, PATH_TO_ICONS } from '../../constant';
+import { formatDate, hasData } from '../../utils/common.js';
+import { DateFormat, typeIcon, PATH_TO_ICONS, EventName, CssClass } from '../../constant';
 import DetailsView from './details.js';
+import AbstractComponentView from '../abstract/companent.js';
 
 const { FULL } = DateFormat;
 
@@ -135,24 +136,34 @@ const getEventEditorTemplate = (data) => {
   </form>`;
 };
 
-export default class EventEditor {
+export default class EventEditor extends AbstractComponentView {
   constructor(data) {
+    super();
     this._data = data;
-    this._element = null;
+    this._submitHandler = this._submitHandler.bind(this);
+    this._clickHandler = this._clickHandler.bind(this);
+  }
+
+  _submitHandler(evt) {
+    evt.preventDefault();
+    this._callback.submit();
+  }
+
+  _clickHandler() {
+    this._callback.click();
+  }
+
+  setSubmitHandler(callback) {
+    this._callback.submit = callback;
+    this.getElement().addEventListener(EventName.SUBMIT, this._submitHandler);
+  }
+
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().querySelector(CssClass.CLOSE_EVENT_EDITOR_BUTTON).addEventListener(EventName.CLICK, this._clickHandler);
   }
 
   getTemplate() {
     return getEventEditorTemplate(this._data);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

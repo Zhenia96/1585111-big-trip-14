@@ -1,7 +1,7 @@
 import OffersView from './offer.js';
 import DescriptionView from './description.js';
-import { hasData } from '../../util.js';
-
+import AbstractComponentView from '../abstract/companent.js';
+import { hasData } from '../../utils/common.js';
 
 const getDetailsTemplate = ({ offers, description }) => {
   const { title, pictures } = description;
@@ -18,8 +18,9 @@ const getDetailsTemplate = ({ offers, description }) => {
     </section>`;
 };
 
-export default class Details {
+export default class Details extends AbstractComponentView {
   constructor(data) {
+    super();
     this._data = data;
   }
 

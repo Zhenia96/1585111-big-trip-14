@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getRandomIntegerRange, getRandomText, getRandomArrayValue, generateId } from '../util.js';
+import { getRandomIntegerRange, getRandomText, getRandomArrayValue, generateId } from '../utils/common.js';
 
 const EVENT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 const EVENT_DESTINATIONS = ['Amsterdam', 'Geneva', 'Chamonix'];

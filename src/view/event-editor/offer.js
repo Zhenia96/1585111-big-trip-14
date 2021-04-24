@@ -1,3 +1,5 @@
+import AbstractComponentView from '../abstract/companent.js';
+
 const getOfferTemplate = ({ title, price, id, isChecked }) => {
   const status = isChecked ? 'checked' : '';
 
@@ -30,10 +32,10 @@ const getOffersTemplate = (offersData) => {
     </section>`;
 };
 
-export default class Offers {
+export default class Offers extends AbstractComponentView {
   constructor(offersData) {
+    super();
     this._offersData = offersData;
-    this._element = null;
   }
 
   getTemplate() {
