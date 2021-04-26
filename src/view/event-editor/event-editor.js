@@ -1,5 +1,5 @@
 import { formatDate, hasData } from '../../utils/common.js';
-import { DateFormat, typeIcon, PATH_TO_ICONS, EventName, CssClass } from '../../constant';
+import { DateFormat, typeIcon, PATH_TO_ICONS, EventName, CssClassName } from '../../constant';
 import DetailsView from './details.js';
 import AbstractComponentView from '../abstract/companent.js';
 
@@ -160,7 +160,7 @@ export default class EventEditor extends AbstractComponentView {
 
   setClickHandler(callback) {
     this._callback.click = callback;
-    this.getElement().querySelector(CssClass.CLOSE_EVENT_EDITOR_BUTTON).addEventListener(EventName.CLICK, this._clickHandler);
+    this.getElement().querySelector(CssClassName.CLOSE_EVENT_EDITOR_BUTTON).addEventListener(EventName.CLICK, this._clickHandler);
   }
 
   getTemplate() {

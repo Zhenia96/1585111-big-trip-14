@@ -1,5 +1,5 @@
 import AbstractComponentView from '../abstract/companent.js';
-import { ESCAPE_BUTTON, CssClass, EventName } from '../../constant.js';
+import { ESCAPE_BUTTON, CssClassName, EventName } from '../../constant.js';
 
 const getEventItemTemplate = () => {
   return '<li class="trip-events__item"></li>';
@@ -12,7 +12,7 @@ export default class EventItem extends AbstractComponentView {
   }
 
   _keydownHandler(evt) {
-    if (evt.code === ESCAPE_BUTTON && this.getElement().querySelector(CssClass.EVENT_EDITOR)) {
+    if (evt.code === ESCAPE_BUTTON && this.getElement().querySelector(CssClassName.EVENT_EDITOR)) {
       this._callback.keydown();
     }
   }

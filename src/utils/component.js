@@ -41,5 +41,6 @@ export const replace = (newElement, oldElement) => {
   }
 
   const container = oldElement.parentNode;
+
   container.replaceChild(newElement, oldElement);
 };
