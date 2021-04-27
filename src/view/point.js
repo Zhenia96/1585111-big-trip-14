@@ -1,5 +1,5 @@
 import { formatDate, getDuration } from '../utils/common.js';
-import { DateFormat, CssClass, PATH_TO_ICONS, typeIcon, EventName } from '../constant';
+import { DateFormat, CssClassName, PATH_TO_ICONS, typeIcon, EventName } from '../constant';
 import AbstractComponentView from './abstract/companent.js';
 
 const { MONTH_DAY, HOUR_MINUTE, SPECIAL_FULL, YEAR_MONTH_DAY } = DateFormat;
@@ -29,7 +29,7 @@ const getPointTemplate = (data) => {
   const { start, end } = time;
   const eventDate = formatDate(start, MONTH_DAY);
   const icon = typeIcon[type];
-  const favoriteEventButtonClass = isFavorite ? CssClass.FAVORITE_EVENT_BUTTON_ACTIVE : '';
+  const favoriteEventButtonClass = isFavorite ? CssClassName.FAVORITE_EVENT_BUTTON_ACTIVE : '';
   const duration = getDuration(start, end);
 
   return `<div class="event">
@@ -67,20 +67,31 @@ export default class Point extends AbstractComponentView {
   constructor(data) {
     super();
     this._data = data;
-    this._clickHandler = this._clickHandler.bind(this);
+    this._openEditorButtonClickHandler = this._openEditorButtonClickHandler.bind(this);
+    this._favoriteButtonClickHandler = this._favoriteButtonClickHandler.bind(this);
   }
 
   getTemplate() {
     return getPointTemplate(this._data);
   }
 
-  _clickHandler() {
-    this._callback.click();
+  _openEditorButtonClickHandler() {
+    this._callback.clickOpenEditorButton();
   }
 
-  setClickHandler(callback) {
-    this._callback.click = callback;
-    this.getElement().addEventListener(EventName.CLICK, this._clickHandler);
+  _favoriteButtonClickHandler() {
+    this._callback.clickFavoriteButton();
+    this.getElement().querySelector(CssClassName.FAVORITE_EVENT_BUTTON).classList.toggle('event__favorite-btn--active');
+  }
+
+  setOpenEditorButtonClickHandler(callback) {
+    this._callback.clickOpenEditorButton = callback;
+    this.getElement().querySelector(CssClassName.OPEN_EVENT_EDITOR_BUTTON).addEventListener(EventName.CLICK, this._openEditorButtonClickHandler);
+  }
+
+  setFavoriteButtonClickHandler(callback) {
+    this._callback.clickFavoriteButton = callback;
+    this.getElement().querySelector(CssClassName.FAVORITE_EVENT_BUTTON).addEventListener(EventName.CLICK, this._favoriteButtonClickHandler);
   }
 }
 
