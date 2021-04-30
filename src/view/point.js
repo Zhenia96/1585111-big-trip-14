@@ -29,7 +29,7 @@ const getPointTemplate = (data) => {
   const { start, end } = time;
   const eventDate = formatDate(start, MONTH_DAY);
   const icon = typeIcon[type];
-  const favoriteEventButtonClass = isFavorite ? CssClassName.FAVORITE_EVENT_BUTTON_ACTIVE : '';
+  const favoriteEventButtonClass = isFavorite ? 'event__favorite-btn--active' : '';
   const duration = getDuration(start, end);
 
   return `<div class="event">

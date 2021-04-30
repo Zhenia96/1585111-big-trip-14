@@ -20,6 +20,12 @@ const CssClassName = {
   CONTENT: '.trip-events',
 };
 
+const SortMode = {
+  DATE: 'date',
+  PRICE: 'price',
+  TIME: 'time',
+};
+
 const EventName = {
   CLICK: 'click',
   SUBMIT: 'submit',
@@ -64,5 +70,6 @@ export {
   Position,
   EventName,
   ESCAPE_BUTTON,
-  CssClassName
+  CssClassName,
+  SortMode
 };
