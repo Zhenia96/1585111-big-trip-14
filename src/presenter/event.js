@@ -12,13 +12,16 @@ export default class Event {
     this._eventEditor = null;
     this._container = container;
     this._closeAllEditors = closeAllEditors;
+
+    this._changeFavoriteStatus = this._changeFavoriteStatus.bind(this);
+    this._eventEditorSubmitCallback = this._eventEditorSubmitCallback.bind(this);
+    this._pointOpenEditorCallback = this._pointOpenEditorCallback.bind(this);
+    this._eventEditorCloseCallback = this._eventEditorCloseCallback.bind(this);
   }
 
   init(eventData) {
     if (this._event === null) {
-      this._eventKeydownCallback = this._eventKeydownCallback.bind(this);
       this._event = new EventItemView();
-      this._event.setKeydownHandler(this._eventKeydownCallback);
       render(this._event, this._container);
     }
 
@@ -29,11 +32,6 @@ export default class Event {
     this._eventData = eventData;
     this._point = new PointView(this._eventData);
     this._eventEditor = new EventEditorView(this._eventData);
-
-    this._changeFavoriteStatus = this._changeFavoriteStatus.bind(this);
-    this._eventEditorSubmitCallback = this._eventEditorSubmitCallback.bind(this);
-    this._pointOpenEditorCallback = this._pointOpenEditorCallback.bind(this);
-    this._eventEditorCloseCallback = this._eventEditorCloseCallback.bind(this);
 
     this._point.setFavoriteButtonClickHandler(this._changeFavoriteStatus);
     this._point.setOpenEditorButtonClickHandler(this._pointOpenEditorCallback);
@@ -53,10 +51,6 @@ export default class Event {
 
   remove() {
     remove(this._event);
-  }
-
-  _eventKeydownCallback() {
-    this.replaceFromEditorToPoint();
   }
 
   _eventEditorSubmitCallback() {

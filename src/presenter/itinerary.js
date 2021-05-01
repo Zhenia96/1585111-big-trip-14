@@ -3,7 +3,7 @@ import EventListView from '../view/event-list/event-list.js';
 import EmptyEventListMessageView from '../view/empty-event-list-message.js';
 import EventPresentor from './event.js';
 import { render } from '../utils/component.js';
-import { SortMode } from '../constant.js';
+import { SortMode, ESCAPE_BUTTON, EventName } from '../constant.js';
 
 export default class Itinerary {
   constructor(container) {
@@ -15,7 +15,11 @@ export default class Itinerary {
     this._emptyEventListMessage = new EmptyEventListMessageView();
 
     this._sortFormClickCallback = this._sortFormClickCallback.bind(this);
+    this._closeAllEditors = this._closeAllEditors.bind(this);
+    this._escKeydownHandler = this._escKeydownHandler.bind(this);
+
     this._sortForm.setClickHandler(this._sortFormClickCallback);
+    this._setEscKeydownHandler();
 
     this._currentSortMode = null;
     this._eventPresentor = {};
@@ -33,7 +37,6 @@ export default class Itinerary {
       this._sort(sortMode);
     }
 
-    this._closeAllEditors = this._closeAllEditors.bind(this);
 
     this._renderSortForm();
     this._renderAllEvents();
@@ -121,6 +124,20 @@ export default class Itinerary {
       currentPresentor.remove();
     });
     this._eventPresentor = {};
+  }
+
+  _escKeydownHandler(evt) {
+    if (evt.code === ESCAPE_BUTTON) {
+      this._closeAllEditors();
+    }
+  }
+
+  _setEscKeydownHandler() {
+    document.addEventListener(EventName.KEYDOWN, this._escKeydownHandler);
+  }
+
+  _removeEscKeydownHandler() {
+    document.removeEventListener(EventName.KEYDOWN, this._escKeydownHandler);
   }
 
   _renderSortForm() {
