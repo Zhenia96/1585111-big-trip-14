@@ -3,6 +3,7 @@ import EventListView from '../view/event-list/event-list.js';
 import EmptyEventListMessageView from '../view/empty-event-list-message.js';
 import EventPresentor from './event.js';
 import { render } from '../utils/component.js';
+import { updateData } from '../utils/common.js';
 import { SortMode, ESCAPE_BUTTON, EventName } from '../constant.js';
 
 export default class Itinerary {
@@ -17,6 +18,7 @@ export default class Itinerary {
     this._sortFormClickCallback = this._sortFormClickCallback.bind(this);
     this._closeAllEditors = this._closeAllEditors.bind(this);
     this._escKeydownHandler = this._escKeydownHandler.bind(this);
+    this._changeData = this._changeData.bind(this);
 
     this._sortForm.setClickHandler(this._sortFormClickCallback);
     this._setEscKeydownHandler();
@@ -41,6 +43,11 @@ export default class Itinerary {
     this._renderSortForm();
     this._renderAllEvents();
     this._renderEventList();
+  }
+
+  _changeData(updatedData) {
+    this._eventDataList = updateData(this._eventDataList, updatedData);
+    this._eventPresentor[updatedData.id].init(updatedData);
   }
 
   _sort(mode) {
@@ -153,7 +160,7 @@ export default class Itinerary {
   }
 
   _renderEvent(data) {
-    const event = new EventPresentor(this._eventList, this._closeAllEditors);
+    const event = new EventPresentor(this._eventList, this._closeAllEditors, this._changeData);
     event.init(data);
     this._eventPresentor[data.id] = event;
   }

@@ -81,7 +81,6 @@ export default class Point extends AbstractComponentView {
 
   _favoriteButtonClickHandler() {
     this._callback.clickFavoriteButton();
-    this.getElement().querySelector(CssClassName.FAVORITE_EVENT_BUTTON).classList.toggle('event__favorite-btn--active');
   }
 
   setOpenEditorButtonClickHandler(callback) {
