@@ -1,7 +1,8 @@
 import { formatDate, hasData } from '../../utils/common.js';
 import { DateFormat, typeIcon, PATH_TO_ICONS, EventName, CssClassName } from '../../constant';
 import DetailsView from './details.js';
-import AbstractComponentView from '../abstract/companent.js';
+import SmartView from '../smart.js';
+import { generateDescriptionsData, generateOfferDataList } from '../../mock/event.js';
 
 const { FULL } = DateFormat;
 
@@ -40,7 +41,7 @@ const getEventEditorTemplate = (data) => {
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="${PATH_TO_ICONS}${typeIcon[type]}" alt="${type} icon">
+          <img class="event__type-icon" width="17" height="17" src="${PATH_TO_ICONS}${typeIcon[type.toLowerCase()]}" alt="${type} icon">
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -136,34 +137,82 @@ const getEventEditorTemplate = (data) => {
   </form>`;
 };
 
-export default class EventEditor extends AbstractComponentView {
+export default class EventEditor extends SmartView {
   constructor(data) {
     super();
     this._data = data;
     this._submitHandler = this._submitHandler.bind(this);
     this._clickHandler = this._clickHandler.bind(this);
+    this._typeChangeHandler = this._typeChangeHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+
+    this._setTypeChangeHandler();
+    this._setDestinationChangeHandler();
+  }
+
+  reset(data) {
+    this._updateData(
+      data,
+    );
   }
 
   _submitHandler(evt) {
     evt.preventDefault();
-    this._callback.submit();
+    this._callback.submit(this._data);
   }
 
   _clickHandler() {
     this._callback.click();
   }
 
-  setSubmitHandler(callback) {
-    this._callback.submit = callback;
-    this.getElement().addEventListener(EventName.SUBMIT, this._submitHandler);
+  _destinationChangeHandler(evt) {
+    this._updateData(
+      {
+        destination: evt.target.value,
+        description: generateDescriptionsData(),
+      },
+    );
   }
 
-  setClickHandler(callback) {
+  _typeChangeHandler(evt) {
+    this._updateData(
+      {
+        type: evt.target.value,
+        offers: generateOfferDataList(),
+      },
+    );
+  }
+
+  _setDestinationChangeHandler() {
+    this.getElement().querySelector(CssClassName.EVENT_EDITOR_DESTINATION_BUTTON).addEventListener(EventName.CHANGE, this._destinationChangeHandler);
+  }
+
+  _setTypeChangeHandler() {
+    this.getElement().querySelector(CssClassName.EVENT_EDITOR_TYPE_GROUP).addEventListener(EventName.CHANGE, this._typeChangeHandler);
+  }
+
+  setSubmitHandler(callback = this._callback.submit) {
+    this._callback.submit = callback;
+    if (this._callback.submit) {
+      this.getElement().addEventListener(EventName.SUBMIT, this._submitHandler);
+    }
+  }
+
+  setClickHandler(callback = this._callback.click) {
     this._callback.click = callback;
-    this.getElement().querySelector(CssClassName.CLOSE_EVENT_EDITOR_BUTTON).addEventListener(EventName.CLICK, this._clickHandler);
+    if (this._callback.click) {
+      this.getElement().querySelector(CssClassName.CLOSE_EVENT_EDITOR_BUTTON).addEventListener(EventName.CLICK, this._clickHandler);
+    }
   }
 
   getTemplate() {
     return getEventEditorTemplate(this._data);
+  }
+
+  _restoreHandlers() {
+    this.setSubmitHandler();
+    this.setClickHandler();
+    this._setTypeChangeHandler();
+    this._setDestinationChangeHandler();
   }
 }

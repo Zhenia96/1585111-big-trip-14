@@ -58,6 +58,10 @@ export default class Event {
     }
   }
 
+  get eventData() {
+    return this._eventData;
+  }
+
   get event() {
     return this._event;
   }
@@ -76,6 +80,7 @@ export default class Event {
   }
 
   _eventEditorCloseCallback() {
+    this._eventEditor.reset(this._eventData);
     this.replaceFromEditorToPoint();
   }
 
@@ -86,6 +91,7 @@ export default class Event {
 
   _replaceFromPointToEditor() {
     replace(this._eventEditor, this._point);
+    this._currentShowMode = showMode.EDITOR;
   }
 
   _changeFavoriteStatus() {
@@ -96,5 +102,6 @@ export default class Event {
 
   replaceFromEditorToPoint() {
     replace(this._point, this._eventEditor);
+    this._currentShowMode = showMode.POINT;
   }
 }

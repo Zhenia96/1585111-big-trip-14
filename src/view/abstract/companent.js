@@ -11,7 +11,7 @@ export default class Companent {
   }
 
   getTemplate() {
-    throw new Error('The method has not implemented. Implement it in an extended class');
+    throw new Error('The method has not been implemented. Implement it in an extended class');
   }
 
   getElement() {

@@ -121,6 +121,7 @@ export default class Itinerary {
       const event = presentor.event.getElement();
       const editor = presentor.eventEditor.getElement();
       if (event.contains(editor)) {
+        presentor.eventEditor.reset(presentor.eventData);
         presentor.replaceFromEditorToPoint();
       }
     });
