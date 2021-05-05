@@ -3,44 +3,63 @@ import EventEditorView from '../view/event-editor/event-editor.js';
 import PointView from '../view/point.js';
 import { render, replace, remove } from '../utils/component.js';
 
+const showMode = {
+  POINT: 'point',
+  EDITOR: 'editor',
+};
+
 
 export default class Event {
-  constructor(container, closeAllEditors) {
+  constructor(container, closeAllEditors, changeData) {
     this._eventData = null;
-    this._event = null;
     this._point = null;
     this._eventEditor = null;
+    this._event = new EventItemView();
     this._container = container;
     this._closeAllEditors = closeAllEditors;
-  }
+    this._changeData = changeData;
 
-  init(eventData) {
-    if (this._event === null) {
-      this._eventKeydownCallback = this._eventKeydownCallback.bind(this);
-      this._event = new EventItemView();
-      this._event.setKeydownHandler(this._eventKeydownCallback);
-      render(this._event, this._container);
-    }
 
-    if (this._point !== null) {
-      remove(this._point);
-    }
-
-    this._eventData = eventData;
-    this._point = new PointView(this._eventData);
-    this._eventEditor = new EventEditorView(this._eventData);
+    this._currentShowMode = showMode.POINT;
 
     this._changeFavoriteStatus = this._changeFavoriteStatus.bind(this);
     this._eventEditorSubmitCallback = this._eventEditorSubmitCallback.bind(this);
     this._pointOpenEditorCallback = this._pointOpenEditorCallback.bind(this);
     this._eventEditorCloseCallback = this._eventEditorCloseCallback.bind(this);
 
+    render(this._event, this._container);
+  }
+
+  init(eventData) {
+    this._eventData = eventData;
+
+    const prevPoint = this._point;
+    const prevEventEditor = this._eventEditor;
+
+    this._point = new PointView(this._eventData);
+    this._eventEditor = new EventEditorView(this._eventData);
+
     this._point.setFavoriteButtonClickHandler(this._changeFavoriteStatus);
     this._point.setOpenEditorButtonClickHandler(this._pointOpenEditorCallback);
     this._eventEditor.setClickHandler(this._eventEditorCloseCallback);
     this._eventEditor.setSubmitHandler(this._eventEditorSubmitCallback);
 
-    render(this._point, this._event);
+    if (prevPoint === null) {
+      render(this._point, this._event);
+      return;
+    }
+
+    if (this._currentShowMode === showMode.POINT) {
+      replace(this._point, prevPoint);
+    }
+
+    if (this._currentShowMode === showMode.EDITOR) {
+      replace(this._eventEditor, prevEventEditor);
+    }
+  }
+
+  get eventData() {
+    return this._eventData;
   }
 
   get event() {
@@ -55,15 +74,13 @@ export default class Event {
     remove(this._event);
   }
 
-  _eventKeydownCallback() {
-    this.replaceFromEditorToPoint();
-  }
-
-  _eventEditorSubmitCallback() {
+  _eventEditorSubmitCallback(updateData) {
+    this._changeData(updateData);
     this.replaceFromEditorToPoint();
   }
 
   _eventEditorCloseCallback() {
+    this._eventEditor.reset(this._eventData);
     this.replaceFromEditorToPoint();
   }
 
@@ -74,14 +91,17 @@ export default class Event {
 
   _replaceFromPointToEditor() {
     replace(this._eventEditor, this._point);
+    this._currentShowMode = showMode.EDITOR;
   }
 
   _changeFavoriteStatus() {
-    this._eventData.isFavorite = !this._eventData.isFavorite;
-    this.init(this._eventData);
+    this._changeData(Object.assign({},
+      this._eventData,
+      { isFavorite: !this._eventData.isFavorite }));
   }
 
   replaceFromEditorToPoint() {
     replace(this._point, this._eventEditor);
+    this._currentShowMode = showMode.POINT;
   }
 }

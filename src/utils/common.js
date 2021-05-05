@@ -58,6 +58,20 @@ export const getDuration = (start, end) => {
   return `${formatedDay}${formatedHour}${formatedMinute}`;
 };
 
+export const updateData = (dataList, updatedData) => {
+  const index = dataList.findIndex((data) => data.id === updatedData.id);
+
+  if (index === -1) {
+    return dataList;
+  }
+
+  return [
+    ...dataList.slice(0, index),
+    updatedData,
+    ...dataList.slice(index + 1),
+  ];
+};
+
 export const hasData = (object) => Boolean(Object.keys(object).length || object.length);
 
 export const generateId = () => nanoid();

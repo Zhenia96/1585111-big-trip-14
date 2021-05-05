@@ -80,4 +80,4 @@ const generateEventDataList = (count) => {
   return Array(count).fill().map(() => generateEventData());
 };
 
-export { generateEventData, generateEventDataList };
+export { generateEventData, generateEventDataList, generateDescriptionsData, generateOfferDataList };

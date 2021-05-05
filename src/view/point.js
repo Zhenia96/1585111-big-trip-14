@@ -28,7 +28,7 @@ const getPointTemplate = (data) => {
   const { type, destination, time, price, offers, isFavorite } = data;
   const { start, end } = time;
   const eventDate = formatDate(start, MONTH_DAY);
-  const icon = typeIcon[type];
+  const icon = typeIcon[type.toLowerCase()];
   const favoriteEventButtonClass = isFavorite ? 'event__favorite-btn--active' : '';
   const duration = getDuration(start, end);
 
@@ -81,7 +81,6 @@ export default class Point extends AbstractComponentView {
 
   _favoriteButtonClickHandler() {
     this._callback.clickFavoriteButton();
-    this.getElement().querySelector(CssClassName.FAVORITE_EVENT_BUTTON).classList.toggle('event__favorite-btn--active');
   }
 
   setOpenEditorButtonClickHandler(callback) {

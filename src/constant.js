@@ -10,6 +10,8 @@ const CssClassName = {
   FAVORITE_EVENT_BUTTON_ACTIVE: '.event__favorite-btn--active',
   FAVORITE_EVENT_BUTTON: '.event__favorite-btn',
   OPEN_EVENT_EDITOR_BUTTON: '.event__rollup-btn',
+  EVENT_EDITOR_TYPE_GROUP: '.event__type-group',
+  EVENT_EDITOR_DESTINATION_BUTTON: '.event__input--destination',
   SAVE_CHANGES_BUTTON: '.event__save-btn',
   CLOSE_EVENT_EDITOR_BUTTON: '.event__reset-btn',
   EVENT_LIST: '.trip-events__list',
@@ -30,6 +32,7 @@ const EventName = {
   CLICK: 'click',
   SUBMIT: 'submit',
   KEYDOWN: 'keydown',
+  CHANGE: 'change',
 };
 
 const Position = {
@@ -46,16 +49,16 @@ const DateFormat = {
 };
 
 const typeIcon = {
-  'Taxi': 'taxi.png',
-  'Bus': 'bus.png',
-  'Train': 'train.png',
-  'Ship': 'ship.png',
-  'Transport': 'transport.png',
-  'Drive': 'drive.png',
-  'Flight': 'flight.png',
-  'Check-in': 'check-in.png',
-  'Sightseeing': 'sightseeing.png',
-  'Restaurant': 'restaurant.png',
+  'taxi': 'taxi.png',
+  'bus': 'bus.png',
+  'train': 'train.png',
+  'ship': 'ship.png',
+  'transport': 'transport.png',
+  'drive': 'drive.png',
+  'flight': 'flight.png',
+  'check-in': 'check-in.png',
+  'sightseeing': 'sightseeing.png',
+  'restaurant': 'restaurant.png',
 };
 
 export {
