@@ -1,17 +1,18 @@
-const PATH_TO_ICONS = 'img/icons/';
-const MINUTES_IN_HOUR = 60;
-const HOURS_IN_DAY = 24;
-const DASH = '&mdash;';
-const NON_BREAKING_SPACE = '&nbsp;';
-const ELLIPSIS = '...';
-const ESCAPE_BUTTON = 'Escape';
+export const PATH_TO_ICONS = 'img/icons/';
+export const MINUTES_IN_HOUR = 60;
+export const HOURS_IN_DAY = 24;
+export const DASH = '&mdash;';
+export const NON_BREAKING_SPACE = '&nbsp;';
+export const ELLIPSIS = '...';
+export const ESCAPE_BUTTON = 'Escape';
 
-const CssClassName = {
+export const CssClassName = {
   FAVORITE_EVENT_BUTTON_ACTIVE: '.event__favorite-btn--active',
   FAVORITE_EVENT_BUTTON: '.event__favorite-btn',
   OPEN_EVENT_EDITOR_BUTTON: '.event__rollup-btn',
   EVENT_EDITOR_TYPE_GROUP: '.event__type-group',
   EVENT_EDITOR_DESTINATION_BUTTON: '.event__input--destination',
+  EVENT_EDITOR_TIME: '.event__field-group--time',
   SAVE_CHANGES_BUTTON: '.event__save-btn',
   CLOSE_EVENT_EDITOR_BUTTON: '.event__reset-btn',
   EVENT_LIST: '.trip-events__list',
@@ -22,33 +23,34 @@ const CssClassName = {
   CONTENT: '.trip-events',
 };
 
-const SortMode = {
+export const SortMode = {
   DATE: 'date',
   PRICE: 'price',
   TIME: 'time',
 };
 
-const EventName = {
+export const EventName = {
   CLICK: 'click',
   SUBMIT: 'submit',
   KEYDOWN: 'keydown',
   CHANGE: 'change',
 };
 
-const Position = {
+export const Position = {
   AFTER_BEGIN: 'afterbegin',
   BEFORE_END: 'beforeend',
 };
 
-const DateFormat = {
+export const DateFormat = {
   FULL: 'DD/MM/YY HH:mm',
+  CALENDAR_FULL: 'd/m/y H:i',
   MONTH_DAY: 'MMM DD',
   HOUR_MINUTE: 'HH:mm',
   SPECIAL_FULL: 'YYYY-MM-DDTHH:mm',
   YEAR_MONTH_DAY: 'YYYY-MM-DD',
 };
 
-const typeIcon = {
+export const typeIcon = {
   'taxi': 'taxi.png',
   'bus': 'bus.png',
   'train': 'train.png',
@@ -59,20 +61,4 @@ const typeIcon = {
   'check-in': 'check-in.png',
   'sightseeing': 'sightseeing.png',
   'restaurant': 'restaurant.png',
-};
-
-export {
-  DateFormat,
-  PATH_TO_ICONS,
-  typeIcon,
-  DASH,
-  NON_BREAKING_SPACE,
-  ELLIPSIS,
-  MINUTES_IN_HOUR,
-  HOURS_IN_DAY,
-  Position,
-  EventName,
-  ESCAPE_BUTTON,
-  CssClassName,
-  SortMode
 };

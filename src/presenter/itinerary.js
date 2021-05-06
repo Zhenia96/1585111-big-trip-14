@@ -74,11 +74,11 @@ export default class Itinerary {
           this._eventDataList.sort((firstEventData, secondEventData) => {
 
             if (firstEventData.price < secondEventData.price) {
-              return -1;
+              return 1;
             }
 
             if (firstEventData.price > secondEventData.price) {
-              return 1;
+              return -1;
             }
 
             return 0;
@@ -91,11 +91,11 @@ export default class Itinerary {
             const secondEventTime = secondEventData.time.end.unix() - secondEventData.time.start.unix();
 
             if (firstEventTime < secondEventTime) {
-              return -1;
+              return 1;
             }
 
             if (firstEventTime > secondEventTime) {
-              return 1;
+              return -1;
             }
 
             return 0;
