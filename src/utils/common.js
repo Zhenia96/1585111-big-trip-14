@@ -1,4 +1,4 @@
-import { MINUTES_IN_HOUR, HOURS_IN_DAY } from '../constant';
+import { MINUTES_IN_HOUR, HOURS_IN_DAY, SortMode } from '../constant';
 import { nanoid } from 'nanoid';
 
 export const getRandomIntegerRange = (min = 0, max = 10) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -75,3 +75,56 @@ export const updateData = (dataList, updatedData) => {
 export const hasData = (object) => Boolean(Object.keys(object).length || object.length);
 
 export const generateId = () => nanoid();
+
+export const sortData = (data, mode = SortMode.DATE) => {
+
+  switch (mode) {
+
+    case SortMode.DATE:
+      data.sort((firstEventData, secondEventData) => {
+
+        if (firstEventData.time.start.unix() < secondEventData.time.start.unix()) {
+          return -1;
+        }
+
+        if (firstEventData.time.start.unix() > secondEventData.time.start.unix()) {
+          return 1;
+        }
+
+        return 0;
+      });
+      break;
+
+    case SortMode.PRICE:
+      data.sort((firstEventData, secondEventData) => {
+
+        if (firstEventData.price < secondEventData.price) {
+          return 1;
+        }
+
+        if (firstEventData.price > secondEventData.price) {
+          return -1;
+        }
+
+        return 0;
+      });
+      break;
+
+    case SortMode.TIME:
+      data.sort((firstEventData, secondEventData) => {
+        const firstEventTime = firstEventData.time.end.unix() - firstEventData.time.start.unix();
+        const secondEventTime = secondEventData.time.end.unix() - secondEventData.time.start.unix();
+
+        if (firstEventTime < secondEventTime) {
+          return 1;
+        }
+
+        if (firstEventTime > secondEventTime) {
+          return -1;
+        }
+
+        return 0;
+      });
+      break;
+  }
+};

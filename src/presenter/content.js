@@ -3,6 +3,7 @@ import EventListView from '../view/event-list/event-list.js';
 import EmptyEventListMessageView from '../view/empty-event-list-message.js';
 import EventPresentor from './event.js';
 import { render } from '../utils/component.js';
+import { sortData } from '../utils/common.js';
 import { SortMode, ESCAPE_BUTTON, EventName } from '../constant.js';
 
 export default class Content {
@@ -49,55 +50,7 @@ export default class Content {
 
   _sort(mode) {
 
-    switch (mode) {
-
-      case SortMode.DATE:
-        this._eventModel.data.sort((firstEventData, secondEventData) => {
-
-          if (firstEventData.time.start.unix() < secondEventData.time.start.unix()) {
-            return -1;
-          }
-
-          if (firstEventData.time.start.unix() > secondEventData.time.start.unix()) {
-            return 1;
-          }
-
-          return 0;
-        });
-        break;
-
-      case SortMode.PRICE:
-        this._eventModel.data.sort((firstEventData, secondEventData) => {
-
-          if (firstEventData.price < secondEventData.price) {
-            return 1;
-          }
-
-          if (firstEventData.price > secondEventData.price) {
-            return -1;
-          }
-
-          return 0;
-        });
-        break;
-
-      case SortMode.TIME:
-        this._eventModel.data.sort((firstEventData, secondEventData) => {
-          const firstEventTime = firstEventData.time.end.unix() - firstEventData.time.start.unix();
-          const secondEventTime = secondEventData.time.end.unix() - secondEventData.time.start.unix();
-
-          if (firstEventTime < secondEventTime) {
-            return 1;
-          }
-
-          if (firstEventTime > secondEventTime) {
-            return -1;
-          }
-
-          return 0;
-        });
-        break;
-    }
+    sortData(this._eventModel.data, mode);
 
     this._currentSortMode = mode;
   }
