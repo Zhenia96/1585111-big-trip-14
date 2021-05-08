@@ -3,6 +3,12 @@ import { DateFormat, typeIcon, PATH_TO_ICONS, EventName, CssClassName } from '..
 import DetailsView from './details.js';
 import SmartView from '../smart.js';
 import { generateDescriptionsData, generateOfferDataList } from '../../mock/event.js';
+import flatpickr from 'flatpickr';
+
+import { } from '../../../node_modules/flatpickr/dist/flatpickr.min.css';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
 
 const { FULL } = DateFormat;
 
@@ -141,13 +147,24 @@ export default class EventEditor extends SmartView {
   constructor(data) {
     super();
     this._data = data;
+    this._startTimeDatepicker = null;
+    this._endTimeDatepicker = null;
     this._submitHandler = this._submitHandler.bind(this);
-    this._clickHandler = this._clickHandler.bind(this);
+    this._closeClickHandler = this._closeClickHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._timeChangeHandler = this._timeChangeHandler.bind(this);
+
 
     this._setTypeChangeHandler();
     this._setDestinationChangeHandler();
+    this._setStartTimeDatepicker();
+    this._setEndTimeDatepicker();
+    this._setTimeChangeHandler();
+  }
+
+  getTemplate() {
+    return getEventEditorTemplate(this._data);
   }
 
   reset(data) {
@@ -158,10 +175,12 @@ export default class EventEditor extends SmartView {
 
   _submitHandler(evt) {
     evt.preventDefault();
+    this._startTimeDatepicker.destroy();
+    this._endTimeDatepicker.destroy();
     this._callback.submit(this._data);
   }
 
-  _clickHandler() {
+  _closeClickHandler() {
     this._callback.click();
   }
 
@@ -183,6 +202,74 @@ export default class EventEditor extends SmartView {
     );
   }
 
+  _timeChangeHandler(evt) {
+    if (evt.target.name === 'event-start-time') {
+      const startTime = dayjs(evt.target.value, FULL);
+
+      if (this._data.time.end.diff(startTime, 'second') > 0) {
+        this._updateData(
+          {
+            time: {
+              start: startTime,
+              end: this._data.time.end,
+            },
+          }, false,
+        );
+      }
+
+    }
+
+    if (evt.target.name === 'event-end-time') {
+      const endTime = dayjs(evt.target.value, FULL);
+
+      if (endTime.diff(this._data.time.start, 'second') > 0) {
+        this._updateData(
+          {
+            time: {
+              start: this._data.time.start,
+              end: endTime,
+            },
+          }, false,
+        );
+      }
+
+    }
+  }
+
+  _setTimeChangeHandler() {
+    this.getElement().querySelector(CssClassName.EVENT_EDITOR_TIME).addEventListener(EventName.CHANGE, this._timeChangeHandler);
+  }
+
+  _setStartTimeDatepicker() {
+    const startTimeField = this.getElement().querySelector('[name=event-start-time]');
+    if (this._startTimeDatepicker !== null) {
+      this._startTimeDatepicker.destroy();
+      this._startTimeDatepicker = null;
+    }
+
+    this._startTimeDatepicker = flatpickr(startTimeField, {
+      dateFormat: DateFormat.CALENDAR_FULL,
+      enableTime: true,
+      minuteIncrement: 1,
+      time_24hr: true,
+    });
+  }
+
+  _setEndTimeDatepicker() {
+    const endTimeField = this.getElement().querySelector('[name=event-end-time]');
+    if (this._endTimeDatepicker !== null) {
+      this._endTimeDatepicker.destroy();
+      this._endTimeDatepicker = null;
+    }
+
+    this._endTimeDatepicker = flatpickr(endTimeField, {
+      dateFormat: DateFormat.CALENDAR_FULL,
+      enableTime: true,
+      minuteIncrement: 1,
+      time_24hr: true,
+    });
+  }
+
   _setDestinationChangeHandler() {
     this.getElement().querySelector(CssClassName.EVENT_EDITOR_DESTINATION_BUTTON).addEventListener(EventName.CHANGE, this._destinationChangeHandler);
   }
@@ -198,21 +285,20 @@ export default class EventEditor extends SmartView {
     }
   }
 
-  setClickHandler(callback = this._callback.click) {
+  setCloseClickHandler(callback = this._callback.click) {
     this._callback.click = callback;
     if (this._callback.click) {
-      this.getElement().querySelector(CssClassName.CLOSE_EVENT_EDITOR_BUTTON).addEventListener(EventName.CLICK, this._clickHandler);
+      this.getElement().querySelector(CssClassName.CLOSE_EVENT_EDITOR_BUTTON).addEventListener(EventName.CLICK, this._closeClickHandler);
     }
-  }
-
-  getTemplate() {
-    return getEventEditorTemplate(this._data);
   }
 
   _restoreHandlers() {
     this.setSubmitHandler();
-    this.setClickHandler();
+    this.setCloseClickHandler();
     this._setTypeChangeHandler();
     this._setDestinationChangeHandler();
+    this._setStartTimeDatepicker();
+    this._setEndTimeDatepicker();
+    this._setTimeChangeHandler();
   }
 }

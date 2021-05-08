@@ -41,7 +41,7 @@ export default class Event {
 
     this._point.setFavoriteButtonClickHandler(this._changeFavoriteStatus);
     this._point.setOpenEditorButtonClickHandler(this._pointOpenEditorCallback);
-    this._eventEditor.setClickHandler(this._eventEditorCloseCallback);
+    this._eventEditor.setCloseClickHandler(this._eventEditorCloseCallback);
     this._eventEditor.setSubmitHandler(this._eventEditorSubmitCallback);
 
     if (prevPoint === null) {
