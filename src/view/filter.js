@@ -1,4 +1,6 @@
 import AbstractComponentView from './abstract/companent.js';
+import { EventName } from '../constant';
+
 
 const getFilterTemplate = () => {
   return `<form class="trip-filters" action="#" method="get">
@@ -23,7 +25,23 @@ const getFilterTemplate = () => {
 
 export default class Filter extends AbstractComponentView {
 
+  constructor() {
+    super();
+    this._clickHandler = this._clickHandler.bind(this);
+  }
+
   getTemplate() {
     return getFilterTemplate();
+  }
+
+  _clickHandler(evt) {
+    if (evt.target.value) {
+      this._callback.click(evt.target.value);
+    }
+  }
+
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().addEventListener(EventName.CLICK, this._clickHandler);
   }
 }

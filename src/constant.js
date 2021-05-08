@@ -62,3 +62,9 @@ export const typeIcon = {
   'sightseeing': 'sightseeing.png',
   'restaurant': 'restaurant.png',
 };
+
+export const FiltersName = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PAST: 'past',
+};
