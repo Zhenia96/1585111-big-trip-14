@@ -3,12 +3,11 @@ import EventListView from '../view/event-list/event-list.js';
 import EmptyEventListMessageView from '../view/empty-event-list-message.js';
 import EventPresentor from './event.js';
 import { render } from '../utils/component.js';
-import { updateData } from '../utils/common.js';
 import { SortMode, ESCAPE_BUTTON, EventName } from '../constant.js';
 
-export default class Itinerary {
-  constructor(container) {
-    this._eventDataList = null;
+export default class Content {
+  constructor(container, eventModel) {
+    this._eventModel = eventModel;
 
     this._container = container;
     this._sortForm = new SortFormView();
@@ -27,13 +26,11 @@ export default class Itinerary {
     this._eventPresentor = {};
   }
 
-  init(eventDataList, sortMode = SortMode.DATE) {
-    if (eventDataList.length === 0) {
+  init(sortMode = SortMode.DATE) {
+    if (this._eventModel.data.length === 0) {
       this._renderEmptyEventListMessage();
       return;
     }
-
-    this._eventDataList = eventDataList.slice();
 
     if (this._currentSortMode !== sortMode) {
       this._sort(sortMode);
@@ -46,65 +43,63 @@ export default class Itinerary {
   }
 
   _changeData(updatedData) {
-    this._eventDataList = updateData(this._eventDataList, updatedData);
+    this._eventModel.update(updatedData);
     this._eventPresentor[updatedData.id].init(updatedData);
   }
 
   _sort(mode) {
-    if (this._eventDataList !== null) {
 
-      switch (mode) {
+    switch (mode) {
 
-        case SortMode.DATE:
-          this._eventDataList.sort((firstEventData, secondEventData) => {
+      case SortMode.DATE:
+        this._eventModel.data.sort((firstEventData, secondEventData) => {
 
-            if (firstEventData.time.start.unix() < secondEventData.time.start.unix()) {
-              return -1;
-            }
+          if (firstEventData.time.start.unix() < secondEventData.time.start.unix()) {
+            return -1;
+          }
 
-            if (firstEventData.time.start.unix() > secondEventData.time.start.unix()) {
-              return 1;
-            }
+          if (firstEventData.time.start.unix() > secondEventData.time.start.unix()) {
+            return 1;
+          }
 
-            return 0;
-          });
-          break;
+          return 0;
+        });
+        break;
 
-        case SortMode.PRICE:
-          this._eventDataList.sort((firstEventData, secondEventData) => {
+      case SortMode.PRICE:
+        this._eventModel.data.sort((firstEventData, secondEventData) => {
 
-            if (firstEventData.price < secondEventData.price) {
-              return 1;
-            }
+          if (firstEventData.price < secondEventData.price) {
+            return 1;
+          }
 
-            if (firstEventData.price > secondEventData.price) {
-              return -1;
-            }
+          if (firstEventData.price > secondEventData.price) {
+            return -1;
+          }
 
-            return 0;
-          });
-          break;
+          return 0;
+        });
+        break;
 
-        case SortMode.TIME:
-          this._eventDataList.sort((firstEventData, secondEventData) => {
-            const firstEventTime = firstEventData.time.end.unix() - firstEventData.time.start.unix();
-            const secondEventTime = secondEventData.time.end.unix() - secondEventData.time.start.unix();
+      case SortMode.TIME:
+        this._eventModel.data.sort((firstEventData, secondEventData) => {
+          const firstEventTime = firstEventData.time.end.unix() - firstEventData.time.start.unix();
+          const secondEventTime = secondEventData.time.end.unix() - secondEventData.time.start.unix();
 
-            if (firstEventTime < secondEventTime) {
-              return 1;
-            }
+          if (firstEventTime < secondEventTime) {
+            return 1;
+          }
 
-            if (firstEventTime > secondEventTime) {
-              return -1;
-            }
+          if (firstEventTime > secondEventTime) {
+            return -1;
+          }
 
-            return 0;
-          });
-          break;
-      }
-
-      this._currentSortMode = mode;
+          return 0;
+        });
+        break;
     }
+
+    this._currentSortMode = mode;
   }
 
   _sortFormClickCallback(sortMode) {
@@ -125,13 +120,6 @@ export default class Itinerary {
         presentor.replaceFromEditorToPoint();
       }
     });
-  }
-
-  _removeAllEvents() {
-    Object.values(this._eventPresentor).forEach((currentPresentor) => {
-      currentPresentor.remove();
-    });
-    this._eventPresentor = {};
   }
 
   _escKeydownHandler(evt) {
@@ -167,8 +155,15 @@ export default class Itinerary {
   }
 
   _renderAllEvents() {
-    this._eventDataList.forEach((eventData) => {
+    this._eventModel.data.forEach((eventData) => {
       this._renderEvent(eventData);
     });
+  }
+
+  _removeAllEvents() {
+    Object.values(this._eventPresentor).forEach((currentPresentor) => {
+      currentPresentor.remove();
+    });
+    this._eventPresentor = {};
   }
 }

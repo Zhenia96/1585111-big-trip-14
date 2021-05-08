@@ -4,7 +4,8 @@ import TripInfoView from './view/trip-info.js';
 import { generateEventDataList } from './mock/event.js';
 import { Position, CssClassName } from './constant.js';
 import { render } from './utils/component.js';
-import Itinerary from './presenter/itinerary.js';
+import ContentPresentor from './presenter/content.js';
+import EventModel from './model/event.js';
 
 const tripMainElement = document.querySelector(CssClassName.TRIP_MAIN);
 const navigationElement = tripMainElement.querySelector(CssClassName.NAVIGATION);
@@ -16,8 +17,11 @@ const tripInfo = new TripInfoView(eventDataList);
 const menu = new MenuView();
 const filter = new FilterView();
 
-const itinerary = new Itinerary(contentContainer);
-itinerary.init(eventDataList);
+const eventModel = new EventModel();
+eventModel.data = eventDataList;
+
+const contentPresentor = new ContentPresentor(contentContainer, eventModel);
+contentPresentor.init();
 
 if (eventDataList.length > 0) {
   render(tripInfo, tripMainElement, Position.AFTER_BEGIN);
