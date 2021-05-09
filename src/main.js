@@ -21,7 +21,7 @@ eventModel.data = eventDataList;
 
 const filterModel = new FilterModel();
 
-const infoPresenter = new InfoPresenter(tripMainElement, eventModel);
+const infoPresenter = new InfoPresenter(tripMainElement, eventModel, filterModel);
 infoPresenter.init();
 
 const contentPresenter = new ContentPresenter(contentContainer, eventModel, filterModel);
@@ -29,6 +29,6 @@ contentPresenter.init();
 
 render(menu, navigationElement, Position.AFTER_BEGIN);
 
-const filterPresenter = new FilterPresenter(filterContainer, filterModel);
+const filterPresenter = new FilterPresenter(filterContainer, eventModel, filterModel);
 filterPresenter.init();
 

@@ -1,9 +1,14 @@
 import Observer from '../utils/observer';
+import { filterData } from '../utils/common.js';
+import { FiltersName } from '../constant.js';
+
 
 export default class Event extends Observer {
 
   constructor() {
     super();
+    this._pastData = null;
+    this._futureData = null;
   }
 
   get data() {
@@ -12,6 +17,16 @@ export default class Event extends Observer {
 
   set data(data) {
     this._data = data.slice();
+    this._pastData = filterData(this._data, FiltersName.PAST);
+    this._futureData = filterData(this._data, FiltersName.FUTURE);
+  }
+
+  get pastData() {
+    return this._pastData;
+  }
+
+  get futureData() {
+    return this._futureData;
   }
 
   update(updatedData) {
@@ -24,6 +39,9 @@ export default class Event extends Observer {
         ...this._data.slice(index + 1),
       ];
     }
+    this._pastData = filterData(this._data, FiltersName.PAST);
+    this._futureData = filterData(this._data, FiltersName.FUTURE);
+    this._notify();
   }
 
   add(newData) {
@@ -31,6 +49,9 @@ export default class Event extends Observer {
       newData,
       ...this._data,
     ];
+    this._pastData = filterData(this._data, FiltersName.PAST);
+    this._futureData = filterData(this._data, FiltersName.FUTURE);
+    this._notify();
   }
 
   delete(deletedData) {
@@ -42,5 +63,8 @@ export default class Event extends Observer {
         ...this._data.slice(index + 1),
       ];
     }
+    this._pastData = filterData(this._data, FiltersName.PAST);
+    this._futureData = filterData(this._data, FiltersName.FUTURE);
+    this._notify();
   }
 }

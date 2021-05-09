@@ -2,14 +2,15 @@ import SortFormView from '../view/sort-form.js';
 import EventListView from '../view/event-list/event-list.js';
 import EmptyEventListMessageView from '../view/empty-event-list-message.js';
 import EventPresentor from './event.js';
-import { render } from '../utils/component.js';
-import { sortData, filterData } from '../utils/common.js';
-import { SortMode, ESCAPE_BUTTON, EventName } from '../constant.js';
+import { remove, render } from '../utils/component.js';
+import { sortData } from '../utils/common.js';
+import { SortMode, ESCAPE_BUTTON, EventName, FiltersName } from '../constant.js';
 
 export default class Content {
   constructor(container, eventModel, filterModel) {
     this._eventModel = eventModel;
     this._filterModel = filterModel;
+    this._data = null;
 
     this._container = container;
     this._sortForm = new SortFormView();
@@ -21,7 +22,9 @@ export default class Content {
     this._escKeydownHandler = this._escKeydownHandler.bind(this);
     this._changeData = this._changeData.bind(this);
 
-    this._sortForm.setClickHandler(this._sortFormClickCallback);
+    this._updateContent = this._updateContent.bind(this);
+    this._filterModel.addObserver(this._updateContent);
+    this._eventModel.addObserver(this._updateContent);
     this._setEscKeydownHandler();
 
     this._currentSortMode = null;
@@ -29,25 +32,39 @@ export default class Content {
   }
 
   init(sortMode = SortMode.DATE) {
-    if (this._eventModel.data.length === 0) {
+    this._currentSortMode = sortMode;
+    this._data = this._getData();
+    this._clearContent();
+
+    this._sortForm.setClickHandler(this._sortFormClickCallback);
+
+    if (this._data.length === 0) {
       this._renderEmptyEventListMessage();
       return;
     }
-
-    if (this._currentSortMode !== sortMode) {
-      this._sort(sortMode);
-    }
-
 
     this._renderSortForm();
     this._renderAllEvents();
     this._renderEventList();
   }
 
+  _updateContent() {
+    this.init();
+  }
+
   _getData() {
-    const data = filterData(this._eventModel.data, this._filterModel.currentFilter);
-    sortData(data, this._currentSortMode);
-    return data;
+    let data = this._eventModel.data;
+
+    switch (this._filterModel.currentFilter) {
+      case FiltersName.FUTURE:
+        data = this._eventModel.futureData;
+        break;
+      case FiltersName.PAST:
+        data = this._eventModel.pastData;
+        break;
+    }
+
+    return sortData(data, this._currentSortMode);
   }
 
   _changeData(updatedData) {
@@ -56,9 +73,7 @@ export default class Content {
   }
 
   _sort(mode) {
-
-    sortData(this._eventModel.data, mode);
-
+    this._data = sortData(this._data, mode);
     this._currentSortMode = mode;
   }
 
@@ -115,7 +130,7 @@ export default class Content {
   }
 
   _renderAllEvents() {
-    this._getData().forEach((eventData) => {
+    this._data.forEach((eventData) => {
       this._renderEvent(eventData);
     });
   }
@@ -124,6 +139,13 @@ export default class Content {
     Object.values(this._eventPresentor).forEach((currentPresentor) => {
       currentPresentor.remove();
     });
+    this._eventPresentor = {};
+  }
+
+  _clearContent() {
+    remove(this._sortForm);
+    remove(this._eventList);
+    remove(this._emptyEventListMessage);
     this._eventPresentor = {};
   }
 }

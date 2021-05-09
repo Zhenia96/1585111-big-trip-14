@@ -28,6 +28,7 @@ export default class Filter extends AbstractComponentView {
   constructor() {
     super();
     this._clickHandler = this._clickHandler.bind(this);
+    this.disableButtons = this.disableButtons.bind(this);
   }
 
   getTemplate() {
@@ -35,9 +36,19 @@ export default class Filter extends AbstractComponentView {
   }
 
   _clickHandler(evt) {
-    if (evt.target.value) {
+    if (evt.target.value && !evt.target.disabled) {
       this._callback.click(evt.target.value);
     }
+  }
+
+  disableButtons({ isEverythingDisabled, isFutureDisabled, isPastDisabled }) {
+    const everythingButton = this.getElement().querySelector('[value = everything]');
+    const futureButton = this.getElement().querySelector('[value = future]');
+    const pastButton = this.getElement().querySelector('[value = past]');
+
+    everythingButton.disabled = isEverythingDisabled;
+    futureButton.disabled = isFutureDisabled;
+    pastButton.disabled = isPastDisabled;
   }
 
   setClickHandler(callback) {

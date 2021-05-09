@@ -1,21 +1,6 @@
 import { DASH, NON_BREAKING_SPACE, ELLIPSIS, DateFormat } from '../constant.js';
-import { formatDate } from '../utils/common.js';
+import { formatDate, calcTotalPrice } from '../utils/common.js';
 import AbstractComponentView from './abstract/companent.js';
-
-const calcOffersPrice = (offers) => {
-  let result = 0;
-  offers.forEach(({ price }) => result += price);
-  return result;
-};
-
-const getTotalPrice = (dataList) => {
-  let totalPrice = 0;
-  dataList.forEach((value) => {
-    const { price, offers } = value;
-    totalPrice += price + calcOffersPrice(offers);
-  });
-  return totalPrice;
-};
 
 const getRoute = (dataList) => {
   const routeTemporary = [];
@@ -57,7 +42,7 @@ const getDistance = (dataList) => {
 };
 
 const getTripInfoTemplate = (dataList) => {
-  const totalPrice = getTotalPrice(dataList);
+  const totalPrice = calcTotalPrice(dataList);
   const route = getRoute(dataList);
   const distance = getDistance(dataList);
   return `<section class="trip-main__trip-info  trip-info">

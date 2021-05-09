@@ -82,7 +82,7 @@ export const sortData = (data, mode = SortMode.DATE) => {
   switch (mode) {
 
     case SortMode.DATE:
-      data.sort((firstEventData, secondEventData) => {
+      return data.sort((firstEventData, secondEventData) => {
 
         if (firstEventData.time.start.unix() < secondEventData.time.start.unix()) {
           return -1;
@@ -94,10 +94,10 @@ export const sortData = (data, mode = SortMode.DATE) => {
 
         return 0;
       });
-      break;
+
 
     case SortMode.PRICE:
-      data.sort((firstEventData, secondEventData) => {
+      return data.sort((firstEventData, secondEventData) => {
 
         if (firstEventData.price < secondEventData.price) {
           return 1;
@@ -109,10 +109,9 @@ export const sortData = (data, mode = SortMode.DATE) => {
 
         return 0;
       });
-      break;
 
     case SortMode.TIME:
-      data.sort((firstEventData, secondEventData) => {
+      return data.sort((firstEventData, secondEventData) => {
         const firstEventTime = firstEventData.time.end.unix() - firstEventData.time.start.unix();
         const secondEventTime = secondEventData.time.end.unix() - secondEventData.time.start.unix();
 
@@ -126,7 +125,6 @@ export const sortData = (data, mode = SortMode.DATE) => {
 
         return 0;
       });
-      break;
   }
 };
 
@@ -144,4 +142,19 @@ export const filterData = (data, filter) => {
     default:
       return filteredData;
   }
+};
+
+export const calcOffersPrice = (offers) => {
+  let result = 0;
+  offers.forEach(({ price }) => result += price);
+  return result;
+};
+
+export const calcTotalPrice = (dataList) => {
+  let totalPrice = 0;
+  dataList.forEach((value) => {
+    const { price, offers } = value;
+    totalPrice += price + calcOffersPrice(offers);
+  });
+  return totalPrice;
 };

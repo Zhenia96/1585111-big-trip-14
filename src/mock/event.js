@@ -5,7 +5,7 @@ const EVENT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flig
 const EVENT_DESTINATIONS = ['Amsterdam', 'Geneva', 'Chamonix'];
 
 const generateTimeData = () => {
-  const MIN_DAYS_COUNT = 1;
+  const MIN_DAYS_COUNT = -10;
   const MAX_DAYS_COUNT = 31;
   const MIN_MINUTES_COUNT = 30;
   const MAX_MINUTES_COUNT = 3000;
