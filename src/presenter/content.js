@@ -3,12 +3,13 @@ import EventListView from '../view/event-list/event-list.js';
 import EmptyEventListMessageView from '../view/empty-event-list-message.js';
 import EventPresentor from './event.js';
 import { render } from '../utils/component.js';
-import { sortData } from '../utils/common.js';
+import { sortData, filterData } from '../utils/common.js';
 import { SortMode, ESCAPE_BUTTON, EventName } from '../constant.js';
 
 export default class Content {
-  constructor(container, eventModel) {
+  constructor(container, eventModel, filterModel) {
     this._eventModel = eventModel;
+    this._filterModel = filterModel;
 
     this._container = container;
     this._sortForm = new SortFormView();
@@ -41,6 +42,12 @@ export default class Content {
     this._renderSortForm();
     this._renderAllEvents();
     this._renderEventList();
+  }
+
+  _getData() {
+    const data = filterData(this._eventModel.data, this._filterModel.currentFilter);
+    sortData(data, this._currentSortMode);
+    return data;
   }
 
   _changeData(updatedData) {
@@ -108,7 +115,7 @@ export default class Content {
   }
 
   _renderAllEvents() {
-    this._eventModel.data.forEach((eventData) => {
+    this._getData().forEach((eventData) => {
       this._renderEvent(eventData);
     });
   }

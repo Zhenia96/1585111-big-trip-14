@@ -24,7 +24,7 @@ const filterModel = new FilterModel();
 const infoPresenter = new InfoPresenter(tripMainElement, eventModel);
 infoPresenter.init();
 
-const contentPresenter = new ContentPresenter(contentContainer, eventModel);
+const contentPresenter = new ContentPresenter(contentContainer, eventModel, filterModel);
 contentPresenter.init();
 
 render(menu, navigationElement, Position.AFTER_BEGIN);

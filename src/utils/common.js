@@ -1,5 +1,6 @@
-import { MINUTES_IN_HOUR, HOURS_IN_DAY, SortMode } from '../constant';
+import { MINUTES_IN_HOUR, HOURS_IN_DAY, SortMode, FiltersName } from '../constant';
 import { nanoid } from 'nanoid';
+import dayjs from 'dayjs';
 
 export const getRandomIntegerRange = (min = 0, max = 10) => Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -126,5 +127,21 @@ export const sortData = (data, mode = SortMode.DATE) => {
         return 0;
       });
       break;
+  }
+};
+
+export const filterData = (data, filter) => {
+  const currentDate = dayjs();
+  let filteredData = data;
+
+  switch (filter) {
+    case FiltersName.FUTURE:
+      filteredData = data.filter((dataItem) => dataItem.time.start.diff(currentDate, 'minute') > 0);
+      return filteredData;
+    case FiltersName.PAST:
+      filteredData = data.filter((dataItem) => dataItem.time.end.diff(currentDate, 'minute') < 0);
+      return filteredData;
+    default:
+      return filteredData;
   }
 };
