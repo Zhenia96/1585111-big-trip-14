@@ -4,7 +4,7 @@ import EmptyEventListMessageView from '../view/empty-event-list-message.js';
 import EventPresentor from './event.js';
 import { remove, render } from '../utils/component.js';
 import { sortData } from '../utils/common.js';
-import { SortMode, ESCAPE_BUTTON, EventName, FiltersName } from '../constant.js';
+import { SortMode, ESCAPE_BUTTON, EventName, FiltersName, ActionType, UpdateType } from '../constant.js';
 
 export default class Content {
   constructor(container, eventModel, filterModel) {
@@ -20,11 +20,11 @@ export default class Content {
     this._sortFormClickCallback = this._sortFormClickCallback.bind(this);
     this._closeAllEditors = this._closeAllEditors.bind(this);
     this._escKeydownHandler = this._escKeydownHandler.bind(this);
-    this._changeData = this._changeData.bind(this);
+    this._handleUserAction = this._handleUserAction.bind(this);
 
-    this._updateContent = this._updateContent.bind(this);
-    this._filterModel.addObserver(this._updateContent);
-    this._eventModel.addObserver(this._updateContent);
+    this._updateView = this._updateView.bind(this);
+    this._filterModel.addObserver(this._updateView);
+    this._eventModel.addObserver(this._updateView);
     this._setEscKeydownHandler();
 
     this._currentSortMode = null;
@@ -48,8 +48,14 @@ export default class Content {
     this._renderEventList();
   }
 
-  _updateContent() {
-    this.init();
+  _updateView(data, updateType = UpdateType.MAJOR) {
+    if (updateType === UpdateType.MINOR) {
+      this._eventPresentor[data.id].init(data);
+    }
+
+    if (updateType === UpdateType.MAJOR) {
+      this.init();
+    }
   }
 
   _getData() {
@@ -67,9 +73,18 @@ export default class Content {
     return sortData(data, this._currentSortMode);
   }
 
-  _changeData(updatedData) {
-    this._eventModel.update(updatedData);
-    this._eventPresentor[updatedData.id].init(updatedData);
+  _handleUserAction(changedData, actionType, updateType) {
+    switch (actionType) {
+      case ActionType.ADD:
+        this._eventModel.add(changedData, updateType);
+        break;
+      case ActionType.DELETE:
+        this._eventModel.delete(changedData, updateType);
+        break;
+      case ActionType.UPDATE:
+        this._eventModel.update(changedData, updateType);
+        break;
+    }
   }
 
   _sort(mode) {
@@ -124,7 +139,7 @@ export default class Content {
   }
 
   _renderEvent(data) {
-    const event = new EventPresentor(this._eventList, this._closeAllEditors, this._changeData);
+    const event = new EventPresentor(this._eventList, this._closeAllEditors, this._handleUserAction);
     event.init(data);
     this._eventPresentor[data.id] = event;
   }

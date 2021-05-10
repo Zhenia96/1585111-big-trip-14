@@ -15,6 +15,7 @@ export default class Info {
 
     this._changeTotalPrice = this._changeTotalPrice.bind(this);
     this._modalFilter.addObserver(this._changeTotalPrice);
+    this._modalEvent.addObserver(this._changeTotalPrice);
   }
 
   init() {

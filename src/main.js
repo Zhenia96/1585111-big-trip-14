@@ -14,8 +14,6 @@ const filterContainer = tripMainElement.querySelector(CssClassName.FILTER);
 const contentContainer = document.querySelector(CssClassName.CONTENT);
 const eventDataList = generateEventDataList(20);
 
-const menu = new MenuView();
-
 const eventModel = new EventModel();
 eventModel.data = eventDataList;
 
@@ -27,6 +25,7 @@ infoPresenter.init();
 const contentPresenter = new ContentPresenter(contentContainer, eventModel, filterModel);
 contentPresenter.init();
 
+const menu = new MenuView();
 render(menu, navigationElement, Position.AFTER_BEGIN);
 
 const filterPresenter = new FilterPresenter(filterContainer, eventModel, filterModel);

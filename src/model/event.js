@@ -29,33 +29,33 @@ export default class Event extends Observer {
     return this._futureData;
   }
 
-  update(updatedData) {
-    const index = this._data.findIndex((dataItem) => dataItem.id === updatedData.id);
+  update(changedData, updateType) {
+    const index = this._data.findIndex((dataItem) => dataItem.id === changedData.id);
 
     if (index !== -1) {
       this._data = [
         ...this._data.slice(0, index),
-        updatedData,
+        changedData,
         ...this._data.slice(index + 1),
       ];
     }
     this._pastData = filterData(this._data, FiltersName.PAST);
     this._futureData = filterData(this._data, FiltersName.FUTURE);
-    this._notify();
+    this._notify(changedData, updateType);
   }
 
-  add(newData) {
+  add(changedData, updateType) {
     this._data = [
-      newData,
+      changedData,
       ...this._data,
     ];
     this._pastData = filterData(this._data, FiltersName.PAST);
     this._futureData = filterData(this._data, FiltersName.FUTURE);
-    this._notify();
+    this._notify(changedData, updateType);
   }
 
-  delete(deletedData) {
-    const index = this._data.findIndex((dataItem) => dataItem.id === deletedData.id);
+  delete(changedData, updateType) {
+    const index = this._data.findIndex((dataItem) => dataItem.id === changedData.id);
 
     if (index !== -1) {
       this._data = [
@@ -65,6 +65,6 @@ export default class Event extends Observer {
     }
     this._pastData = filterData(this._data, FiltersName.PAST);
     this._futureData = filterData(this._data, FiltersName.FUTURE);
-    this._notify();
+    this._notify(changedData, updateType);
   }
 }

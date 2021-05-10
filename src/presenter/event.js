@@ -2,6 +2,7 @@ import EventItemView from '../view/event-list/event-item.js';
 import EventEditorView from '../view/event-editor/event-editor.js';
 import PointView from '../view/point.js';
 import { render, replace, remove } from '../utils/component.js';
+import { ActionType, EditorMode, UpdateType } from '../constant.js';
 
 const showMode = {
   POINT: 'point',
@@ -10,14 +11,14 @@ const showMode = {
 
 
 export default class Event {
-  constructor(container, closeAllEditors, changeData) {
+  constructor(container, closeAllEditors, handleUserAction) {
     this._eventData = null;
     this._point = null;
     this._eventEditor = null;
     this._event = new EventItemView();
     this._container = container;
     this._closeAllEditors = closeAllEditors;
-    this._changeData = changeData;
+    this._handleUserAction = handleUserAction;
 
 
     this._currentShowMode = showMode.POINT;
@@ -26,6 +27,7 @@ export default class Event {
     this._eventEditorSubmitCallback = this._eventEditorSubmitCallback.bind(this);
     this._pointOpenEditorCallback = this._pointOpenEditorCallback.bind(this);
     this._eventEditorCloseCallback = this._eventEditorCloseCallback.bind(this);
+    this._eventEditorDeleteCallback = this._eventEditorDeleteCallback.bind(this);
 
     render(this._event, this._container);
   }
@@ -37,12 +39,13 @@ export default class Event {
     const prevEventEditor = this._eventEditor;
 
     this._point = new PointView(this._eventData);
-    this._eventEditor = new EventEditorView(this._eventData);
+    this._eventEditor = new EventEditorView(this._eventData, EditorMode.EDITOR);
 
     this._point.setFavoriteButtonClickHandler(this._changeFavoriteStatus);
     this._point.setOpenEditorButtonClickHandler(this._pointOpenEditorCallback);
     this._eventEditor.setCloseClickHandler(this._eventEditorCloseCallback);
     this._eventEditor.setSubmitHandler(this._eventEditorSubmitCallback);
+    this._eventEditor.setDeleteClickHandler(this._eventEditorDeleteCallback);
 
     if (prevPoint === null) {
       render(this._point, this._event);
@@ -75,13 +78,17 @@ export default class Event {
   }
 
   _eventEditorSubmitCallback(updateData) {
-    this._changeData(updateData);
+    this._handleUserAction(updateData, ActionType.UPDATE, UpdateType.MAJOR);
     this.replaceFromEditorToPoint();
   }
 
   _eventEditorCloseCallback() {
     this._eventEditor.reset(this._eventData);
     this.replaceFromEditorToPoint();
+  }
+
+  _eventEditorDeleteCallback(deletedData) {
+    this._handleUserAction(deletedData, ActionType.DELETE, UpdateType.MAJOR);
   }
 
   _pointOpenEditorCallback() {
@@ -95,9 +102,9 @@ export default class Event {
   }
 
   _changeFavoriteStatus() {
-    this._changeData(Object.assign({},
+    this._handleUserAction(Object.assign({},
       this._eventData,
-      { isFavorite: !this._eventData.isFavorite }));
+      { isFavorite: !this._eventData.isFavorite }), ActionType.UPDATE, UpdateType.MINOR);
   }
 
   replaceFromEditorToPoint() {
