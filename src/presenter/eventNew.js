@@ -5,7 +5,7 @@ import { ActionType, EditorMode, UpdateType, Position } from '../constant.js';
 
 import { generateEventDataList } from '../mock/event.js';
 
-const dataTemplate = generateEventDataList(1)[0];
+const dataTemplate = generateEventDataList(1)[0]; //Временно, вместо дефолтных данных
 
 export default class EventNew {
   constructor(handleUserAction) {

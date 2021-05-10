@@ -12,6 +12,8 @@ dayjs.extend(customParseFormat);
 
 const { FULL } = DateFormat;
 
+const EVENT_DESTINATIONS = ['Amsterdam', 'Geneva', 'Chamonix']; // Временное
+
 const typeStatus = {
   'taxi': '',
   'bus': '',
@@ -176,6 +178,8 @@ export default class EventEditor extends SmartView {
     this._setEndTimeDatepicker();
     this._setTimeChangeHandler();
 
+    this._setPriceInputHandler();
+
     if (this._mode === EditorMode.EDITOR) {
       this._closeClickHandler = this._closeClickHandler.bind(this);
       this._deleteClickHandler = this._deleteClickHandler.bind(this);
@@ -216,12 +220,14 @@ export default class EventEditor extends SmartView {
   }
 
   _destinationChangeHandler(evt) {
-    this._updateData(
-      {
-        destination: evt.target.value,
-        description: generateDescriptionsData(),
-      },
-    );
+    if (EVENT_DESTINATIONS.includes(evt.target.value)) {
+      this._updateData(
+        {
+          destination: evt.target.value,
+          description: generateDescriptionsData(),
+        },
+      );
+    }
   }
 
   _typeChangeHandler(evt) {
@@ -276,6 +282,17 @@ export default class EventEditor extends SmartView {
 
   _setTimeChangeHandler() {
     this.getElement().querySelector(CssClassName.EVENT_EDITOR_TIME).addEventListener(EventName.CHANGE, this._timeChangeHandler);
+  }
+
+  _setPriceInputHandler() {
+    this.getElement().querySelector('.event__input--price').addEventListener('input', (evt) => {
+      evt.target.value = evt.target.value.replace(/[^\d]/, '');
+      this._updateData(
+        {
+          price: Number(evt.target.value),
+        }, false,
+      );
+    });
   }
 
   _setStartTimeDatepicker() {
@@ -350,6 +367,7 @@ export default class EventEditor extends SmartView {
     this._setStartTimeDatepicker();
     this._setEndTimeDatepicker();
     this._setTimeChangeHandler();
+    this._setPriceInputHandler();
 
     if (this._mode === EditorMode.EDITOR) {
       this.setCloseClickHandler();
