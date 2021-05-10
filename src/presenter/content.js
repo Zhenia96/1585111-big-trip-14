@@ -2,9 +2,10 @@ import SortFormView from '../view/sort-form.js';
 import EventListView from '../view/event-list/event-list.js';
 import EmptyEventListMessageView from '../view/empty-event-list-message.js';
 import EventPresentor from './event.js';
+import EventNewPresentor from './eventNew.js';
 import { remove, render } from '../utils/component.js';
 import { sortData } from '../utils/common.js';
-import { SortMode, ESCAPE_BUTTON, EventName, FiltersName, ActionType, UpdateType } from '../constant.js';
+import { SortMode, ESCAPE_BUTTON, EventName, FiltersName, ActionType, UpdateType, CssClassName } from '../constant.js';
 
 export default class Content {
   constructor(container, eventModel, filterModel) {
@@ -17,15 +18,21 @@ export default class Content {
     this._eventList = new EventListView();
     this._emptyEventListMessage = new EmptyEventListMessageView();
 
+    this._addEventButton = document.querySelector(CssClassName.ADD_EVENT_BUTTON);
+
     this._sortFormClickCallback = this._sortFormClickCallback.bind(this);
     this._closeAllEditors = this._closeAllEditors.bind(this);
     this._escKeydownHandler = this._escKeydownHandler.bind(this);
     this._handleUserAction = this._handleUserAction.bind(this);
+    this._addEventClickHandler = this._addEventClickHandler.bind(this);
+
+    this._eventNewPresentor = new EventNewPresentor(this._handleUserAction);
 
     this._updateView = this._updateView.bind(this);
     this._filterModel.addObserver(this._updateView);
     this._eventModel.addObserver(this._updateView);
     this._setEscKeydownHandler();
+    this._setAddEventClickHandler();
 
     this._currentSortMode = null;
     this._eventPresentor = {};
@@ -110,6 +117,7 @@ export default class Content {
         presentor.replaceFromEditorToPoint();
       }
     });
+    this._eventNewPresentor.remove();
   }
 
   _escKeydownHandler(evt) {
@@ -121,6 +129,17 @@ export default class Content {
   _setEscKeydownHandler() {
     document.addEventListener(EventName.KEYDOWN, this._escKeydownHandler);
   }
+
+  _addEventClickHandler() {
+    this._closeAllEditors();
+    this._filterModel.currentFilter = FiltersName.EVERYTHING;
+    this._eventNewPresentor.init(this._eventList);
+  }
+
+  _setAddEventClickHandler() {
+    this._addEventButton.addEventListener(EventName.CLICK, this._addEventClickHandler);
+  }
+
 
   _removeEscKeydownHandler() {
     document.removeEventListener(EventName.KEYDOWN, this._escKeydownHandler);

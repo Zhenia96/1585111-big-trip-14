@@ -9,7 +9,7 @@ export default class Filter {
     this._eventModel = eventModel;
     this._filter = new FilterView();
 
-    this._filterClickCallback = this._filterClickCallback.bind(this);
+    this._handleFilterClick = this._handleFilterClick.bind(this);
     this._disableNeedlessButtons = this._disableNeedlessButtons.bind(this);
 
     this._eventModel.addObserver(this._disableNeedlessButtons);
@@ -19,7 +19,7 @@ export default class Filter {
     render(this._filter, this._container, Position.AFTER_BEGIN);
 
     this._disableNeedlessButtons();
-    this._filter.setClickHandler(this._filterClickCallback);
+    this._filter.setClickHandler(this._handleFilterClick);
   }
 
   _disableNeedlessButtons() {
@@ -32,7 +32,7 @@ export default class Filter {
     this._filter.disableButtons(config);
   }
 
-  _filterClickCallback(clickedFilter) {
+  _handleFilterClick(clickedFilter) {
     if (this._filterModel.currentFilter !== clickedFilter) {
       this._filterModel.currentFilter = clickedFilter;
     }

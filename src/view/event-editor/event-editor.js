@@ -180,6 +180,10 @@ export default class EventEditor extends SmartView {
       this._closeClickHandler = this._closeClickHandler.bind(this);
       this._deleteClickHandler = this._deleteClickHandler.bind(this);
     }
+
+    if (this._mode === EditorMode.CREATOR) {
+      this._cancelClickHandler = this._cancelClickHandler.bind(this);
+    }
   }
 
   getTemplate() {
@@ -200,7 +204,11 @@ export default class EventEditor extends SmartView {
   }
 
   _closeClickHandler() {
-    this._callback.click();
+    this._callback.close();
+  }
+
+  _cancelClickHandler() {
+    this._callback.cancel();
   }
 
   _deleteClickHandler() {
@@ -259,6 +267,13 @@ export default class EventEditor extends SmartView {
     }
   }
 
+  setCancelClickHandler(callback = this._callback.cancel) {
+    this._callback.cancel = callback;
+    if (this._callback.cancel) {
+      this.getElement().querySelector('[data-type=cancel]').addEventListener(EventName.CLICK, this._cancelClickHandler);
+    }
+  }
+
   _setTimeChangeHandler() {
     this.getElement().querySelector(CssClassName.EVENT_EDITOR_TIME).addEventListener(EventName.CHANGE, this._timeChangeHandler);
   }
@@ -308,12 +323,12 @@ export default class EventEditor extends SmartView {
     }
   }
 
-  setCloseClickHandler(callback = this._callback.click) {
+  setCloseClickHandler(callback = this._callback.close) {
     if (this._mode !== EditorMode.EDITOR) {
       return;
     }
-    this._callback.click = callback;
-    if (this._callback.click) {
+    this._callback.close = callback;
+    if (this._callback.close) {
       this.getElement().querySelector([CssClassName.CLOSE_EVENT_EDITOR_BUTTON]).addEventListener(EventName.CLICK, this._closeClickHandler);
     }
   }
@@ -339,6 +354,10 @@ export default class EventEditor extends SmartView {
     if (this._mode === EditorMode.EDITOR) {
       this.setCloseClickHandler();
       this.setDeleteClickHandler();
+    }
+
+    if (this._mode === EditorMode.CREATOR) {
+      this.setCancelClickHandler();
     }
   }
 }

@@ -18,6 +18,7 @@ export const CssClassName = {
   EVENT_LIST: '.trip-events__list',
   EVENT_EDITOR: '.event--edit',
   TRIP_MAIN: '.trip-main',
+  ADD_EVENT_BUTTON: '.trip-main__event-add-btn',
   NAVIGATION: '.trip-controls__navigation',
   FILTER: '.trip-controls__filters',
   CONTENT: '.trip-events',
