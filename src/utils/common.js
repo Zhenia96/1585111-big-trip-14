@@ -1,5 +1,6 @@
-import { MINUTES_IN_HOUR, HOURS_IN_DAY } from '../constant';
+import { MINUTES_IN_HOUR, HOURS_IN_DAY, SortMode, FiltersName } from '../constant';
 import { nanoid } from 'nanoid';
+import dayjs from 'dayjs';
 
 export const getRandomIntegerRange = (min = 0, max = 10) => Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -75,3 +76,85 @@ export const updateData = (dataList, updatedData) => {
 export const hasData = (object) => Boolean(Object.keys(object).length || object.length);
 
 export const generateId = () => nanoid();
+
+export const sortData = (data, mode = SortMode.DATE) => {
+
+  switch (mode) {
+
+    case SortMode.DATE:
+      return data.sort((firstEventData, secondEventData) => {
+
+        if (firstEventData.time.start.unix() < secondEventData.time.start.unix()) {
+          return -1;
+        }
+
+        if (firstEventData.time.start.unix() > secondEventData.time.start.unix()) {
+          return 1;
+        }
+
+        return 0;
+      });
+
+
+    case SortMode.PRICE:
+      return data.sort((firstEventData, secondEventData) => {
+
+        if (firstEventData.price < secondEventData.price) {
+          return 1;
+        }
+
+        if (firstEventData.price > secondEventData.price) {
+          return -1;
+        }
+
+        return 0;
+      });
+
+    case SortMode.TIME:
+      return data.sort((firstEventData, secondEventData) => {
+        const firstEventTime = firstEventData.time.end.unix() - firstEventData.time.start.unix();
+        const secondEventTime = secondEventData.time.end.unix() - secondEventData.time.start.unix();
+
+        if (firstEventTime < secondEventTime) {
+          return 1;
+        }
+
+        if (firstEventTime > secondEventTime) {
+          return -1;
+        }
+
+        return 0;
+      });
+  }
+};
+
+export const filterData = (data, filter) => {
+  const currentDate = dayjs();
+  let filteredData = data;
+
+  switch (filter) {
+    case FiltersName.FUTURE:
+      filteredData = data.filter((dataItem) => dataItem.time.start.diff(currentDate, 'minute') > 0);
+      return filteredData;
+    case FiltersName.PAST:
+      filteredData = data.filter((dataItem) => dataItem.time.end.diff(currentDate, 'minute') < 0);
+      return filteredData;
+    default:
+      return filteredData;
+  }
+};
+
+export const calcOffersPrice = (offers) => {
+  let result = 0;
+  offers.forEach(({ price }) => result += price);
+  return result;
+};
+
+export const calcTotalPrice = (dataList) => {
+  let totalPrice = 0;
+  dataList.forEach((value) => {
+    const { price, offers } = value;
+    totalPrice += price + calcOffersPrice(offers);
+  });
+  return totalPrice;
+};

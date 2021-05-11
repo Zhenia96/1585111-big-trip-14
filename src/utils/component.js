@@ -26,6 +26,9 @@ export const render = (element, container, position = 'beforeend') => {
 };
 
 export const remove = (component) => {
+  if (component === null) {
+    return;
+  }
   const element = component.getElement();
   component.removeElement();
   element.parentNode.removeChild(element);

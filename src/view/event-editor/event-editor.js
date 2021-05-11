@@ -1,5 +1,5 @@
 import { formatDate, hasData } from '../../utils/common.js';
-import { DateFormat, typeIcon, PATH_TO_ICONS, EventName, CssClassName } from '../../constant';
+import { DateFormat, typeIcon, PATH_TO_ICONS, EventName, CssClassName, EditorMode } from '../../constant';
 import DetailsView from './details.js';
 import SmartView from '../smart.js';
 import { generateDescriptionsData, generateOfferDataList } from '../../mock/event.js';
@@ -11,6 +11,8 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
 
 const { FULL } = DateFormat;
+
+const EVENT_DESTINATIONS = ['Amsterdam', 'Geneva', 'Chamonix']; // Временное
 
 const typeStatus = {
   'taxi': '',
@@ -33,13 +35,26 @@ const changeTypeStatus = (type) => {
   typeStatus[type] = 'checked';
 };
 
-const getEventEditorTemplate = (data) => {
+const getEventEditorTemplate = (data, mode) => {
   const { type, destination, time, price, offers, description } = data;
   const { start, end } = time;
   const { title, pictures } = description;
   changeTypeStatus(type.toLowerCase());
   const detailsTemplate = hasData(offers) || hasData(title) || hasData(pictures) ?
     new DetailsView(data).getTemplate() :
+    '';
+  const cancelButton = mode === EditorMode.CREATOR ?
+    '<button class="event__reset-btn" type="reset" data-type="cancel">Cancel</button>' :
+    '';
+
+  const closeButton = mode === EditorMode.EDITOR ?
+    `<button class="event__rollup-btn" type="button">
+       <span class="visually-hidden">Open event</span>
+     </button>` :
+    '';
+
+  const deleteButton = mode === EditorMode.EDITOR ?
+    '<button class="event__reset-btn" type="reset" data-type="delete">Delete</button>' :
     '';
 
   return `<form class="event event--edit" action="#" method="post">
@@ -137,34 +152,46 @@ const getEventEditorTemplate = (data) => {
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Cancel</button>
+      ${cancelButton}
+      ${deleteButton}
+      ${closeButton}
     </header>
     ${detailsTemplate}
   </form>`;
 };
 
 export default class EventEditor extends SmartView {
-  constructor(data) {
+  constructor(data, mode) {
     super();
     this._data = data;
+    this._mode = mode;
     this._startTimeDatepicker = null;
     this._endTimeDatepicker = null;
     this._submitHandler = this._submitHandler.bind(this);
-    this._closeClickHandler = this._closeClickHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._timeChangeHandler = this._timeChangeHandler.bind(this);
-
 
     this._setTypeChangeHandler();
     this._setDestinationChangeHandler();
     this._setStartTimeDatepicker();
     this._setEndTimeDatepicker();
     this._setTimeChangeHandler();
+
+    this._setPriceInputHandler();
+
+    if (this._mode === EditorMode.EDITOR) {
+      this._closeClickHandler = this._closeClickHandler.bind(this);
+      this._deleteClickHandler = this._deleteClickHandler.bind(this);
+    }
+
+    if (this._mode === EditorMode.CREATOR) {
+      this._cancelClickHandler = this._cancelClickHandler.bind(this);
+    }
   }
 
   getTemplate() {
-    return getEventEditorTemplate(this._data);
+    return getEventEditorTemplate(this._data, this._mode);
   }
 
   reset(data) {
@@ -181,16 +208,26 @@ export default class EventEditor extends SmartView {
   }
 
   _closeClickHandler() {
-    this._callback.click();
+    this._callback.close();
+  }
+
+  _cancelClickHandler() {
+    this._callback.cancel();
+  }
+
+  _deleteClickHandler() {
+    this._callback.delete(this._data);
   }
 
   _destinationChangeHandler(evt) {
-    this._updateData(
-      {
-        destination: evt.target.value,
-        description: generateDescriptionsData(),
-      },
-    );
+    if (EVENT_DESTINATIONS.includes(evt.target.value)) {
+      this._updateData(
+        {
+          destination: evt.target.value,
+          description: generateDescriptionsData(),
+        },
+      );
+    }
   }
 
   _typeChangeHandler(evt) {
@@ -236,8 +273,26 @@ export default class EventEditor extends SmartView {
     }
   }
 
+  setCancelClickHandler(callback = this._callback.cancel) {
+    this._callback.cancel = callback;
+    if (this._callback.cancel) {
+      this.getElement().querySelector('[data-type=cancel]').addEventListener(EventName.CLICK, this._cancelClickHandler);
+    }
+  }
+
   _setTimeChangeHandler() {
     this.getElement().querySelector(CssClassName.EVENT_EDITOR_TIME).addEventListener(EventName.CHANGE, this._timeChangeHandler);
+  }
+
+  _setPriceInputHandler() {
+    this.getElement().querySelector('.event__input--price').addEventListener('input', (evt) => {
+      evt.target.value = evt.target.value.replace(/[^\d]/, '');
+      this._updateData(
+        {
+          price: Number(evt.target.value),
+        }, false,
+      );
+    });
   }
 
   _setStartTimeDatepicker() {
@@ -285,20 +340,42 @@ export default class EventEditor extends SmartView {
     }
   }
 
-  setCloseClickHandler(callback = this._callback.click) {
-    this._callback.click = callback;
-    if (this._callback.click) {
-      this.getElement().querySelector(CssClassName.CLOSE_EVENT_EDITOR_BUTTON).addEventListener(EventName.CLICK, this._closeClickHandler);
+  setCloseClickHandler(callback = this._callback.close) {
+    if (this._mode !== EditorMode.EDITOR) {
+      return;
+    }
+    this._callback.close = callback;
+    if (this._callback.close) {
+      this.getElement().querySelector([CssClassName.CLOSE_EVENT_EDITOR_BUTTON]).addEventListener(EventName.CLICK, this._closeClickHandler);
+    }
+  }
+
+  setDeleteClickHandler(callback = this._callback.delete) {
+    if (this._mode !== EditorMode.EDITOR) {
+      return;
+    }
+    this._callback.delete = callback;
+    if (this._callback.delete) {
+      this.getElement().querySelector('[data-type=delete]').addEventListener(EventName.CLICK, this._deleteClickHandler);
     }
   }
 
   _restoreHandlers() {
     this.setSubmitHandler();
-    this.setCloseClickHandler();
     this._setTypeChangeHandler();
     this._setDestinationChangeHandler();
     this._setStartTimeDatepicker();
     this._setEndTimeDatepicker();
     this._setTimeChangeHandler();
+    this._setPriceInputHandler();
+
+    if (this._mode === EditorMode.EDITOR) {
+      this.setCloseClickHandler();
+      this.setDeleteClickHandler();
+    }
+
+    if (this._mode === EditorMode.CREATOR) {
+      this.setCancelClickHandler();
+    }
   }
 }

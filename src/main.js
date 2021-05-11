@@ -1,10 +1,12 @@
-import FilterView from './view/filter.js';
 import MenuView from './view/menu.js';
-import TripInfoView from './view/trip-info.js';
 import { generateEventDataList } from './mock/event.js';
 import { Position, CssClassName } from './constant.js';
 import { render } from './utils/component.js';
-import Itinerary from './presenter/itinerary.js';
+import ContentPresenter from './presenter/content.js';
+import InfoPresenter from './presenter/info.js';
+import FilterPresenter from './presenter/filter.js';
+import EventModel from './model/event.js';
+import FilterModel from './model/filter.js';
 
 const tripMainElement = document.querySelector(CssClassName.TRIP_MAIN);
 const navigationElement = tripMainElement.querySelector(CssClassName.NAVIGATION);
@@ -12,17 +14,20 @@ const filterContainer = tripMainElement.querySelector(CssClassName.FILTER);
 const contentContainer = document.querySelector(CssClassName.CONTENT);
 const eventDataList = generateEventDataList(20);
 
-const tripInfo = new TripInfoView(eventDataList);
+const eventModel = new EventModel();
+eventModel.data = eventDataList;
+
+const filterModel = new FilterModel();
+
+const infoPresenter = new InfoPresenter(tripMainElement, eventModel, filterModel);
+infoPresenter.init();
+
+const contentPresenter = new ContentPresenter(contentContainer, eventModel, filterModel);
+contentPresenter.init();
+
 const menu = new MenuView();
-const filter = new FilterView();
-
-const itinerary = new Itinerary(contentContainer);
-itinerary.init(eventDataList);
-
-if (eventDataList.length > 0) {
-  render(tripInfo, tripMainElement, Position.AFTER_BEGIN);
-}
-
 render(menu, navigationElement, Position.AFTER_BEGIN);
-render(filter, filterContainer, Position.AFTER_BEGIN);
+
+const filterPresenter = new FilterPresenter(filterContainer, eventModel, filterModel);
+filterPresenter.init();
 

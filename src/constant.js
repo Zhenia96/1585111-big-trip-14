@@ -14,10 +14,11 @@ export const CssClassName = {
   EVENT_EDITOR_DESTINATION_BUTTON: '.event__input--destination',
   EVENT_EDITOR_TIME: '.event__field-group--time',
   SAVE_CHANGES_BUTTON: '.event__save-btn',
-  CLOSE_EVENT_EDITOR_BUTTON: '.event__reset-btn',
+  CLOSE_EVENT_EDITOR_BUTTON: '.event__rollup-btn',
   EVENT_LIST: '.trip-events__list',
   EVENT_EDITOR: '.event--edit',
   TRIP_MAIN: '.trip-main',
+  ADD_EVENT_BUTTON: '.trip-main__event-add-btn',
   NAVIGATION: '.trip-controls__navigation',
   FILTER: '.trip-controls__filters',
   CONTENT: '.trip-events',
@@ -61,4 +62,26 @@ export const typeIcon = {
   'check-in': 'check-in.png',
   'sightseeing': 'sightseeing.png',
   'restaurant': 'restaurant.png',
+};
+
+export const FiltersName = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PAST: 'past',
+};
+
+export const EditorMode = {
+  CREATOR: 'creator',
+  EDITOR: 'editor',
+};
+
+export const ActionType = {
+  ADD: 'add',
+  DELETE: 'delete',
+  UPDATE: 'update',
+};
+
+export const UpdateType = {
+  MINOR: 'minor',
+  MAJOR: 'major',
 };
