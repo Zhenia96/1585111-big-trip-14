@@ -34,6 +34,10 @@ export default class EventNew {
   }
 
   remove() {
+    if (this._eventEditor !== null) {
+      this._eventEditor.removeStartTimeDatepicker();
+      this._eventEditor.removeEndTimeDatepicker();
+    }
     remove(this._event);
   }
 

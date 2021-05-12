@@ -171,6 +171,8 @@ export default class EventEditor extends SmartView {
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._timeChangeHandler = this._timeChangeHandler.bind(this);
+    this.removeStartTimeDatepicker = this.removeStartTimeDatepicker.bind(this);
+    this.removeEndTimeDatepicker = this.removeEndTimeDatepicker.bind(this);
 
     this._setTypeChangeHandler();
     this._setDestinationChangeHandler();
@@ -298,8 +300,7 @@ export default class EventEditor extends SmartView {
   _setStartTimeDatepicker() {
     const startTimeField = this.getElement().querySelector('[name=event-start-time]');
     if (this._startTimeDatepicker !== null) {
-      this._startTimeDatepicker.destroy();
-      this._startTimeDatepicker = null;
+      this.removeStartTimeDatepicker();
     }
 
     this._startTimeDatepicker = flatpickr(startTimeField, {
@@ -310,11 +311,17 @@ export default class EventEditor extends SmartView {
     });
   }
 
+  removeStartTimeDatepicker() {
+    if (this._startTimeDatepicker !== null) {
+      this._startTimeDatepicker.destroy();
+      this._startTimeDatepicker = null;
+    }
+  }
+
   _setEndTimeDatepicker() {
     const endTimeField = this.getElement().querySelector('[name=event-end-time]');
     if (this._endTimeDatepicker !== null) {
-      this._endTimeDatepicker.destroy();
-      this._endTimeDatepicker = null;
+      this.removeEndTimeDatepicker();
     }
 
     this._endTimeDatepicker = flatpickr(endTimeField, {
@@ -323,6 +330,13 @@ export default class EventEditor extends SmartView {
       minuteIncrement: 1,
       time_24hr: true,
     });
+  }
+
+  removeEndTimeDatepicker() {
+    if (this._endTimeDatepicker !== null) {
+      this._endTimeDatepicker.destroy();
+      this._endTimeDatepicker = null;
+    }
   }
 
   _setDestinationChangeHandler() {

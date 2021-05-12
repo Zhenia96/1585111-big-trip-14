@@ -74,6 +74,8 @@ export default class Event {
   }
 
   remove() {
+    this._eventEditor.removeStartTimeDatepicker();
+    this._eventEditor.removeEndTimeDatepicker();
     remove(this._event);
   }
 
