@@ -85,3 +85,9 @@ export const UpdateType = {
   MINOR: 'minor',
   MAJOR: 'major',
 };
+
+export const ChartType = {
+  MONEY: 'money',
+  TYPE: 'type',
+  TIME: 'time',
+};

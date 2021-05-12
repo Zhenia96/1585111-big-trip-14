@@ -1,8 +1,9 @@
 import MenuView from './view/menu.js';
 import { generateEventDataList } from './mock/event.js';
-import { Position, CssClassName } from './constant.js';
+import { CssClassName } from './constant.js';
 import { render } from './utils/component.js';
 import TourPresenter from './presenter/tour.js';
+import StatisticsPresenter from './presenter/statistics.js';
 import InfoPresenter from './presenter/info.js';
 import FilterPresenter from './presenter/filter.js';
 import EventModel from './model/event.js';
@@ -25,8 +26,11 @@ infoPresenter.init();
 const tourPresenter = new TourPresenter(contentContainer, eventModel, filterModel);
 tourPresenter.init();
 
+const statisticsPresenter = new StatisticsPresenter(contentContainer, eventModel);
+statisticsPresenter.init();
+
 const menu = new MenuView();
-render(menu, navigationElement, Position.AFTER_BEGIN);
+render(menu, navigationElement);
 
 const filterPresenter = new FilterPresenter(filterContainer, eventModel, filterModel);
 filterPresenter.init();
