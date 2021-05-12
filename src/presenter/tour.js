@@ -31,12 +31,13 @@ export default class Content {
     this._sortForm = new SortFormView();
     this._eventList = new EventListView();
     this._emptyEventListMessage = new EmptyEventListMessageView();
-    this._eventNewPresentor = new EventNewPresentor(this._handleUserAction);
+    this._eventNewPresentor = new EventNewPresentor(this._handleUserAction, this._addEventButton);
 
     render(this._tour, this._container);
   }
 
   init(sortMode = SortMode.DATE) {
+    this._addEventButton.disabled = false;
     this._currentSortMode = sortMode;
     this._data = this._getData();
     this.destroy();
@@ -69,8 +70,16 @@ export default class Content {
     }
   }
 
+  get tour() {
+    return this._tour;
+  }
+
+  get currentSortMode() {
+    return this._currentSortMode;
+  }
+
   _getData() {
-    let data = this._eventModel.data;
+    let data;
 
     switch (this._filterModel.currentFilter) {
       case FiltersName.FUTURE:
@@ -79,6 +88,8 @@ export default class Content {
       case FiltersName.PAST:
         data = this._eventModel.pastData;
         break;
+      default:
+        data = this._eventModel.data;
     }
 
     return sortData(data, this._currentSortMode);

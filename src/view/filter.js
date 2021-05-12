@@ -1,7 +1,6 @@
 import AbstractComponentView from './abstract/companent.js';
 import { EventName } from '../constant';
 
-
 const getFilterTemplate = () => {
   return `<form class="trip-filters" action="#" method="get">
     <div class="trip-filters__filter">
@@ -27,8 +26,23 @@ export default class Filter extends AbstractComponentView {
 
   constructor() {
     super();
+    this._everythingButton = this.getElement().querySelector('[value = everything]');
+    this._futureButton = this.getElement().querySelector('[value = future]');
+    this._pastButton = this.getElement().querySelector('[value = past]');
     this._clickHandler = this._clickHandler.bind(this);
     this.disableButtons = this.disableButtons.bind(this);
+  }
+
+  get everythingButton() {
+    return this._everythingButton;
+  }
+
+  get futureButton() {
+    return this._futureButton;
+  }
+
+  get pastButton() {
+    return this._pastButton;
   }
 
   getTemplate() {
@@ -41,14 +55,10 @@ export default class Filter extends AbstractComponentView {
     }
   }
 
-  disableButtons({ isEverythingDisabled, isFutureDisabled, isPastDisabled }) {
-    const everythingButton = this.getElement().querySelector('[value = everything]');
-    const futureButton = this.getElement().querySelector('[value = future]');
-    const pastButton = this.getElement().querySelector('[value = past]');
-
-    everythingButton.disabled = isEverythingDisabled;
-    futureButton.disabled = isFutureDisabled;
-    pastButton.disabled = isPastDisabled;
+  disableButtons({ isEverythingDisabled, isFutureDisabled, isPastDisabled }, disableAllButtons = false) {
+    this._everythingButton.disabled = disableAllButtons ? true : isEverythingDisabled;
+    this._futureButton.disabled = disableAllButtons ? true : isFutureDisabled;
+    this._pastButton.disabled = disableAllButtons ? true : isPastDisabled;
   }
 
   setClickHandler(callback) {

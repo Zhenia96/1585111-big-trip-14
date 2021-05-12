@@ -86,6 +86,8 @@ export const getChart = (type, labels, container, data) => {
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
+        barThickness: 44,
+        minBarLength: 50,
       }],
     },
     options: {
@@ -118,7 +120,7 @@ export const getChart = (type, labels, container, data) => {
             display: false,
             drawBorder: false,
           },
-          barThickness: 44,
+
         }],
         xAxes: [{
           ticks: {
@@ -129,7 +131,6 @@ export const getChart = (type, labels, container, data) => {
             display: false,
             drawBorder: false,
           },
-          minBarLength: 50,
         }],
       },
       legend: {

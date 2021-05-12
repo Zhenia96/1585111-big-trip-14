@@ -8,7 +8,8 @@ import { generateEventDataList } from '../mock/event.js';
 const dataTemplate = generateEventDataList(1)[0]; //Временно, вместо дефолтных данных
 
 export default class EventNew {
-  constructor(handleUserAction) {
+  constructor(handleUserAction, addEventButton) {
+    this._addEventButton = addEventButton;
     this._eventData = null;
     this._eventEditor = null;
     this._event = new EventItemView();
@@ -21,6 +22,7 @@ export default class EventNew {
   }
 
   init(container) {
+    this._addEventButton.disabled = true;
     this._eventData = dataTemplate;
     this._container = container;
 
@@ -39,6 +41,7 @@ export default class EventNew {
       this._eventEditor.removeEndTimeDatepicker();
     }
     remove(this._event);
+    this._addEventButton.disabled = false;
   }
 
   _handleCancelClick() {

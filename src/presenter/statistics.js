@@ -1,4 +1,4 @@
-import { render } from '../utils/component.js';
+import { remove, render } from '../utils/component.js';
 import { ChartType } from '../constant.js';
 import StatisticsView from '../view/statistics.js';
 import { getChart, getLabels, getMoneyChartData, getTypeChartData, getTimeChartData } from '../utils/statistics.js';
@@ -9,6 +9,7 @@ export default class Statistics {
   constructor(container, eventModel) {
     this._container = container;
     this._eventModel = eventModel;
+    this._dataChangedStatus = true;
 
     this._moneyCtx = null;
     this._typeCtx = null;
@@ -21,10 +22,16 @@ export default class Statistics {
     this._labels = null;
     this._barHeight = null;
 
-    this._statistics = new StatisticsView();
+    this._statistics = null;
+
+    this._changeDataChangedStatus = this._changeDataChangedStatus.bind(this);
+    this._eventModel.addObserver(this._changeDataChangedStatus);
   }
 
   init() {
+    this._destroy();
+    this._statistics = new StatisticsView();
+
     this._moneyCtx = this._statistics.getElement().querySelector('.statistics__chart--money');
     this._typeCtx = this._statistics.getElement().querySelector('.statistics__chart--transport');
     this._timeCtx = this._statistics.getElement().querySelector('.statistics__chart--time');
@@ -49,6 +56,7 @@ export default class Statistics {
       this._typeCtx,
       getTypeChartData(this._eventModel.data, this._labels),
     );
+
     this._timeChart = getChart(
       ChartType.TIME,
       this._labels,
@@ -57,10 +65,23 @@ export default class Statistics {
     );
 
     render(this._statistics, this._container);
+    this._dataChangedStatus = false;
   }
 
   get statistics() {
     return this._statistics;
   }
 
+  get dataChangedStatus() {
+    return this._dataChangedStatus;
+  }
+
+  _changeDataChangedStatus() {
+    this._dataChangedStatus = true;
+  }
+
+  _destroy() {
+    remove(this._statistics);
+    this._statistics = null;
+  }
 }
