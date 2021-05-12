@@ -1,4 +1,5 @@
 import SortFormView from '../view/sort-form.js';
+import TourView from '../view/tour.js';
 import EventListView from '../view/event-list/event-list.js';
 import EmptyEventListMessageView from '../view/empty-event-list-message.js';
 import EventPresentor from './event.js';
@@ -26,10 +27,13 @@ export default class Content {
     this._updateView = this._updateView.bind(this);
     this.destroy = this.destroy.bind(this);
 
+    this._tour = new TourView();
     this._sortForm = new SortFormView();
     this._eventList = new EventListView();
     this._emptyEventListMessage = new EmptyEventListMessageView();
     this._eventNewPresentor = new EventNewPresentor(this._handleUserAction);
+
+    render(this._tour, this._container);
   }
 
   init(sortMode = SortMode.DATE) {
@@ -137,15 +141,15 @@ export default class Content {
   }
 
   _renderSortForm() {
-    render(this._sortForm, this._container);
+    render(this._sortForm, this._tour);
   }
 
   _renderEventList() {
-    render(this._eventList, this._container);
+    render(this._eventList, this._tour);
   }
 
   _renderEmptyEventListMessage() {
-    render(this._emptyEventListMessage, this._container);
+    render(this._emptyEventListMessage, this._tour);
   }
 
   _renderEvent(data) {
