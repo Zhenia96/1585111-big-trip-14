@@ -8,8 +8,9 @@ import { generateEventDataList } from '../mock/event.js';
 const dataTemplate = generateEventDataList(1)[0]; //Временно, вместо дефолтных данных
 
 export default class EventNew {
-  constructor(handleUserAction, addEventButton) {
+  constructor(handleUserAction, addEventButton, handleEventEditorCancel) {
     this._addEventButton = addEventButton;
+    this._handleEventEditorCancel = handleEventEditorCancel;
     this._eventData = null;
     this._eventEditor = null;
     this._event = new EventItemView();
@@ -46,6 +47,7 @@ export default class EventNew {
 
   _handleCancelClick() {
     this.remove();
+    this._handleEventEditorCancel();
   }
 
   _handleSubmit(addedData) {

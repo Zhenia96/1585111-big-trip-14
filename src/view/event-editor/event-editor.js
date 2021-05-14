@@ -71,52 +71,52 @@ const getEventEditorTemplate = (data, mode) => {
             <legend class="visually-hidden">Event type</legend>
 
             <div class="event__type-item">
-              <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi" ${typeStatus['taxi']}>
+              <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="Taxi" ${typeStatus['taxi']}>
               <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus" ${typeStatus['bus']}>
+              <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="Bus" ${typeStatus['bus']}>
               <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train" ${typeStatus['train']}>
+              <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="Train" ${typeStatus['train']}>
               <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship" ${typeStatus['ship']}>
+              <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="Ship" ${typeStatus['ship']}>
               <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport" ${typeStatus['transport']}>
+              <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="Transport" ${typeStatus['transport']}>
               <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive" ${typeStatus['drive']}>
+              <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="Drive" ${typeStatus['drive']}>
               <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" ${typeStatus['flight']}>
+              <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="Flight" ${typeStatus['flight']}>
               <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in" ${typeStatus['check-in']}>
+              <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="Check-in" ${typeStatus['check-in']}>
               <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing" ${typeStatus['sightseeing']}>
+              <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="Sightseeing" ${typeStatus['sightseeing']}>
               <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
             </div>
 
             <div class="event__type-item">
-              <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant" ${typeStatus['restaurant']}>
+              <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="Restaurant" ${typeStatus['restaurant']}>
               <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
             </div>
           </fieldset>

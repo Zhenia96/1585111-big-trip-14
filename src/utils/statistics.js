@@ -87,7 +87,7 @@ export const getChart = (type, labels, container, data) => {
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
         barThickness: 44,
-        minBarLength: 50,
+        minBarLength: 120,
       }],
     },
     options: {

@@ -20,18 +20,19 @@ export default class Content {
     this._eventPresentor = {};
 
     this._handleSortFormClick = this._handleSortFormClick.bind(this);
-    this._closeAllEditors = this._closeAllEditors.bind(this);
+    this.closeAllEditors = this.closeAllEditors.bind(this);
     this._escKeydownHandler = this._escKeydownHandler.bind(this);
     this._handleUserAction = this._handleUserAction.bind(this);
     this._addEventClickHandler = this._addEventClickHandler.bind(this);
     this._updateView = this._updateView.bind(this);
     this.destroy = this.destroy.bind(this);
+    this._handleEventEditorCancel = this._handleEventEditorCancel.bind(this);
 
     this._tour = new TourView();
     this._sortForm = new SortFormView();
     this._eventList = new EventListView();
     this._emptyEventListMessage = new EmptyEventListMessageView();
-    this._eventNewPresentor = new EventNewPresentor(this._handleUserAction, this._addEventButton);
+    this._eventNewPresentor = new EventNewPresentor(this._handleUserAction, this._addEventButton, this._handleEventEditorCancel);
 
     render(this._tour, this._container);
   }
@@ -109,6 +110,12 @@ export default class Content {
     }
   }
 
+  _handleEventEditorCancel() {
+    if (this._data.length === 0) {
+      this._renderEmptyEventListMessage();
+    }
+  }
+
   _sort(mode) {
     this._data = sortData(this._data, mode);
     this._currentSortMode = mode;
@@ -125,7 +132,10 @@ export default class Content {
 
   _escKeydownHandler(evt) {
     if (evt.code === ESCAPE_BUTTON) {
-      this._closeAllEditors();
+      this.closeAllEditors();
+      if (this._data.length === 0) {
+        this._renderEmptyEventListMessage();
+      }
     }
   }
 
@@ -138,8 +148,12 @@ export default class Content {
   }
 
   _addEventClickHandler() {
-    this._closeAllEditors();
+    this.closeAllEditors();
     this._filterModel.currentFilter = FiltersName.EVERYTHING;
+    if (this._data.length === 0) {
+      remove(this._emptyEventListMessage);
+      this._renderEventList();
+    }
     this._eventNewPresentor.init(this._eventList);
   }
 
@@ -164,7 +178,7 @@ export default class Content {
   }
 
   _renderEvent(data) {
-    const event = new EventPresentor(this._eventList, this._closeAllEditors, this._handleUserAction);
+    const event = new EventPresentor(this._eventList, this.closeAllEditors, this._handleUserAction);
     event.init(data);
     this._eventPresentor[data.id] = event;
   }
@@ -182,7 +196,7 @@ export default class Content {
     this._eventPresentor = {};
   }
 
-  _closeAllEditors() {
+  closeAllEditors() {
     Object.values(this._eventPresentor).forEach((presentor) => {
       const event = presentor.event.getElement();
       const editor = presentor.eventEditor.getElement();

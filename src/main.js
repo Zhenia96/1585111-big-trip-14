@@ -51,6 +51,7 @@ const handleOpenStatisticsClick = () => {
   addEventButton.disabled = true;
   filterPresenter.filter.disableButtons({}, true);
   tourPresenter.tour.hideElement();
+  tourPresenter._closeAllEditors();
   if (statisticsPresenter.dataChangedStatus) {
     statisticsPresenter.init();
   }
