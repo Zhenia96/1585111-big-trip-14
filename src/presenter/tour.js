@@ -1,4 +1,5 @@
 import SortFormView from '../view/sort-form.js';
+import TourView from '../view/tour.js';
 import EventListView from '../view/event-list/event-list.js';
 import EmptyEventListMessageView from '../view/empty-event-list-message.js';
 import EventPresentor from './event.js';
@@ -9,41 +10,46 @@ import { SortMode, ESCAPE_BUTTON, EventName, FiltersName, ActionType, UpdateType
 
 export default class Content {
   constructor(container, eventModel, filterModel) {
+    this._container = container;
+    this._addEventButton = document.querySelector(CssClassName.ADD_EVENT_BUTTON);
+
     this._eventModel = eventModel;
     this._filterModel = filterModel;
     this._data = null;
+    this._currentSortMode = null;
+    this._eventPresentor = {};
 
-    this._container = container;
-    this._sortForm = new SortFormView();
-    this._eventList = new EventListView();
-    this._emptyEventListMessage = new EmptyEventListMessageView();
-
-    this._addEventButton = document.querySelector(CssClassName.ADD_EVENT_BUTTON);
-
-    this._sortFormClickCallback = this._sortFormClickCallback.bind(this);
-    this._closeAllEditors = this._closeAllEditors.bind(this);
+    this._handleSortFormClick = this._handleSortFormClick.bind(this);
+    this.closeAllEditors = this.closeAllEditors.bind(this);
     this._escKeydownHandler = this._escKeydownHandler.bind(this);
     this._handleUserAction = this._handleUserAction.bind(this);
     this._addEventClickHandler = this._addEventClickHandler.bind(this);
-
-    this._eventNewPresentor = new EventNewPresentor(this._handleUserAction);
-
     this._updateView = this._updateView.bind(this);
-    this._filterModel.addObserver(this._updateView);
-    this._eventModel.addObserver(this._updateView);
-    this._setEscKeydownHandler();
-    this._setAddEventClickHandler();
+    this.destroy = this.destroy.bind(this);
+    this._handleEventEditorCancel = this._handleEventEditorCancel.bind(this);
 
-    this._currentSortMode = null;
-    this._eventPresentor = {};
+    this._tour = new TourView();
+    this._sortForm = new SortFormView();
+    this._eventList = new EventListView();
+    this._emptyEventListMessage = new EmptyEventListMessageView();
+    this._eventNewPresentor = new EventNewPresentor(this._handleUserAction, this._addEventButton, this._handleEventEditorCancel);
+
+    render(this._tour, this._container);
   }
 
   init(sortMode = SortMode.DATE) {
+    this._addEventButton.disabled = false;
     this._currentSortMode = sortMode;
     this._data = this._getData();
-    this._clearContent();
+    this.destroy();
 
-    this._sortForm.setClickHandler(this._sortFormClickCallback);
+    this._setEscKeydownHandler();
+    this._setAddEventClickHandler();
+
+    this._filterModel.addObserver(this._updateView);
+    this._eventModel.addObserver(this._updateView);
+
+    this._sortForm.setClickHandler(this._handleSortFormClick);
 
     if (this._data.length === 0) {
       this._renderEmptyEventListMessage();
@@ -65,8 +71,16 @@ export default class Content {
     }
   }
 
+  get tour() {
+    return this._tour;
+  }
+
+  get currentSortMode() {
+    return this._currentSortMode;
+  }
+
   _getData() {
-    let data = this._eventModel.data;
+    let data;
 
     switch (this._filterModel.currentFilter) {
       case FiltersName.FUTURE:
@@ -75,6 +89,8 @@ export default class Content {
       case FiltersName.PAST:
         data = this._eventModel.pastData;
         break;
+      default:
+        data = this._eventModel.data;
     }
 
     return sortData(data, this._currentSortMode);
@@ -94,12 +110,18 @@ export default class Content {
     }
   }
 
+  _handleEventEditorCancel() {
+    if (this._data.length === 0) {
+      this._renderEmptyEventListMessage();
+    }
+  }
+
   _sort(mode) {
     this._data = sortData(this._data, mode);
     this._currentSortMode = mode;
   }
 
-  _sortFormClickCallback(sortMode) {
+  _handleSortFormClick(sortMode) {
     if (this._currentSortMode !== sortMode) {
       this._removeAllEvents();
       this._sort(sortMode);
@@ -108,21 +130,12 @@ export default class Content {
     }
   }
 
-  _closeAllEditors() {
-    Object.values(this._eventPresentor).forEach((presentor) => {
-      const event = presentor.event.getElement();
-      const editor = presentor.eventEditor.getElement();
-      if (event.contains(editor)) {
-        presentor.eventEditor.reset(presentor.eventData);
-        presentor.replaceFromEditorToPoint();
-      }
-    });
-    this._eventNewPresentor.remove();
-  }
-
   _escKeydownHandler(evt) {
     if (evt.code === ESCAPE_BUTTON) {
-      this._closeAllEditors();
+      this.closeAllEditors();
+      if (this._data.length === 0) {
+        this._renderEmptyEventListMessage();
+      }
     }
   }
 
@@ -130,9 +143,17 @@ export default class Content {
     document.addEventListener(EventName.KEYDOWN, this._escKeydownHandler);
   }
 
+  _removeEscKeydownHandler() {
+    document.removeEventListener(EventName.KEYDOWN, this._escKeydownHandler);
+  }
+
   _addEventClickHandler() {
-    this._closeAllEditors();
+    this.closeAllEditors();
     this._filterModel.currentFilter = FiltersName.EVERYTHING;
+    if (this._data.length === 0) {
+      remove(this._emptyEventListMessage);
+      this._renderEventList();
+    }
     this._eventNewPresentor.init(this._eventList);
   }
 
@@ -140,25 +161,24 @@ export default class Content {
     this._addEventButton.addEventListener(EventName.CLICK, this._addEventClickHandler);
   }
 
-
-  _removeEscKeydownHandler() {
-    document.removeEventListener(EventName.KEYDOWN, this._escKeydownHandler);
+  _removeAddEventClickHandler() {
+    document.removeEventListener(EventName.CLICK, this._addEventClickHandler);
   }
 
   _renderSortForm() {
-    render(this._sortForm, this._container);
+    render(this._sortForm, this._tour);
   }
 
   _renderEventList() {
-    render(this._eventList, this._container);
+    render(this._eventList, this._tour);
   }
 
   _renderEmptyEventListMessage() {
-    render(this._emptyEventListMessage, this._container);
+    render(this._emptyEventListMessage, this._tour);
   }
 
   _renderEvent(data) {
-    const event = new EventPresentor(this._eventList, this._closeAllEditors, this._handleUserAction);
+    const event = new EventPresentor(this._eventList, this.closeAllEditors, this._handleUserAction);
     event.init(data);
     this._eventPresentor[data.id] = event;
   }
@@ -176,10 +196,31 @@ export default class Content {
     this._eventPresentor = {};
   }
 
+  closeAllEditors() {
+    Object.values(this._eventPresentor).forEach((presentor) => {
+      const event = presentor.event.getElement();
+      const editor = presentor.eventEditor.getElement();
+      if (event.contains(editor)) {
+        presentor.eventEditor.reset(presentor.eventData);
+        presentor.replaceFromEditorToPoint();
+      }
+    });
+    this._eventNewPresentor.remove();
+  }
+
   _clearContent() {
+    this._removeAllEvents();
     remove(this._sortForm);
     remove(this._eventList);
     remove(this._emptyEventListMessage);
     this._eventPresentor = {};
+  }
+
+  destroy() {
+    this._clearContent();
+    this._filterModel.removeObserver(this._updateView);
+    this._eventModel.removeObserver(this._updateView);
+    this._removeEscKeydownHandler();
+    this._removeAddEventClickHandler();
   }
 }

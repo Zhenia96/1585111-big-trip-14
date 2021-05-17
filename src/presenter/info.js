@@ -45,6 +45,9 @@ export default class Info {
   }
 
   _changeTotalPrice() {
+    if (this._modalEvent.data.length === 0) {
+      return;
+    }
     let currentData;
     const costField = this._info.getElement().querySelector('.trip-info__cost-value');
     if (this._modalFilter.currentFilter === FiltersName.EVERYTHING) {

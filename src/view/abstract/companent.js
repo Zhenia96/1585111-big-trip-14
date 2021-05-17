@@ -21,6 +21,14 @@ export default class Companent {
     return this._element;
   }
 
+  hideElement() {
+    this.getElement().hidden = true;
+  }
+
+  showElement() {
+    this.getElement().hidden = false;
+  }
+
   removeElement() {
     this._element = null;
   }
