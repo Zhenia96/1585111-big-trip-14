@@ -1,15 +1,17 @@
 import SortFormView from '../view/sort-form.js';
 import TourView from '../view/tour.js';
+import LoadingView from '../view/loading.js';
 import EventListView from '../view/event-list/event-list.js';
 import EmptyEventListMessageView from '../view/empty-event-list-message.js';
 import EventPresentor from './event.js';
 import EventNewPresentor from './eventNew.js';
 import { remove, render } from '../utils/component.js';
+import { adaptPointToClient } from '../utils/adapter.js';
 import { sortData } from '../utils/common.js';
-import { SortMode, ESCAPE_BUTTON, EventName, FiltersName, ActionType, UpdateType, CssClassName } from '../constant.js';
+import { SortMode, ServerPath, ESCAPE_BUTTON, EventName, FiltersName, ActionType, UpdateType, CssClassName } from '../constant.js';
 
 export default class Content {
-  constructor(container, eventModel, filterModel) {
+  constructor(container, eventModel, filterModel, api) {
     this._container = container;
     this._addEventButton = document.querySelector(CssClassName.ADD_EVENT_BUTTON);
 
@@ -18,6 +20,7 @@ export default class Content {
     this._data = null;
     this._currentSortMode = null;
     this._eventPresentor = {};
+    this._api = api;
 
     this._handleSortFormClick = this._handleSortFormClick.bind(this);
     this.closeAllEditors = this.closeAllEditors.bind(this);
@@ -32,14 +35,18 @@ export default class Content {
     this._sortForm = new SortFormView();
     this._eventList = new EventListView();
     this._emptyEventListMessage = new EmptyEventListMessageView();
-    this._eventNewPresentor = new EventNewPresentor(this._handleUserAction, this._addEventButton, this._handleEventEditorCancel);
+    this._loading = new LoadingView();
+    this._eventNewPresentor = new EventNewPresentor(this._handleUserAction, this._addEventButton, this._handleEventEditorCancel, this._eventModel);
 
+    this._renderLoading();
     render(this._tour, this._container);
   }
 
   init(sortMode = SortMode.DATE) {
+    this._removeLoading();
     this._addEventButton.disabled = false;
     this._currentSortMode = sortMode;
+    this._sortForm.changeSortMode(this._currentSortMode);
     this._data = this._getData();
     this.destroy();
 
@@ -69,6 +76,10 @@ export default class Content {
     if (updateType === UpdateType.MAJOR) {
       this.init();
     }
+
+    if (updateType === UpdateType.MAJOR_WITHOUT_SORT_RESET) {
+      this.init(this._currentSortMode);
+    }
   }
 
   get tour() {
@@ -97,16 +108,25 @@ export default class Content {
   }
 
   _handleUserAction(changedData, actionType, updateType) {
+
     switch (actionType) {
       case ActionType.ADD:
-        this._eventModel.add(changedData, updateType);
-        break;
+        return this._api.addData(ServerPath.POINTS, changedData)
+          .then((response) => {
+            this._eventModel.add(adaptPointToClient(response), updateType);
+          });
+
       case ActionType.DELETE:
-        this._eventModel.delete(changedData, updateType);
-        break;
+        return this._api.deleteData(`${ServerPath.POINTS}/${changedData.id}`)
+          .then(() => {
+            this._eventModel.delete(changedData, updateType);
+          });
+
       case ActionType.UPDATE:
-        this._eventModel.update(changedData, updateType);
-        break;
+        return this._api.updateData(`${ServerPath.POINTS}/${changedData.id}`, changedData)
+          .then((response) => {
+            this._eventModel.update(adaptPointToClient(response), updateType);
+          });
     }
   }
 
@@ -165,6 +185,14 @@ export default class Content {
     document.removeEventListener(EventName.CLICK, this._addEventClickHandler);
   }
 
+  _renderLoading() {
+    render(this._loading, this._tour);
+  }
+
+  _removeLoading() {
+    remove(this._loading);
+  }
+
   _renderSortForm() {
     render(this._sortForm, this._tour);
   }
@@ -178,7 +206,7 @@ export default class Content {
   }
 
   _renderEvent(data) {
-    const event = new EventPresentor(this._eventList, this.closeAllEditors, this._handleUserAction);
+    const event = new EventPresentor(this._eventList, this.closeAllEditors, this._handleUserAction, this._eventModel);
     event.init(data);
     this._eventPresentor[data.id] = event;
   }

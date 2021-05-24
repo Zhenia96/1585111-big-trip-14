@@ -2,6 +2,23 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { ChartType } from '../constant.js';
 
+const sortChartData = (chartData) => {
+  const sortedChartData = Object.entries(chartData).sort((firstChartData, secondChartData) => {
+
+    if (firstChartData[1] > secondChartData[1]) {
+      return -1;
+    }
+
+    if (firstChartData[1] < secondChartData[1]) {
+      return 1;
+    }
+
+    return 0;
+  });
+
+  return new Map(sortedChartData);
+};
+
 const getTime = (minutes) => {
   const daysCount = Math.floor(minutes / 60 / 24);
   const hoursCount = Math.floor((minutes - (daysCount * 24 * 60)) / 60);
@@ -33,48 +50,49 @@ export const getLabels = (data) => {
 };
 
 export const getMoneyChartData = (data, labels) => {
-  const moneyChartData = [];
+  const moneyChartData = {};
   labels.forEach((label) => {
-    let result = 0;
+    moneyChartData[label] = 0;
     data.forEach((dataItem) => {
       if (dataItem.type === label) {
-        result += dataItem.price;
+        moneyChartData[label] += dataItem.price;
       }
     });
-    moneyChartData.push(result);
   });
-  return moneyChartData;
+
+  return sortChartData(moneyChartData);
 };
 
 export const getTypeChartData = (data, labels) => {
-  const typeChartData = [];
+  const typeChartData = {};
   labels.forEach((label) => {
-    let result = 0;
+    typeChartData[label] = 0;
     data.forEach((dataItem) => {
       if (dataItem.type === label) {
-        result += 1;
+        typeChartData[label] += 1;
       }
     });
-    typeChartData.push(result);
   });
-  return typeChartData;
+
+  return sortChartData(typeChartData);
 };
 
 export const getTimeChartData = (data, labels) => {
-  const timeChartData = [];
+  const timeChartData = {};
   labels.forEach((label) => {
-    let result = 0;
+    timeChartData[label] = 0;
     data.forEach((dataItem) => {
       if (dataItem.type === label) {
-        result += dataItem.time.end.diff(dataItem.time.start, 'minute');
+        timeChartData[label] += dataItem.time.end.diff(dataItem.time.start, 'minute');
       }
     });
-    timeChartData.push(result);
   });
-  return timeChartData;
+  return sortChartData(timeChartData);
 };
 
-export const getChart = (type, labels, container, data) => {
+export const getChart = (type, chartData, container) => {
+  const labels = Array.from(chartData.keys());
+  const data = Array.from(chartData.values());
 
   return new Chart(container, {
     plugins: [ChartDataLabels],

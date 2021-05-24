@@ -7,8 +7,14 @@ export default class Event extends Observer {
 
   constructor() {
     super();
-    this._pastData = null;
-    this._futureData = null;
+    this._data = [];
+    this._pastData = [];
+    this._futureData = [];
+    this._destinations = [];
+    this._offers = [];
+    this._availableDestintionNames = [];
+
+    this.setAvailableDestintionNames = this.setAvailableDestintionNames.bind(this);
   }
 
   get data() {
@@ -16,9 +22,30 @@ export default class Event extends Observer {
   }
 
   set data(data) {
-    this._data = data.slice();
+    this._data = data;
     this._pastData = filterData(this._data, FiltersName.PAST);
     this._futureData = filterData(this._data, FiltersName.FUTURE);
+    this._notify();
+  }
+
+  get offers() {
+    return this._offers;
+  }
+
+  set offers(offers) {
+    this._offers = offers;
+  }
+
+  get destinations() {
+    return this._destinations;
+  }
+
+  set destinations(destinations) {
+    this._destinations = destinations;
+  }
+
+  get availableDestintionNames() {
+    return this._availableDestintionNames;
   }
 
   get pastData() {
@@ -27,6 +54,12 @@ export default class Event extends Observer {
 
   get futureData() {
     return this._futureData;
+  }
+
+  setAvailableDestintionNames() {
+    this._destinations.forEach((destination) => {
+      this._availableDestintionNames.push(destination.destination);
+    });
   }
 
   update(changedData, updateType) {

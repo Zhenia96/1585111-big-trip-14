@@ -2,13 +2,12 @@ import EventItemView from '../view/event-list/event-item.js';
 import EventEditorView from '../view/event-editor/event-editor.js';
 import { render, remove } from '../utils/component.js';
 import { ActionType, EditorMode, UpdateType, Position } from '../constant.js';
-
-import { generateEventDataList } from '../mock/event.js';
-
-const dataTemplate = generateEventDataList(1)[0]; //Временно, вместо дефолтных данных
+import { getOffers, getDescription, generateTimeData } from '../utils/common.js';
+import { lockApplicationt, unlockApplicationt } from '../utils/lock-application.js';
 
 export default class EventNew {
-  constructor(handleUserAction, addEventButton, handleEventEditorCancel) {
+  constructor(handleUserAction, addEventButton, handleEventEditorCancel, eventModel) {
+    this._eventModel = eventModel;
     this._addEventButton = addEventButton;
     this._handleEventEditorCancel = handleEventEditorCancel;
     this._eventData = null;
@@ -24,10 +23,16 @@ export default class EventNew {
 
   init(container) {
     this._addEventButton.disabled = true;
-    this._eventData = dataTemplate;
+    this._eventData = this._getDefaultData();
     this._container = container;
 
-    this._eventEditor = new EventEditorView(this._eventData, EditorMode.CREATOR);
+    this._eventEditor = new EventEditorView(
+      this._eventData,
+      EditorMode.CREATOR,
+      this._eventModel.availableDestintionNames,
+      this._eventModel.destinations,
+      this._eventModel.offers,
+    );
 
     this._eventEditor.setSubmitHandler(this._handleSubmit);
     this._eventEditor.setCancelClickHandler(this._handleCancelClick);
@@ -51,6 +56,27 @@ export default class EventNew {
   }
 
   _handleSubmit(addedData) {
-    this._handleUserAction(addedData, ActionType.ADD, UpdateType.MAJOR);
+    this._eventEditor.setSaveButtonState(true);
+    lockApplicationt();
+    this._handleUserAction(addedData, ActionType.ADD, UpdateType.MAJOR)
+      .catch(() => {
+        this._eventEditor.shake();
+      })
+      .finally(() => {
+        this._eventEditor.setSaveButtonState(false);
+        unlockApplicationt();
+      });
+  }
+
+  _getDefaultData() {
+    return {
+      type: 'Taxi',
+      destination: 'Amsterdam',
+      time: generateTimeData(),
+      price: 500,
+      offers: getOffers('Taxi', this._eventModel.offers),
+      description: getDescription('Amsterdam', this._eventModel.destinations),
+      isFavorite: false,
+    };
   }
 }

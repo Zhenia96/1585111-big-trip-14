@@ -1,8 +1,7 @@
-import { formatDate, hasData } from '../../utils/common.js';
+import { formatDate, hasData, getOffers, getDescription, cloneObjects } from '../../utils/common.js';
 import { DateFormat, typeIcon, PATH_TO_ICONS, EventName, CssClassName, EditorMode } from '../../constant';
 import DetailsView from './details.js';
 import SmartView from '../smart.js';
-import { generateDescriptionsData, generateOfferDataList } from '../../mock/event.js';
 import flatpickr from 'flatpickr';
 
 import { } from '../../../node_modules/flatpickr/dist/flatpickr.min.css';
@@ -11,8 +10,6 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
 
 const { FULL } = DateFormat;
-
-const EVENT_DESTINATIONS = ['Amsterdam', 'Geneva', 'Chamonix']; // Временное
 
 const typeStatus = {
   'taxi': '',
@@ -25,6 +22,16 @@ const typeStatus = {
   'check-in': '',
   'sightseeng': '',
   'restaurant': '',
+};
+
+const SaveButtonState = {
+  SAVING: 'Saving...',
+  DEFAULT: 'Save',
+};
+
+const DeleteButtonState = {
+  DELETING: 'Deleting...',
+  DEFAULT: 'Delete',
 };
 
 const changeTypeStatus = (type) => {
@@ -161,12 +168,16 @@ const getEventEditorTemplate = (data, mode) => {
 };
 
 export default class EventEditor extends SmartView {
-  constructor(data, mode) {
+  constructor(data, mode, availableDestintionNames, destinations, offers) {
     super();
+    this._availableDestintionNames = availableDestintionNames;
+    this._destinations = destinations;
+    this._offers = offers;
     this._data = data;
     this._mode = mode;
     this._startTimeDatepicker = null;
     this._endTimeDatepicker = null;
+
     this._submitHandler = this._submitHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
@@ -179,8 +190,8 @@ export default class EventEditor extends SmartView {
     this._setStartTimeDatepicker();
     this._setEndTimeDatepicker();
     this._setTimeChangeHandler();
-
     this._setPriceInputHandler();
+    this._setOffersClickHandler();
 
     if (this._mode === EditorMode.EDITOR) {
       this._closeClickHandler = this._closeClickHandler.bind(this);
@@ -222,11 +233,11 @@ export default class EventEditor extends SmartView {
   }
 
   _destinationChangeHandler(evt) {
-    if (EVENT_DESTINATIONS.includes(evt.target.value)) {
+    if (this._availableDestintionNames.includes(evt.target.value)) {
       this._updateData(
         {
           destination: evt.target.value,
-          description: generateDescriptionsData(),
+          description: getDescription(evt.target.value, this._destinations),
         },
       );
     }
@@ -236,7 +247,7 @@ export default class EventEditor extends SmartView {
     this._updateData(
       {
         type: evt.target.value,
-        offers: generateOfferDataList(),
+        offers: getOffers(evt.target.value, this._offers),
       },
     );
   }
@@ -279,6 +290,33 @@ export default class EventEditor extends SmartView {
     this._callback.cancel = callback;
     if (this._callback.cancel) {
       this.getElement().querySelector('[data-type=cancel]').addEventListener(EventName.CLICK, this._cancelClickHandler);
+    }
+  }
+
+
+  _setOffersClickHandler() {
+    const offers = this.getElement().querySelector('.event__available-offers');
+
+    if (offers) {
+      this.getElement().querySelector('.event__available-offers').addEventListener(EventName.CLICK, (evt) => {
+
+        if (evt.target.type === 'checkbox') {
+          let targetedOffer = this._data.offers.find((offer) => {
+            return evt.target.id === offer.id;
+          });
+          targetedOffer = Object.assign({}, targetedOffer);
+          targetedOffer.isChecked = !targetedOffer.isChecked;
+          const updatedOffers = cloneObjects(this._data.offers);
+          const targetedIndex = updatedOffers.findIndex((offer) => offer.id === targetedOffer.id);
+          updatedOffers[targetedIndex] = targetedOffer;
+          this._updateData(
+            {
+              offers: updatedOffers,
+            }, false,
+          );
+        }
+
+      });
     }
   }
 
@@ -374,6 +412,16 @@ export default class EventEditor extends SmartView {
     }
   }
 
+  setSaveButtonState(isSaving) {
+    const saveButton = this.getElement().querySelector('.event__save-btn');
+    saveButton.textContent = isSaving ? SaveButtonState.SAVING : SaveButtonState.DEFAULT;
+  }
+
+  setDeleteButtonState(isDeleting) {
+    const deleteButton = this.getElement().querySelector('[data-type=delete]');
+    deleteButton.textContent = isDeleting ? DeleteButtonState.DELETING : DeleteButtonState.DEFAULT;
+  }
+
   _restoreHandlers() {
     this.setSubmitHandler();
     this._setTypeChangeHandler();
@@ -382,6 +430,7 @@ export default class EventEditor extends SmartView {
     this._setEndTimeDatepicker();
     this._setTimeChangeHandler();
     this._setPriceInputHandler();
+    this._setOffersClickHandler();
 
     if (this._mode === EditorMode.EDITOR) {
       this.setCloseClickHandler();

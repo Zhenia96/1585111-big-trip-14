@@ -6,6 +6,9 @@ export const NON_BREAKING_SPACE = '&nbsp;';
 export const ELLIPSIS = '...';
 export const ESCAPE_BUTTON = 'Escape';
 
+export const SERVER_ADDRESS = 'https://14.ecmascript.pages.academy/big-trip/';
+export const AUTHORIZATION_VALUE = 'Basic baguvix';
+
 export const CssClassName = {
   FAVORITE_EVENT_BUTTON_ACTIVE: '.event__favorite-btn--active',
   FAVORITE_EVENT_BUTTON: '.event__favorite-btn',
@@ -84,6 +87,7 @@ export const ActionType = {
 export const UpdateType = {
   MINOR: 'minor',
   MAJOR: 'major',
+  MAJOR_WITHOUT_SORT_RESET: 'major without sort reset',
 };
 
 export const ChartType = {
@@ -91,3 +95,10 @@ export const ChartType = {
   TYPE: 'type',
   TIME: 'time',
 };
+
+export const ServerPath = {
+  POINTS: 'points',
+  DESTINATIONS: 'destinations',
+  OFFERS: 'offers',
+};
+

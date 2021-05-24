@@ -2,7 +2,9 @@ import EventItemView from '../view/event-list/event-item.js';
 import EventEditorView from '../view/event-editor/event-editor.js';
 import PointView from '../view/point.js';
 import { render, replace, remove } from '../utils/component.js';
+import { addAvailableOffers, getOffers } from '../utils/common.js';
 import { ActionType, EditorMode, UpdateType } from '../constant.js';
+import { lockApplicationt, unlockApplicationt } from '../utils/lock-application.js';
 
 const showMode = {
   POINT: 'point',
@@ -11,7 +13,8 @@ const showMode = {
 
 
 export default class Event {
-  constructor(container, closeAllEditors, handleUserAction) {
+  constructor(container, closeAllEditors, handleUserAction, eventModel) {
+    this._eventModel = eventModel;
     this._eventData = null;
     this._point = null;
     this._eventEditor = null;
@@ -34,12 +37,19 @@ export default class Event {
 
   init(eventData) {
     this._eventData = eventData;
+    this._eventData.offers = addAvailableOffers(this._eventData.offers, getOffers(this._eventData.type, this._eventModel.offers));
 
     const prevPoint = this._point;
     const prevEventEditor = this._eventEditor;
 
     this._point = new PointView(this._eventData);
-    this._eventEditor = new EventEditorView(this._eventData, EditorMode.EDITOR);
+    this._eventEditor = new EventEditorView(
+      this._eventData,
+      EditorMode.EDITOR,
+      this._eventModel.availableDestintionNames,
+      this._eventModel.destinations,
+      this._eventModel.offers,
+    );
 
     this._point.setFavoriteButtonClickHandler(this._changeFavoriteStatus);
     this._point.setOpenEditorButtonClickHandler(this._pointOpenEditorCallback);
@@ -80,8 +90,19 @@ export default class Event {
   }
 
   _eventEditorSubmitCallback(updateData) {
-    this._handleUserAction(updateData, ActionType.UPDATE, UpdateType.MAJOR);
-    this.replaceFromEditorToPoint();
+    this._eventEditor.setSaveButtonState(true);
+    lockApplicationt();
+    this._handleUserAction(updateData, ActionType.UPDATE, UpdateType.MAJOR_WITHOUT_SORT_RESET)
+      .then(() => {
+        this.replaceFromEditorToPoint();
+      })
+      .catch(() => {
+        this._eventEditor.shake();
+      })
+      .finally(() => {
+        this._eventEditor.setSaveButtonState(false);
+        unlockApplicationt();
+      });
   }
 
   _eventEditorCloseCallback() {
@@ -90,7 +111,16 @@ export default class Event {
   }
 
   _eventEditorDeleteCallback(deletedData) {
-    this._handleUserAction(deletedData, ActionType.DELETE, UpdateType.MAJOR);
+    this._eventEditor.setDeleteButtonState(true);
+    lockApplicationt();
+    this._handleUserAction(deletedData, ActionType.DELETE, UpdateType.MAJOR_WITHOUT_SORT_RESET)
+      .catch(() => {
+        this._eventEditor.shake();
+      })
+      .finally(() => {
+        this._eventEditor.setDeleteButtonState(false);
+        unlockApplicationt();
+      });
   }
 
   _pointOpenEditorCallback() {
@@ -104,9 +134,13 @@ export default class Event {
   }
 
   _changeFavoriteStatus() {
+    lockApplicationt();
     this._handleUserAction(Object.assign({},
       this._eventData,
-      { isFavorite: !this._eventData.isFavorite }), ActionType.UPDATE, UpdateType.MINOR);
+      { isFavorite: !this._eventData.isFavorite }), ActionType.UPDATE, UpdateType.MINOR)
+      .finally(() => {
+        unlockApplicationt();
+      });
   }
 
   replaceFromEditorToPoint() {

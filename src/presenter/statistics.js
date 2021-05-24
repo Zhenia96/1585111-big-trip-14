@@ -43,25 +43,26 @@ export default class Statistics {
     this._typeCtx.height = this._barHeight;
     this._timeCtx.height = this._barHeight;
 
+    this._moneyChartData = getMoneyChartData(this._eventModel.data, this._labels);
+    this._typeChartData = getTypeChartData(this._eventModel.data, this._labels);
+    this._timeChartData = getTimeChartData(this._eventModel.data, this._labels);
+
     this._moneyChart = getChart(
       ChartType.MONEY,
-      this._labels,
+      this._moneyChartData,
       this._moneyCtx,
-      getMoneyChartData(this._eventModel.data, this._labels),
     );
 
     this._typeChart = getChart(
       ChartType.TYPE,
-      this._labels,
+      this._typeChartData,
       this._typeCtx,
-      getTypeChartData(this._eventModel.data, this._labels),
     );
 
     this._timeChart = getChart(
       ChartType.TIME,
-      this._labels,
+      this._timeChartData,
       this._timeCtx,
-      getTimeChartData(this._eventModel.data, this._labels),
     );
 
     render(this._statistics, this._container);

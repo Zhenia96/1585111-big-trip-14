@@ -1,5 +1,7 @@
 import { createElement } from '../../utils/component.js';
 
+const ANIMATION_TIMEOUT = 600;
+
 export default class Companent {
   constructor() {
     if (new.target === 'AbstarctCompanent') {
@@ -31,5 +33,12 @@ export default class Companent {
 
   removeElement() {
     this._element = null;
+  }
+
+  shake() {
+    this.getElement().style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this.getElement().style.animation = '';
+    }, ANIMATION_TIMEOUT);
   }
 }

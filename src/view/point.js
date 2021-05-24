@@ -16,7 +16,9 @@ const getOffersListTemplate = (offersData) => {
   let offersFragment = '';
 
   offersData.forEach((offerData) => {
-    offersFragment += getOfferTemplate(offerData);
+    if (offerData.isChecked) {
+      offersFragment += getOfferTemplate(offerData);
+    }
   });
 
   return `<ul class="event__selected-offers">
