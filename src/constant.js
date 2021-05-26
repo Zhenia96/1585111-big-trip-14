@@ -5,27 +5,24 @@ export const DASH = '&mdash;';
 export const NON_BREAKING_SPACE = '&nbsp;';
 export const ELLIPSIS = '...';
 export const ESCAPE_BUTTON = 'Escape';
-
 export const SERVER_ADDRESS = 'https://14.ecmascript.pages.academy/big-trip/';
 export const AUTHORIZATION_VALUE = 'Basic baguvix';
 export const OFFLINE = ' [offline]';
 
 export const CssClassName = {
-  FAVORITE_EVENT_BUTTON_ACTIVE: '.event__favorite-btn--active',
-  FAVORITE_EVENT_BUTTON: '.event__favorite-btn',
-  OPEN_EVENT_EDITOR_BUTTON: '.event__rollup-btn',
+  EVENT_FAVORITE_BUTTON: '.event__favorite-btn',
+  EVENT_EDITOR: '.event--edit',
+  EVENT_EDITOR_OPEN_BUTTON: '.event__rollup-btn',
   EVENT_EDITOR_TYPE_GROUP: '.event__type-group',
   EVENT_EDITOR_DESTINATION_BUTTON: '.event__input--destination',
   EVENT_EDITOR_TIME: '.event__field-group--time',
-  SAVE_CHANGES_BUTTON: '.event__save-btn',
-  CLOSE_EVENT_EDITOR_BUTTON: '.event__rollup-btn',
-  EVENT_LIST: '.trip-events__list',
-  EVENT_EDITOR: '.event--edit',
+  EVENT_EDITOR_PRICE: '.event__input--price',
+  EVENT_EDITOR_CLOSE_BUTTON: '.event__rollup-btn',
   TRIP_MAIN: '.trip-main',
-  ADD_EVENT_BUTTON: '.trip-main__event-add-btn',
+  EVENT_ADD_BUTTON: '.trip-main__event-add-btn',
   NAVIGATION: '.trip-controls__navigation',
   FILTER: '.trip-controls__filters',
-  CONTENT: '.trip-events',
+  AVAILABLE_OFFERS: '.event__available-offers',
 };
 
 export const SortMode = {
@@ -42,6 +39,7 @@ export const EventName = {
   LOAD: 'load',
   OFFLINE: 'offline',
   ONLINE: 'online',
+  INPUT: 'input',
 };
 
 export const Position = {
@@ -109,7 +107,7 @@ export const ServerPath = {
 
 export const ErrorMessage = {
   NO_INTERNET: 'No internet',
-  ERROR_STATUS: 'Error status',
+  FAILED_REQUEST: 'Failed request',
 };
 
 export const StoreKey = {
@@ -117,7 +115,7 @@ export const StoreKey = {
   POINTS: 'big-trip-points',
 };
 
-export const showMode = {
+export const ShowMode = {
   POINT: 'point',
   EDITOR: 'editor',
 };

@@ -7,6 +7,7 @@ export const getRandomIntegerRange = (min = 0, max = 10) => Math.floor(Math.rand
 export const getRandomArrayValue = (array) => {
   const lastIndex = array.length - 1;
   const randomIndex = getRandomIntegerRange(0, lastIndex);
+
   return array[randomIndex];
 };
 
@@ -33,9 +34,7 @@ export const getRandomText = (sentencesCount) => {
   return text;
 };
 
-export const formatDate = (date, format) => {
-  return date.format(format);
-};
+export const formatDate = (date, format) => date.format(format);
 
 export const getDuration = (start, end) => {
   const durationInDays = end.diff(start, 'day');
@@ -80,7 +79,6 @@ export const generateId = () => nanoid();
 export const sortData = (data, mode = SortMode.DATE) => {
 
   switch (mode) {
-
     case SortMode.DATE:
       return data.sort((firstEventData, secondEventData) => {
 
@@ -94,7 +92,6 @@ export const sortData = (data, mode = SortMode.DATE) => {
 
         return 0;
       });
-
 
     case SortMode.PRICE:
       return data.sort((firstEventData, secondEventData) => {
@@ -146,6 +143,7 @@ export const filterData = (data, filter) => {
 
 export const calcOffersPrice = (offers) => {
   let result = 0;
+
   offers.forEach(({ price, isChecked }) => {
     if (isChecked) {
       result += price;
@@ -156,6 +154,7 @@ export const calcOffersPrice = (offers) => {
 
 export const calcTotalPrice = (dataList) => {
   let totalPrice = 0;
+
   dataList.forEach((value) => {
     const { price, offers } = value;
     totalPrice += price + calcOffersPrice(offers);
@@ -170,6 +169,7 @@ export const transformDateToString = (dateObject) => {
 export const transformDateToObject = (stringDate) => {
   const lastIndex = stringDate.length - 1;
   const lastSymbol = stringDate[lastIndex];
+
   if (lastSymbol === 'Z') {
     stringDate = stringDate.slice(0, lastIndex);
   }
@@ -210,6 +210,7 @@ export const generateTimeData = () => {
 
 export const addAvailableOffers = (checkedOffers, availableOffers) => {
   const offers = [...checkedOffers];
+
   availableOffers.forEach((availableOffer) => {
     if (!offers.find((offer) => offer.title === availableOffer.title)) {
       offers.push(availableOffer);
@@ -220,6 +221,7 @@ export const addAvailableOffers = (checkedOffers, availableOffers) => {
 
 export const cloneObjects = (objects) => {
   const result = [];
+
   objects.forEach((object) => {
     result.push(Object.assign({}, object));
   });
@@ -229,4 +231,3 @@ export const cloneObjects = (objects) => {
 export const isOnline = () => {
   return window.navigator.onLine;
 };
-

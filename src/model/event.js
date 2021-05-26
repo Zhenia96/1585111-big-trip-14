@@ -1,12 +1,12 @@
+import { FiltersName } from '../constant.js';
 import Observer from '../utils/observer';
 import { filterData } from '../utils/common.js';
-import { FiltersName } from '../constant.js';
-
 
 export default class Event extends Observer {
 
   constructor() {
     super();
+
     this._data = [];
     this._pastData = [];
     this._futureData = [];

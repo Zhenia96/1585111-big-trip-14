@@ -13,6 +13,7 @@ export default class BasedApi {
   getData(path) {
     const url = SERVER_ADDRESS + path;
     const headers = new Headers();
+
     headers.append('Authorization', AUTHORIZATION_VALUE);
 
     return fetch(url, {
@@ -27,6 +28,7 @@ export default class BasedApi {
   updateData(path, data) {
     const url = SERVER_ADDRESS + path;
     const headers = new Headers({ 'Content-Type': 'application/json' });
+
     headers.append('Authorization', AUTHORIZATION_VALUE);
 
     return fetch(url, {
@@ -41,6 +43,7 @@ export default class BasedApi {
   addData(path, data) {
     const url = SERVER_ADDRESS + path;
     const headers = new Headers({ 'Content-Type': 'application/json' });
+
     headers.append('Authorization', AUTHORIZATION_VALUE);
 
     return fetch(url, {
@@ -55,6 +58,7 @@ export default class BasedApi {
   deleteData(path) {
     const url = SERVER_ADDRESS + path;
     const headers = new Headers();
+
     headers.append('Authorization', AUTHORIZATION_VALUE);
 
     return fetch(url, {
@@ -66,9 +70,9 @@ export default class BasedApi {
   }
 
   sync(path, data) {
-
     const url = SERVER_ADDRESS + path;
     const headers = new Headers({ 'Content-Type': 'application/json' });
+
     headers.append('Authorization', AUTHORIZATION_VALUE);
 
     return fetch(url, {
@@ -86,7 +90,7 @@ export default class BasedApi {
 
   _hasOkStatus(response) {
     if (!response.ok) {
-      throw new Error(`${ErrorMessage.ERROR_STATUS} ${response.status}`);
+      throw new Error(`${ErrorMessage.FAILED_REQUEST}`);
     }
 
     return response;

@@ -27,6 +27,7 @@ const getTime = (minutes) => {
   const formatedDay = daysCount > 0 ? `${daysCount}D ` : '';
   let formatedHour;
   const formatedMinute = minutesCount < 10 ? `0${minutesCount}M` : `${minutesCount}M`;
+
   if (!daysCount && hoursCount === 0) {
     formatedHour = '';
   } else if (hoursCount < 10) {
@@ -41,16 +42,19 @@ const getTime = (minutes) => {
 
 export const getLabels = (data) => {
   const labels = [];
+
   data.forEach((dataItem) => {
     if (!labels.includes(dataItem.type)) {
       labels.push(dataItem.type);
     }
   });
+
   return labels;
 };
 
 export const getMoneyChartData = (data, labels) => {
   const moneyChartData = {};
+
   labels.forEach((label) => {
     moneyChartData[label] = 0;
     data.forEach((dataItem) => {
@@ -65,6 +69,7 @@ export const getMoneyChartData = (data, labels) => {
 
 export const getTypeChartData = (data, labels) => {
   const typeChartData = {};
+
   labels.forEach((label) => {
     typeChartData[label] = 0;
     data.forEach((dataItem) => {
@@ -79,6 +84,7 @@ export const getTypeChartData = (data, labels) => {
 
 export const getTimeChartData = (data, labels) => {
   const timeChartData = {};
+
   labels.forEach((label) => {
     timeChartData[label] = 0;
     data.forEach((dataItem) => {
@@ -87,6 +93,7 @@ export const getTimeChartData = (data, labels) => {
       }
     });
   });
+
   return sortChartData(timeChartData);
 };
 

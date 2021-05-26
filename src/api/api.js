@@ -1,9 +1,7 @@
 import { isOnline } from '../utils/common.js';
 import { adaptPointToServer } from '../utils/adapter.js';
 
-const getSyncedPoints = (items) => {
-  return items.map(({ payload }) => payload.point);
-};
+const getSyncedPoints = (items) => items.map(({ payload }) => payload.point);
 
 export default class Api {
   constructor(basedApi, store) {

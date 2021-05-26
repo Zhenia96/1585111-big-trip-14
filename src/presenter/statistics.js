@@ -1,6 +1,6 @@
-import { remove, render } from '../utils/component.js';
 import { ChartType } from '../constant.js';
 import StatisticsView from '../view/statistics.js';
+import { remove, render } from '../utils/component.js';
 import { getChart, getLabels, getMoneyChartData, getTypeChartData, getTimeChartData } from '../utils/statistics.js';
 
 const BAR_HEIGHT = 55;

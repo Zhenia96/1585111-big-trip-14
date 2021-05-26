@@ -14,30 +14,29 @@ import { SortMode, ServerPath, ESCAPE_BUTTON, EventName, FiltersName, ActionType
 export default class Tour {
   constructor(container, eventModel, filterModel, api) {
     this._container = container;
-    this._addEventButton = document.querySelector(CssClassName.ADD_EVENT_BUTTON);
-
     this._eventModel = eventModel;
     this._filterModel = filterModel;
     this._data = null;
     this._currentSortMode = null;
     this._eventPresentor = {};
     this._api = api;
+    this._addEventButton = document.querySelector(CssClassName.EVENT_ADD_BUTTON);
 
-    this._handleSortFormClick = this._handleSortFormClick.bind(this);
+    this._sortFormClickCallback = this._sortFormClickCallback.bind(this);
     this.closeAllEditors = this.closeAllEditors.bind(this);
-    this._escKeydownHandler = this._escKeydownHandler.bind(this);
+    this._handleEscKeydown = this._handleEscKeydown.bind(this);
     this._handleUserAction = this._handleUserAction.bind(this);
-    this._addEventClickHandler = this._addEventClickHandler.bind(this);
+    this._handleAddEventButtonClick = this._handleAddEventButtonClick.bind(this);
     this._updateView = this._updateView.bind(this);
     this.destroy = this.destroy.bind(this);
-    this._handleEventEditorCancel = this._handleEventEditorCancel.bind(this);
+    this._eventEditorCancelClickCallback = this._eventEditorCancelClickCallback.bind(this);
 
     this._tour = new TourView();
     this._sortForm = new SortFormView();
     this._eventList = new EventListView();
     this._emptyEventListMessage = new EmptyEventListMessageView();
     this._loading = new LoadingView();
-    this._eventNewPresentor = new EventNewPresentor(this._handleUserAction, this._addEventButton, this._handleEventEditorCancel, this._eventModel);
+    this._eventNewPresentor = new EventNewPresentor(this._handleUserAction, this._addEventButton, this._eventEditorCancelClickCallback, this._eventModel);
 
     this._renderLoading();
     render(this._tour, this._container);
@@ -47,17 +46,17 @@ export default class Tour {
     this._removeLoading();
     this._addEventButton.disabled = false;
     this._currentSortMode = sortMode;
-    this._sortForm.changeSortMode(this._currentSortMode);
+    this._sortForm.changeMode(this._currentSortMode);
     this._data = this._getData();
     this.destroy();
 
     this._setEscKeydownHandler();
-    this._setAddEventClickHandler();
+    this._setAddEventButtonClickHandler();
 
     this._filterModel.addObserver(this._updateView);
     this._eventModel.addObserver(this._updateView);
 
-    this._sortForm.setClickHandler(this._handleSortFormClick);
+    this._sortForm.setButtonClickHandler(this._sortFormClickCallback);
 
     if (this._data.length === 0) {
       this._renderEmptyEventListMessage();
@@ -67,20 +66,6 @@ export default class Tour {
     this._renderSortForm();
     this._renderAllEvents();
     this._renderEventList();
-  }
-
-  _updateView(data, updateType = UpdateType.MAJOR) {
-    if (updateType === UpdateType.MINOR) {
-      this._eventPresentor[data.id].init(data);
-    }
-
-    if (updateType === UpdateType.MAJOR) {
-      this.init();
-    }
-
-    if (updateType === UpdateType.MAJOR_WITHOUT_SORT_RESET) {
-      this.init(this._currentSortMode);
-    }
   }
 
   get tour() {
@@ -108,92 +93,59 @@ export default class Tour {
     return sortData(data, this._currentSortMode);
   }
 
-  _handleUserAction(changedData, actionType, updateType) {
-
-    switch (actionType) {
-      case ActionType.ADD:
-        return this._api.addData(ServerPath.POINTS, changedData)
-          .then((response) => {
-            this._eventModel.add(adaptPointToClient(response), updateType);
-          });
-
-      case ActionType.DELETE:
-        return this._api.deleteData(`${ServerPath.POINTS}/${changedData.id}`)
-          .then(() => {
-            this._eventModel.delete(changedData, updateType);
-          });
-
-      case ActionType.UPDATE:
-        return this._api.updateData(`${ServerPath.POINTS}/${changedData.id}`, changedData, StoreKey.POINTS)
-          .then((response) => {
-            this._eventModel.update(adaptPointToClient(response), updateType);
-          });
-    }
-  }
-
-  _handleEventEditorCancel() {
-    if (this._data.length === 0) {
-      this._renderEmptyEventListMessage();
-    }
-  }
-
   _sort(mode) {
     this._data = sortData(this._data, mode);
     this._currentSortMode = mode;
   }
 
-  _handleSortFormClick(sortMode) {
-    if (this._currentSortMode !== sortMode) {
-      this._sort(sortMode);
+  _clear() {
+    this._removeAllEvents();
+    remove(this._sortForm);
+    remove(this._eventList);
+    remove(this._emptyEventListMessage);
+    this._eventPresentor = {};
+  }
+
+  destroy() {
+    this._clear();
+    this._filterModel.removeObserver(this._updateView);
+    this._eventModel.removeObserver(this._updateView);
+    this._removeEscKeydownHandler();
+    this._removeAddEventButtonClickHandler();
+  }
+
+  _updateView(data, updateType = UpdateType.MAJOR) {
+    if (updateType === UpdateType.MINOR) {
+      this._eventPresentor[data.id].init(data);
+    }
+
+    if (updateType === UpdateType.MAJOR) {
+      this.init();
+    }
+
+    if (updateType === UpdateType.MAJOR_WITHOUT_SORT_RESET) {
       this.init(this._currentSortMode);
     }
   }
 
-  _escKeydownHandler(evt) {
-    if (evt.code === ESCAPE_BUTTON) {
-      this.closeAllEditors();
-      if (this._data.length === 0) {
-        this._renderEmptyEventListMessage();
-      }
-    }
+  _setEscKeydownHandler() {
+    document.addEventListener(EventName.KEYDOWN, this._handleEscKeydown);
   }
 
-  _setEscKeydownHandler() {
-    document.addEventListener(EventName.KEYDOWN, this._escKeydownHandler);
+  _setAddEventButtonClickHandler() {
+    this._addEventButton.addEventListener(EventName.CLICK, this._handleAddEventButtonClick);
   }
 
   _removeEscKeydownHandler() {
-    document.removeEventListener(EventName.KEYDOWN, this._escKeydownHandler);
+    document.removeEventListener(EventName.KEYDOWN, this._handleEscKeydown);
   }
 
-  _addEventClickHandler() {
-    if (!isOnline()) {
-      toast(ErrorMessage.NO_INTERNET);
-      return;
-    }
-    this.closeAllEditors();
-    this._filterModel.currentFilter = FiltersName.EVERYTHING;
-    if (this._data.length === 0) {
-      remove(this._emptyEventListMessage);
-      this._renderEventList();
-    }
-    this._eventNewPresentor.init(this._eventList);
-  }
-
-  _setAddEventClickHandler() {
-    this._addEventButton.addEventListener(EventName.CLICK, this._addEventClickHandler);
-  }
-
-  _removeAddEventClickHandler() {
-    document.removeEventListener(EventName.CLICK, this._addEventClickHandler);
+  _removeAddEventButtonClickHandler() {
+    this._addEventButton.removeEventListener(EventName.CLICK, this._handleAddEventButtonClick);
   }
 
   _renderLoading() {
     render(this._loading, this._tour);
-  }
-
-  _removeLoading() {
-    remove(this._loading);
   }
 
   _renderSortForm() {
@@ -220,6 +172,10 @@ export default class Tour {
     });
   }
 
+  _removeLoading() {
+    remove(this._loading);
+  }
+
   _removeAllEvents() {
     Object.values(this._eventPresentor).forEach((currentPresentor) => {
       currentPresentor.remove();
@@ -239,19 +195,62 @@ export default class Tour {
     this._eventNewPresentor.remove();
   }
 
-  _clearContent() {
-    this._removeAllEvents();
-    remove(this._sortForm);
-    remove(this._eventList);
-    remove(this._emptyEventListMessage);
-    this._eventPresentor = {};
+  _sortFormClickCallback(sortMode) {
+    if (this._currentSortMode !== sortMode) {
+      this._sort(sortMode);
+      this.init(this._currentSortMode);
+    }
   }
 
-  destroy() {
-    this._clearContent();
-    this._filterModel.removeObserver(this._updateView);
-    this._eventModel.removeObserver(this._updateView);
-    this._removeEscKeydownHandler();
-    this._removeAddEventClickHandler();
+  _eventEditorCancelClickCallback() {
+    if (this._data.length === 0) {
+      this._renderEmptyEventListMessage();
+    }
+  }
+
+  _handleAddEventButtonClick() {
+    if (!isOnline()) {
+      toast(ErrorMessage.NO_INTERNET);
+      return;
+    }
+    this.closeAllEditors();
+    this._filterModel.currentFilter = FiltersName.EVERYTHING;
+    if (this._data.length === 0) {
+      remove(this._emptyEventListMessage);
+      this._renderEventList();
+    }
+    this._eventNewPresentor.init(this._eventList);
+  }
+
+  _handleEscKeydown(evt) {
+    if (evt.code === ESCAPE_BUTTON) {
+      this.closeAllEditors();
+      if (this._data.length === 0) {
+        this._renderEmptyEventListMessage();
+      }
+    }
+  }
+
+  _handleUserAction(changedData, actionType, updateType) {
+
+    switch (actionType) {
+      case ActionType.ADD:
+        return this._api.addData(ServerPath.POINTS, changedData)
+          .then((response) => {
+            this._eventModel.add(adaptPointToClient(response), updateType);
+          });
+
+      case ActionType.DELETE:
+        return this._api.deleteData(`${ServerPath.POINTS}/${changedData.id}`)
+          .then(() => {
+            this._eventModel.delete(changedData, updateType);
+          });
+
+      case ActionType.UPDATE:
+        return this._api.updateData(`${ServerPath.POINTS}/${changedData.id}`, changedData, StoreKey.POINTS)
+          .then((response) => {
+            this._eventModel.update(adaptPointToClient(response), updateType);
+          });
+    }
   }
 }

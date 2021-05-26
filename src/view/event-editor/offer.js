@@ -15,6 +15,7 @@ const getOfferTemplate = ({ title, price, id, isChecked }) => {
 
 const getOfferListTemplate = (offersData) => {
   let offersList = '';
+
   offersData.forEach((offerData) => {
     offersList += getOfferTemplate(offerData);
   });
@@ -35,6 +36,7 @@ const getOffersTemplate = (offersData) => {
 export default class Offers extends AbstractComponentView {
   constructor(offersData) {
     super();
+
     this._offersData = offersData;
   }
 

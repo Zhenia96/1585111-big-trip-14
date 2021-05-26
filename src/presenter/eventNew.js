@@ -1,7 +1,7 @@
+import { ActionType, EditorMode, UpdateType, Position, ErrorMessage } from '../constant.js';
 import EventItemView from '../view/event-list/event-item.js';
 import EventEditorView from '../view/event-editor/event-editor.js';
 import { render, remove } from '../utils/component.js';
-import { ActionType, EditorMode, UpdateType, Position, ErrorMessage } from '../constant.js';
 import { getOffers, getDescription, generateTimeData, isOnline } from '../utils/common.js';
 import { lockApplicationt, unlockApplicationt } from '../utils/lock-application.js';
 import { toast } from '../utils/toast.js';
@@ -18,8 +18,8 @@ export default class EventNew {
     this._handleUserAction = handleUserAction;
 
 
-    this._handleSubmit = this._handleSubmit.bind(this);
-    this._handleCancelClick = this._handleCancelClick.bind(this);
+    this._submitCallback = this._submitCallback.bind(this);
+    this._cancelClickCallback = this._cancelClickCallback.bind(this);
   }
 
   init(container) {
@@ -35,8 +35,8 @@ export default class EventNew {
       this._eventModel.offers,
     );
 
-    this._eventEditor.setSubmitHandler(this._handleSubmit);
-    this._eventEditor.setCancelClickHandler(this._handleCancelClick);
+    this._eventEditor.setSubmitHandler(this._submitCallback);
+    this._eventEditor.setCancelClickHandler(this._cancelClickCallback);
 
     render(this._eventEditor, this._event);
     render(this._event, this._container, Position.AFTER_BEGIN);
@@ -51,12 +51,24 @@ export default class EventNew {
     this._addEventButton.disabled = false;
   }
 
-  _handleCancelClick() {
+  _getDefaultData() {
+    return {
+      type: 'Taxi',
+      destination: 'Amsterdam',
+      time: generateTimeData(),
+      price: 500,
+      offers: getOffers('Taxi', this._eventModel.offers),
+      description: getDescription('Amsterdam', this._eventModel.destinations),
+      isFavorite: false,
+    };
+  }
+
+  _cancelClickCallback() {
     this.remove();
     this._handleEventEditorCancel();
   }
 
-  _handleSubmit(addedData) {
+  _submitCallback(addedData) {
     if (!isOnline()) {
       toast(ErrorMessage.NO_INTERNET);
       this._eventEditor.shake();
@@ -72,17 +84,5 @@ export default class EventNew {
         this._eventEditor.setSaveButtonState(false);
         unlockApplicationt();
       });
-  }
-
-  _getDefaultData() {
-    return {
-      type: 'Taxi',
-      destination: 'Amsterdam',
-      time: generateTimeData(),
-      price: 500,
-      offers: getOffers('Taxi', this._eventModel.offers),
-      description: getDescription('Amsterdam', this._eventModel.destinations),
-      isFavorite: false,
-    };
   }
 }

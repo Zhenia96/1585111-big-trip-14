@@ -1,7 +1,8 @@
+import { Position, FiltersName } from '../constant.js';
 import TripInfoView from '../view/trip-info.js';
 import { render, replace, remove } from '../utils/component.js';
 import { sortData, calcTotalPrice } from '../utils/common.js';
-import { Position, FiltersName } from '../constant.js';
+
 
 export default class Info {
   constructor(container, modalEvent, modalFilter) {

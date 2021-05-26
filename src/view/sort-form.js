@@ -31,29 +31,28 @@ const getSortFormTemplate = (sortMode) => {
 };
 
 export default class SortForm extends AbstractComponentView {
-
   constructor() {
     super();
-    this._clickHandler = this._clickHandler.bind(this);
-    this._currentSortMode = SortMode.DATE;
+    this._handleClick = this._handleClick.bind(this);
+    this._currentMode = SortMode.DATE;
   }
 
   getTemplate() {
-    return getSortFormTemplate(this._currentSortMode);
+    return getSortFormTemplate(this._currentMode);
   }
 
-  changeSortMode(mode) {
-    this._currentSortMode = mode;
+  changeMode(mode) {
+    this._currentMode = mode;
   }
 
-  _clickHandler(evt) {
+  setButtonClickHandler(callback) {
+    this._callback.clickButton = callback;
+    this.getElement().addEventListener(EventName.CLICK, this._handleClick);
+  }
+
+  _handleClick(evt) {
     if (evt.target.dataset.sortType) {
-      this._callback.clickSortButtons(evt.target.dataset.sortType);
+      this._callback.clickButton(evt.target.dataset.sortType);
     }
-  }
-
-  setClickHandler(callback) {
-    this._callback.clickSortButtons = callback;
-    this.getElement().addEventListener(EventName.CLICK, this._clickHandler);
   }
 }

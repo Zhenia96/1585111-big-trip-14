@@ -1,4 +1,6 @@
 import { CssClassName, ServerPath, StoreKey, EventName, OFFLINE } from './constant.js';
+import { adaptPointsToClient, adaptEditorDestinationsToClient, adaptEditorOffersToClient } from './utils/adapter.js';
+import { isOnline } from './utils/common.js';
 import TourPresenter from './presenter/tour.js';
 import StatisticsPresenter from './presenter/statistics.js';
 import InfoPresenter from './presenter/info.js';
@@ -6,8 +8,6 @@ import FilterPresenter from './presenter/filter.js';
 import MenuPresenter from './presenter/menu.js';
 import EventModel from './model/event.js';
 import FilterModel from './model/filter.js';
-import { adaptPointsToClient, adaptDestinationsForEditorToClient, adaptOffersForEditorToClient } from './utils/adapter.js';
-import { isOnline } from './utils/common.js';
 import Api from './api/api.js';
 import BasedApi from './api/based-api.js';
 import Storage from './api/storage.js';
@@ -48,19 +48,17 @@ const initPointsData = () => {
 };
 
 const initDestinationsData = () => {
-
   return basedApi.getData(ServerPath.DESTINATIONS)
     .then((response) => {
-      eventModel.destinations = adaptDestinationsForEditorToClient(response);
+      eventModel.destinations = adaptEditorDestinationsToClient(response);
       eventModel.setAvailableDestintionNames();
     });
-
 };
 
 const initOffersData = () => {
   return api.getData(ServerPath.OFFERS, StoreKey.OFFERS)
     .then((response) => {
-      eventModel.offers = adaptOffersForEditorToClient(response);
+      eventModel.offers = adaptEditorOffersToClient(response);
     });
 };
 

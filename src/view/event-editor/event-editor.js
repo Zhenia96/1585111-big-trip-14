@@ -1,15 +1,36 @@
-import { formatDate, hasData, getOffers, getDescription, cloneObjects } from '../../utils/common.js';
 import { DateFormat, typeIcon, PATH_TO_ICONS, EventName, CssClassName, EditorMode } from '../../constant';
+import { formatDate, hasData, getOffers, getDescription, cloneObjects } from '../../utils/common.js';
 import DetailsView from './details.js';
 import SmartView from '../smart.js';
 import flatpickr from 'flatpickr';
-
 import { } from '../../../node_modules/flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+
 dayjs.extend(customParseFormat);
 
 const { FULL } = DateFormat;
+
+const SaveButtonState = {
+  SAVING: 'Saving...',
+  DEFAULT: 'Save',
+};
+
+const DeleteButtonState = {
+  DELETING: 'Deleting...',
+  DEFAULT: 'Delete',
+};
+
+const TimeFieldName = {
+  START: 'event-start-time',
+  END: 'event-end-time',
+};
+
+const EditorButton = {
+  CANCEL: '[data-type=cancel]',
+  DELETE: '[data-type=delete]',
+  SAVE: '[data-type=save]',
+};
 
 const typeStatus = {
   'taxi': '',
@@ -24,18 +45,9 @@ const typeStatus = {
   'restaurant': '',
 };
 
-const SaveButtonState = {
-  SAVING: 'Saving...',
-  DEFAULT: 'Save',
-};
-
-const DeleteButtonState = {
-  DELETING: 'Deleting...',
-  DEFAULT: 'Delete',
-};
-
 const getDestinationOptions = (destinations) => {
   let destinationOptions = '';
+
   if (destinations.length > 0) {
     destinations.forEach((destination) => {
       destinationOptions += `<option value="${destination}"></option>`;
@@ -46,6 +58,7 @@ const getDestinationOptions = (destinations) => {
 
 const changeTypeStatus = (type) => {
   const allTypes = Object.keys(typeStatus);
+
   allTypes.forEach((type) => {
     typeStatus[type] = '';
   });
@@ -56,10 +69,11 @@ const getEventEditorTemplate = (data, mode, destinationOptions) => {
   const { type, destination, time, price, offers, description } = data;
   const { start, end } = time;
   const { title, pictures } = description;
-  changeTypeStatus(type.toLowerCase());
+
   const detailsTemplate = hasData(offers) || hasData(title) || hasData(pictures) ?
     new DetailsView(data).getTemplate() :
     '';
+
   const cancelButton = mode === EditorMode.CREATOR ?
     '<button class="event__reset-btn" type="reset" data-type="cancel">Cancel</button>' :
     '';
@@ -73,6 +87,8 @@ const getEventEditorTemplate = (data, mode, destinationOptions) => {
   const deleteButton = mode === EditorMode.EDITOR ?
     '<button class="event__reset-btn" type="reset" data-type="delete">Delete</button>' :
     '';
+
+  changeTypeStatus(type.toLowerCase());
 
   return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -166,7 +182,7 @@ const getEventEditorTemplate = (data, mode, destinationOptions) => {
         <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
       </div>
 
-      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+      <button class="event__save-btn  btn  btn--blue" type="submit" data-type="save">Save</button>
       ${cancelButton}
       ${deleteButton}
       ${closeButton}
@@ -178,6 +194,7 @@ const getEventEditorTemplate = (data, mode, destinationOptions) => {
 export default class EventEditor extends SmartView {
   constructor(data, mode, availableDestintionNames, destinations, offers) {
     super();
+
     this._availableDestintionNames = availableDestintionNames;
     this._destinations = destinations;
     this._offers = offers;
@@ -186,10 +203,10 @@ export default class EventEditor extends SmartView {
     this._startTimeDatepicker = null;
     this._endTimeDatepicker = null;
 
-    this._submitHandler = this._submitHandler.bind(this);
-    this._typeChangeHandler = this._typeChangeHandler.bind(this);
-    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
-    this._timeChangeHandler = this._timeChangeHandler.bind(this);
+    this._handleSubmit = this._handleSubmit.bind(this);
+    this._handleTypeChange = this._handleTypeChange.bind(this);
+    this._handleDestinationChange = this._handleDestinationChange.bind(this);
+    this._handleTimeChange = this._handleTimeChange.bind(this);
     this.removeStartTimeDatepicker = this.removeStartTimeDatepicker.bind(this);
     this.removeEndTimeDatepicker = this.removeEndTimeDatepicker.bind(this);
 
@@ -202,12 +219,12 @@ export default class EventEditor extends SmartView {
     this._setOffersClickHandler();
 
     if (this._mode === EditorMode.EDITOR) {
-      this._closeClickHandler = this._closeClickHandler.bind(this);
-      this._deleteClickHandler = this._deleteClickHandler.bind(this);
+      this._handleCloseClickr = this._handleCloseClickr.bind(this);
+      this._handleDeleteClick = this._handleDeleteClick.bind(this);
     }
 
     if (this._mode === EditorMode.CREATOR) {
-      this._cancelClickHandler = this._cancelClickHandler.bind(this);
+      this._handleCancelClick = this._handleCancelClick.bind(this);
     }
   }
 
@@ -221,26 +238,171 @@ export default class EventEditor extends SmartView {
     );
   }
 
-  _submitHandler(evt) {
+  setSaveButtonState(isSaving) {
+    const saveButton = this.getElement().querySelector(EditorButton.SAVE);
+
+    saveButton.textContent = isSaving ? SaveButtonState.SAVING : SaveButtonState.DEFAULT;
+  }
+
+  setDeleteButtonState(isDeleting) {
+    const deleteButton = this.getElement().querySelector(EditorButton.DELETE);
+
+    deleteButton.textContent = isDeleting ? DeleteButtonState.DELETING : DeleteButtonState.DEFAULT;
+  }
+
+  setCancelClickHandler(callback = this._callback.cancel) {
+    this._callback.cancel = callback;
+
+    if (this._callback.cancel) {
+      this.getElement().querySelector(EditorButton.CANCEL).addEventListener(EventName.CLICK, this._handleCancelClick);
+    }
+  }
+
+  setSubmitHandler(callback = this._callback.submit) {
+    this._callback.submit = callback;
+
+    if (this._callback.submit) {
+      this.getElement().addEventListener(EventName.SUBMIT, this._handleSubmit);
+    }
+  }
+
+  setCloseClickHandler(callback = this._callback.close) {
+    if (this._mode !== EditorMode.EDITOR) {
+      return;
+    }
+
+    this._callback.close = callback;
+
+    if (this._callback.close) {
+      this.getElement().querySelector([CssClassName.EVENT_EDITOR_CLOSE_BUTTON]).addEventListener(EventName.CLICK, this._handleCloseClickr);
+    }
+  }
+
+  setDeleteClickHandler(callback = this._callback.delete) {
+    if (this._mode !== EditorMode.EDITOR) {
+      return;
+    }
+
+    this._callback.delete = callback;
+
+    if (this._callback.delete) {
+      this.getElement().querySelector(EditorButton.DELETE).addEventListener(EventName.CLICK, this._handleDeleteClick);
+    }
+  }
+
+  _setOffersClickHandler() {
+    const offers = this.getElement().querySelector(CssClassName.AVAILABLE_OFFERS);
+
+    if (offers) {
+      this.getElement().querySelector(CssClassName.AVAILABLE_OFFERS).addEventListener(EventName.CLICK, (evt) => {
+
+        if (evt.target.type === 'checkbox') {
+          const updatedOffers = cloneObjects(this._data.offers);
+          let targetedOffer = this._data.offers.find((offer) => evt.target.id === offer.id);
+          targetedOffer = Object.assign({}, targetedOffer);
+          targetedOffer.isChecked = !targetedOffer.isChecked;
+
+          const targetedIndex = updatedOffers.findIndex((offer) => offer.id === targetedOffer.id);
+
+          updatedOffers[targetedIndex] = targetedOffer;
+          this._updateData(
+            {
+              offers: updatedOffers,
+            }, false,
+          );
+        }
+      });
+    }
+  }
+
+  _setTimeChangeHandler() {
+    this.getElement().querySelector(CssClassName.EVENT_EDITOR_TIME).addEventListener(EventName.CHANGE, this._handleTimeChange);
+  }
+
+  _setPriceInputHandler() {
+    this.getElement().querySelector(CssClassName.EVENT_EDITOR_PRICE).addEventListener(EventName.INPUT, (evt) => {
+      evt.target.value = evt.target.value.replace(/[^\d]/, '');
+      this._updateData(
+        {
+          price: Number(evt.target.value),
+        }, false,
+      );
+    });
+  }
+
+  _setDestinationChangeHandler() {
+    this.getElement().querySelector(CssClassName.EVENT_EDITOR_DESTINATION_BUTTON).addEventListener(EventName.CHANGE, this._handleDestinationChange);
+  }
+
+  _setTypeChangeHandler() {
+    this.getElement().querySelector(CssClassName.EVENT_EDITOR_TYPE_GROUP).addEventListener(EventName.CHANGE, this._handleTypeChange);
+  }
+
+  _setStartTimeDatepicker() {
+    const startTimeField = this.getElement().querySelector(`[name=${TimeFieldName.START}]`);
+
+    if (this._startTimeDatepicker !== null) {
+      this.removeStartTimeDatepicker();
+    }
+
+    this._startTimeDatepicker = flatpickr(startTimeField, {
+      dateFormat: DateFormat.CALENDAR_FULL,
+      enableTime: true,
+      minuteIncrement: 1,
+      time_24hr: true,
+    });
+  }
+
+  _setEndTimeDatepicker() {
+    const endTimeField = this.getElement().querySelector(`[name=${TimeFieldName.END}]`);
+
+    if (this._endTimeDatepicker !== null) {
+      this.removeEndTimeDatepicker();
+    }
+
+    this._endTimeDatepicker = flatpickr(endTimeField, {
+      dateFormat: DateFormat.CALENDAR_FULL,
+      enableTime: true,
+      minuteIncrement: 1,
+      time_24hr: true,
+    });
+  }
+
+  removeStartTimeDatepicker() {
+    if (this._startTimeDatepicker !== null) {
+      this._startTimeDatepicker.destroy();
+      this._startTimeDatepicker = null;
+    }
+  }
+
+  removeEndTimeDatepicker() {
+    if (this._endTimeDatepicker !== null) {
+      this._endTimeDatepicker.destroy();
+      this._endTimeDatepicker = null;
+    }
+  }
+
+  _handleSubmit(evt) {
     evt.preventDefault();
+
     this._startTimeDatepicker.destroy();
     this._endTimeDatepicker.destroy();
     this._callback.submit(this._data);
   }
 
-  _closeClickHandler() {
+  _handleCloseClickr() {
     this._callback.close();
   }
 
-  _cancelClickHandler() {
+  _handleCancelClick() {
     this._callback.cancel();
   }
 
-  _deleteClickHandler() {
+  _handleDeleteClick() {
     this._callback.delete(this._data);
   }
 
-  _destinationChangeHandler(evt) {
+  _handleDestinationChange(evt) {
     if (this._availableDestintionNames.includes(evt.target.value)) {
       this._updateData(
         {
@@ -251,7 +413,7 @@ export default class EventEditor extends SmartView {
     }
   }
 
-  _typeChangeHandler(evt) {
+  _handleTypeChange(evt) {
     this._updateData(
       {
         type: evt.target.value,
@@ -260,8 +422,8 @@ export default class EventEditor extends SmartView {
     );
   }
 
-  _timeChangeHandler(evt) {
-    if (evt.target.name === 'event-start-time') {
+  _handleTimeChange(evt) {
+    if (evt.target.name === TimeFieldName.START) {
       const startTime = dayjs(evt.target.value, FULL);
 
       if (this._data.time.end.diff(startTime, 'second') > 0) {
@@ -277,7 +439,7 @@ export default class EventEditor extends SmartView {
 
     }
 
-    if (evt.target.name === 'event-end-time') {
+    if (evt.target.name === TimeFieldName.END) {
       const endTime = dayjs(evt.target.value, FULL);
 
       if (endTime.diff(this._data.time.start, 'second') > 0) {
@@ -292,142 +454,6 @@ export default class EventEditor extends SmartView {
       }
 
     }
-  }
-
-  setCancelClickHandler(callback = this._callback.cancel) {
-    this._callback.cancel = callback;
-    if (this._callback.cancel) {
-      this.getElement().querySelector('[data-type=cancel]').addEventListener(EventName.CLICK, this._cancelClickHandler);
-    }
-  }
-
-
-  _setOffersClickHandler() {
-    const offers = this.getElement().querySelector('.event__available-offers');
-
-    if (offers) {
-      this.getElement().querySelector('.event__available-offers').addEventListener(EventName.CLICK, (evt) => {
-
-        if (evt.target.type === 'checkbox') {
-          let targetedOffer = this._data.offers.find((offer) => {
-            return evt.target.id === offer.id;
-          });
-          targetedOffer = Object.assign({}, targetedOffer);
-          targetedOffer.isChecked = !targetedOffer.isChecked;
-          const updatedOffers = cloneObjects(this._data.offers);
-          const targetedIndex = updatedOffers.findIndex((offer) => offer.id === targetedOffer.id);
-          updatedOffers[targetedIndex] = targetedOffer;
-          this._updateData(
-            {
-              offers: updatedOffers,
-            }, false,
-          );
-        }
-
-      });
-    }
-  }
-
-  _setTimeChangeHandler() {
-    this.getElement().querySelector(CssClassName.EVENT_EDITOR_TIME).addEventListener(EventName.CHANGE, this._timeChangeHandler);
-  }
-
-  _setPriceInputHandler() {
-    this.getElement().querySelector('.event__input--price').addEventListener('input', (evt) => {
-      evt.target.value = evt.target.value.replace(/[^\d]/, '');
-      this._updateData(
-        {
-          price: Number(evt.target.value),
-        }, false,
-      );
-    });
-  }
-
-  _setStartTimeDatepicker() {
-    const startTimeField = this.getElement().querySelector('[name=event-start-time]');
-    if (this._startTimeDatepicker !== null) {
-      this.removeStartTimeDatepicker();
-    }
-
-    this._startTimeDatepicker = flatpickr(startTimeField, {
-      dateFormat: DateFormat.CALENDAR_FULL,
-      enableTime: true,
-      minuteIncrement: 1,
-      time_24hr: true,
-    });
-  }
-
-  removeStartTimeDatepicker() {
-    if (this._startTimeDatepicker !== null) {
-      this._startTimeDatepicker.destroy();
-      this._startTimeDatepicker = null;
-    }
-  }
-
-  _setEndTimeDatepicker() {
-    const endTimeField = this.getElement().querySelector('[name=event-end-time]');
-    if (this._endTimeDatepicker !== null) {
-      this.removeEndTimeDatepicker();
-    }
-
-    this._endTimeDatepicker = flatpickr(endTimeField, {
-      dateFormat: DateFormat.CALENDAR_FULL,
-      enableTime: true,
-      minuteIncrement: 1,
-      time_24hr: true,
-    });
-  }
-
-  removeEndTimeDatepicker() {
-    if (this._endTimeDatepicker !== null) {
-      this._endTimeDatepicker.destroy();
-      this._endTimeDatepicker = null;
-    }
-  }
-
-  _setDestinationChangeHandler() {
-    this.getElement().querySelector(CssClassName.EVENT_EDITOR_DESTINATION_BUTTON).addEventListener(EventName.CHANGE, this._destinationChangeHandler);
-  }
-
-  _setTypeChangeHandler() {
-    this.getElement().querySelector(CssClassName.EVENT_EDITOR_TYPE_GROUP).addEventListener(EventName.CHANGE, this._typeChangeHandler);
-  }
-
-  setSubmitHandler(callback = this._callback.submit) {
-    this._callback.submit = callback;
-    if (this._callback.submit) {
-      this.getElement().addEventListener(EventName.SUBMIT, this._submitHandler);
-    }
-  }
-
-  setCloseClickHandler(callback = this._callback.close) {
-    if (this._mode !== EditorMode.EDITOR) {
-      return;
-    }
-    this._callback.close = callback;
-    if (this._callback.close) {
-      this.getElement().querySelector([CssClassName.CLOSE_EVENT_EDITOR_BUTTON]).addEventListener(EventName.CLICK, this._closeClickHandler);
-    }
-  }
-
-  setDeleteClickHandler(callback = this._callback.delete) {
-    if (this._mode !== EditorMode.EDITOR) {
-      return;
-    }
-    this._callback.delete = callback;
-    if (this._callback.delete) {
-      this.getElement().querySelector('[data-type=delete]').addEventListener(EventName.CLICK, this._deleteClickHandler);
-    }
-  }
-
-  setSaveButtonState(isSaving) {
-    const saveButton = this.getElement().querySelector('.event__save-btn');
-    saveButton.textContent = isSaving ? SaveButtonState.SAVING : SaveButtonState.DEFAULT;
-  }
-
-  setDeleteButtonState(isDeleting) {
-    const deleteButton = this.getElement().querySelector('[data-type=delete]');
-    deleteButton.textContent = isDeleting ? DeleteButtonState.DELETING : DeleteButtonState.DEFAULT;
   }
 
   _restoreHandlers() {

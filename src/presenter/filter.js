@@ -1,7 +1,7 @@
-import { render } from '../utils/component.js';
-import { Position } from '../constant.js';
+import { FiltersName, Position } from '../constant.js';
 import FilterView from '../view/filter.js';
-import { FiltersName } from '../constant.js';
+import { render } from '../utils/component.js';
+
 
 export default class Filter {
   constructor(container, eventModel, filterModel) {
@@ -10,23 +10,23 @@ export default class Filter {
     this._eventModel = eventModel;
     this._filter = new FilterView();
 
-    this._handleFilterClick = this._handleFilterClick.bind(this);
-    this.disableNeedlessButtons = this.disableNeedlessButtons.bind(this);
+    this._buttonClickCallback = this._buttonClickCallback.bind(this);
+    this.disableButtons = this.disableButtons.bind(this);
     this.checkButton = this.checkButton.bind(this);
 
-    this._eventModel.addObserver(this.disableNeedlessButtons);
+    this._eventModel.addObserver(this.disableButtons);
     this._filterModel.addObserver(this.checkButton);
-  }
-
-  get filter() {
-    return this._filter;
   }
 
   init() {
     render(this._filter, this._container, Position.AFTER_BEGIN);
 
-    this.disableNeedlessButtons();
-    this._filter.setClickHandler(this._handleFilterClick);
+    this.disableButtons();
+    this._filter.setButtonClickHandler(this._buttonClickCallback);
+  }
+
+  get filter() {
+    return this._filter;
   }
 
   checkButton() {
@@ -42,7 +42,7 @@ export default class Filter {
     }
   }
 
-  disableNeedlessButtons() {
+  disableButtons() {
     const config = {
       isEverythingDisabled: this._eventModel.data.length === 0,
       isFutureDisabled: this._eventModel.futureData.length === 0,
@@ -52,7 +52,7 @@ export default class Filter {
     this._filter.disableButtons(config);
   }
 
-  _handleFilterClick(clickedFilter) {
+  _buttonClickCallback(clickedFilter) {
     if (this._filterModel.currentFilter !== clickedFilter) {
       this._filterModel.currentFilter = clickedFilter;
     }
