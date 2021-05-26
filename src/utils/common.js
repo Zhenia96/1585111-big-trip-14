@@ -225,3 +225,8 @@ export const cloneObjects = (objects) => {
   });
   return result;
 };
+
+export const isOnline = () => {
+  return window.navigator.onLine;
+};
+

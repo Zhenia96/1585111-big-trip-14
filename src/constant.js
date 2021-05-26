@@ -8,6 +8,7 @@ export const ESCAPE_BUTTON = 'Escape';
 
 export const SERVER_ADDRESS = 'https://14.ecmascript.pages.academy/big-trip/';
 export const AUTHORIZATION_VALUE = 'Basic baguvix';
+export const OFFLINE = ' [offline]';
 
 export const CssClassName = {
   FAVORITE_EVENT_BUTTON_ACTIVE: '.event__favorite-btn--active',
@@ -38,6 +39,9 @@ export const EventName = {
   SUBMIT: 'submit',
   KEYDOWN: 'keydown',
   CHANGE: 'change',
+  LOAD: 'load',
+  OFFLINE: 'offline',
+  ONLINE: 'online',
 };
 
 export const Position = {
@@ -100,5 +104,21 @@ export const ServerPath = {
   POINTS: 'points',
   DESTINATIONS: 'destinations',
   OFFERS: 'offers',
+  SYNC: 'points/sync',
+};
+
+export const ErrorMessage = {
+  NO_INTERNET: 'No internet',
+  ERROR_STATUS: 'Error status',
+};
+
+export const StoreKey = {
+  OFFERS: 'big-trip-offers',
+  POINTS: 'big-trip-points',
+};
+
+export const showMode = {
+  POINT: 'point',
+  EDITOR: 'editor',
 };
 

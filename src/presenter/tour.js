@@ -7,10 +7,11 @@ import EventPresentor from './event.js';
 import EventNewPresentor from './eventNew.js';
 import { remove, render } from '../utils/component.js';
 import { adaptPointToClient } from '../utils/adapter.js';
-import { sortData } from '../utils/common.js';
-import { SortMode, ServerPath, ESCAPE_BUTTON, EventName, FiltersName, ActionType, UpdateType, CssClassName } from '../constant.js';
+import { sortData, isOnline } from '../utils/common.js';
+import { toast } from '../utils/toast.js';
+import { SortMode, ServerPath, ESCAPE_BUTTON, EventName, FiltersName, ActionType, UpdateType, CssClassName, ErrorMessage, StoreKey } from '../constant.js';
 
-export default class Content {
+export default class Tour {
   constructor(container, eventModel, filterModel, api) {
     this._container = container;
     this._addEventButton = document.querySelector(CssClassName.ADD_EVENT_BUTTON);
@@ -123,7 +124,7 @@ export default class Content {
           });
 
       case ActionType.UPDATE:
-        return this._api.updateData(`${ServerPath.POINTS}/${changedData.id}`, changedData)
+        return this._api.updateData(`${ServerPath.POINTS}/${changedData.id}`, changedData, StoreKey.POINTS)
           .then((response) => {
             this._eventModel.update(adaptPointToClient(response), updateType);
           });
@@ -143,10 +144,8 @@ export default class Content {
 
   _handleSortFormClick(sortMode) {
     if (this._currentSortMode !== sortMode) {
-      this._removeAllEvents();
       this._sort(sortMode);
-      this._currentSortMode = sortMode;
-      this._renderAllEvents();
+      this.init(this._currentSortMode);
     }
   }
 
@@ -168,6 +167,10 @@ export default class Content {
   }
 
   _addEventClickHandler() {
+    if (!isOnline()) {
+      toast(ErrorMessage.NO_INTERNET);
+      return;
+    }
     this.closeAllEditors();
     this._filterModel.currentFilter = FiltersName.EVERYTHING;
     if (this._data.length === 0) {

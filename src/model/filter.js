@@ -1,5 +1,4 @@
 import Observer from '../utils/observer';
-
 import { FiltersName } from '../constant.js';
 
 export default class Filter extends Observer {
@@ -17,4 +16,3 @@ export default class Filter extends Observer {
     this._notify();
   }
 }
-

@@ -34,6 +34,16 @@ const DeleteButtonState = {
   DEFAULT: 'Delete',
 };
 
+const getDestinationOptions = (destinations) => {
+  let destinationOptions = '';
+  if (destinations.length > 0) {
+    destinations.forEach((destination) => {
+      destinationOptions += `<option value="${destination}"></option>`;
+    });
+  }
+  return destinationOptions;
+};
+
 const changeTypeStatus = (type) => {
   const allTypes = Object.keys(typeStatus);
   allTypes.forEach((type) => {
@@ -42,7 +52,7 @@ const changeTypeStatus = (type) => {
   typeStatus[type] = 'checked';
 };
 
-const getEventEditorTemplate = (data, mode) => {
+const getEventEditorTemplate = (data, mode, destinationOptions) => {
   const { type, destination, time, price, offers, description } = data;
   const { start, end } = time;
   const { title, pictures } = description;
@@ -136,9 +146,7 @@ const getEventEditorTemplate = (data, mode) => {
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
         <datalist id="destination-list-1">
-          <option value="Amsterdam"></option>
-          <option value="Geneva"></option>
-          <option value="Chamonix"></option>
+          ${destinationOptions}
         </datalist>
       </div>
 
@@ -204,7 +212,7 @@ export default class EventEditor extends SmartView {
   }
 
   getTemplate() {
-    return getEventEditorTemplate(this._data, this._mode);
+    return getEventEditorTemplate(this._data, this._mode, getDestinationOptions(this._availableDestintionNames));
   }
 
   reset(data) {

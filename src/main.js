@@ -1,4 +1,4 @@
-import { CssClassName, ServerPath } from './constant.js';
+import { CssClassName, ServerPath, StoreKey, EventName, OFFLINE } from './constant.js';
 import TourPresenter from './presenter/tour.js';
 import StatisticsPresenter from './presenter/statistics.js';
 import InfoPresenter from './presenter/info.js';
@@ -7,8 +7,10 @@ import MenuPresenter from './presenter/menu.js';
 import EventModel from './model/event.js';
 import FilterModel from './model/filter.js';
 import { adaptPointsToClient, adaptDestinationsForEditorToClient, adaptOffersForEditorToClient } from './utils/adapter.js';
-import { } from './utils/lock-application.js';
-import Api from './api.js';
+import { isOnline } from './utils/common.js';
+import Api from './api/api.js';
+import BasedApi from './api/based-api.js';
+import Storage from './api/storage.js';
 
 const tripMainElement = document.querySelector(CssClassName.TRIP_MAIN);
 const navigationElement = tripMainElement.querySelector(CssClassName.NAVIGATION);
@@ -16,7 +18,9 @@ const filterContainer = tripMainElement.querySelector(CssClassName.FILTER);
 const contentContainer = document.querySelector('.page-body__page-main .page-body__container');
 const addEventButton = tripMainElement.querySelector('.trip-main__event-add-btn');
 
-const api = new Api();
+const basedApi = new BasedApi();
+const storage = new Storage(window.localStorage);
+const api = new Api(basedApi, storage);
 
 const eventModel = new EventModel();
 
@@ -37,36 +41,63 @@ const menuPresenter = new MenuPresenter({ navigationElement, filterPresenter, st
 menuPresenter.init();
 
 const initPointsData = () => {
-  return api.getData(ServerPath.POINTS)
-    .then((json) => {
-      eventModel.data = adaptPointsToClient(json);
+  return api.getData(ServerPath.POINTS, StoreKey.POINTS)
+    .then((response) => {
+      eventModel.setData(adaptPointsToClient(response));
     });
 };
 
 const initDestinationsData = () => {
-  return api.getData(ServerPath.DESTINATIONS)
-    .then((json) => {
-      eventModel.destinations = adaptDestinationsForEditorToClient(json);
+
+  return basedApi.getData(ServerPath.DESTINATIONS)
+    .then((response) => {
+      eventModel.destinations = adaptDestinationsForEditorToClient(response);
       eventModel.setAvailableDestintionNames();
     });
+
 };
 
 const initOffersData = () => {
-  return api.getData(ServerPath.OFFERS)
-    .then((json) => {
-      eventModel.offers = adaptOffersForEditorToClient(json);
+  return api.getData(ServerPath.OFFERS, StoreKey.OFFERS)
+    .then((response) => {
+      eventModel.offers = adaptOffersForEditorToClient(response);
     });
 };
 
-const firstInit = () => {
+const initApplicationData = () => {
   Promise.all([
     initPointsData(),
-    initDestinationsData(),
     initOffersData(),
+    initDestinationsData(),
   ])
+    .catch(() => {
+      if (!isOnline()) {
+        document.title += OFFLINE;
+      }
+    })
     .finally(() => {
       tourPresenter.init();
     });
 };
 
-firstInit();
+initApplicationData();
+
+window.addEventListener(EventName.LOAD, () => {
+  window.navigator.serviceWorker.register('./sw.js');
+});
+
+window.addEventListener(EventName.ONLINE, () => {
+  api.sync(ServerPath.SYNC, StoreKey.POINTS)
+    .then((points) => {
+      eventModel.setData(adaptPointsToClient(points), true);
+
+      if (eventModel.destinations.length === 0) {
+        initDestinationsData();
+      }
+    });
+  document.title = document.title.replace(OFFLINE, '');
+});
+
+window.addEventListener(EventName.OFFLINE, () => {
+  document.title += OFFLINE;
+});

@@ -1,9 +1,10 @@
 import EventItemView from '../view/event-list/event-item.js';
 import EventEditorView from '../view/event-editor/event-editor.js';
 import { render, remove } from '../utils/component.js';
-import { ActionType, EditorMode, UpdateType, Position } from '../constant.js';
-import { getOffers, getDescription, generateTimeData } from '../utils/common.js';
+import { ActionType, EditorMode, UpdateType, Position, ErrorMessage } from '../constant.js';
+import { getOffers, getDescription, generateTimeData, isOnline } from '../utils/common.js';
 import { lockApplicationt, unlockApplicationt } from '../utils/lock-application.js';
+import { toast } from '../utils/toast.js';
 
 export default class EventNew {
   constructor(handleUserAction, addEventButton, handleEventEditorCancel, eventModel) {
@@ -56,6 +57,11 @@ export default class EventNew {
   }
 
   _handleSubmit(addedData) {
+    if (!isOnline()) {
+      toast(ErrorMessage.NO_INTERNET);
+      this._eventEditor.shake();
+      return;
+    }
     this._eventEditor.setSaveButtonState(true);
     lockApplicationt();
     this._handleUserAction(addedData, ActionType.ADD, UpdateType.MAJOR)

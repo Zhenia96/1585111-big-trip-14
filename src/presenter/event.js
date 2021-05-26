@@ -2,15 +2,10 @@ import EventItemView from '../view/event-list/event-item.js';
 import EventEditorView from '../view/event-editor/event-editor.js';
 import PointView from '../view/point.js';
 import { render, replace, remove } from '../utils/component.js';
-import { addAvailableOffers, getOffers } from '../utils/common.js';
-import { ActionType, EditorMode, UpdateType } from '../constant.js';
+import { addAvailableOffers, getOffers, isOnline } from '../utils/common.js';
+import { ActionType, EditorMode, UpdateType, ErrorMessage, showMode } from '../constant.js';
 import { lockApplicationt, unlockApplicationt } from '../utils/lock-application.js';
-
-const showMode = {
-  POINT: 'point',
-  EDITOR: 'editor',
-};
-
+import { toast } from '../utils/toast.js';
 
 export default class Event {
   constructor(container, closeAllEditors, handleUserAction, eventModel) {
@@ -22,8 +17,6 @@ export default class Event {
     this._container = container;
     this._closeAllEditors = closeAllEditors;
     this._handleUserAction = handleUserAction;
-
-
     this._currentShowMode = showMode.POINT;
 
     this._changeFavoriteStatus = this._changeFavoriteStatus.bind(this);
@@ -43,6 +36,9 @@ export default class Event {
     const prevEventEditor = this._eventEditor;
 
     this._point = new PointView(this._eventData);
+    this._point.setFavoriteButtonClickHandler(this._changeFavoriteStatus);
+    this._point.setOpenEditorButtonClickHandler(this._pointOpenEditorCallback);
+
     this._eventEditor = new EventEditorView(
       this._eventData,
       EditorMode.EDITOR,
@@ -50,12 +46,10 @@ export default class Event {
       this._eventModel.destinations,
       this._eventModel.offers,
     );
-
-    this._point.setFavoriteButtonClickHandler(this._changeFavoriteStatus);
-    this._point.setOpenEditorButtonClickHandler(this._pointOpenEditorCallback);
     this._eventEditor.setCloseClickHandler(this._eventEditorCloseCallback);
     this._eventEditor.setSubmitHandler(this._eventEditorSubmitCallback);
     this._eventEditor.setDeleteClickHandler(this._eventEditorDeleteCallback);
+
 
     if (prevPoint === null) {
       render(this._point, this._event);
@@ -84,12 +78,20 @@ export default class Event {
   }
 
   remove() {
-    this._eventEditor.removeStartTimeDatepicker();
-    this._eventEditor.removeEndTimeDatepicker();
+    if (this._eventEditor !== null) {
+      this._eventEditor.removeStartTimeDatepicker();
+      this._eventEditor.removeEndTimeDatepicker();
+    }
+
     remove(this._event);
   }
 
   _eventEditorSubmitCallback(updateData) {
+    if (!isOnline()) {
+      toast(ErrorMessage.NO_INTERNET);
+      this._eventEditor.shake();
+      return;
+    }
     this._eventEditor.setSaveButtonState(true);
     lockApplicationt();
     this._handleUserAction(updateData, ActionType.UPDATE, UpdateType.MAJOR_WITHOUT_SORT_RESET)
@@ -111,6 +113,11 @@ export default class Event {
   }
 
   _eventEditorDeleteCallback(deletedData) {
+    if (!isOnline()) {
+      toast(ErrorMessage.NO_INTERNET);
+      this._eventEditor.shake();
+      return;
+    }
     this._eventEditor.setDeleteButtonState(true);
     lockApplicationt();
     this._handleUserAction(deletedData, ActionType.DELETE, UpdateType.MAJOR_WITHOUT_SORT_RESET)
@@ -124,6 +131,11 @@ export default class Event {
   }
 
   _pointOpenEditorCallback() {
+    if (!isOnline()) {
+      toast(ErrorMessage.NO_INTERNET);
+      this._point.shake();
+      return;
+    }
     this._closeAllEditors();
     this._replaceFromPointToEditor();
   }
