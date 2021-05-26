@@ -1,6 +1,12 @@
 import AbstractComponentView from './abstract/companent.js';
 import { EventName } from '../constant';
 
+const FilterButton = {
+  EVERYTHING: '[value = everything]',
+  FUTURE: '[value = future]',
+  PAST: '[value = past]',
+};
+
 const getFilterTemplate = () => {
   return `<form class="trip-filters" action="#" method="get">
     <div class="trip-filters__filter">
@@ -23,13 +29,14 @@ const getFilterTemplate = () => {
 };
 
 export default class Filter extends AbstractComponentView {
-
   constructor() {
     super();
-    this._everythingButton = this.getElement().querySelector('[value = everything]');
-    this._futureButton = this.getElement().querySelector('[value = future]');
-    this._pastButton = this.getElement().querySelector('[value = past]');
-    this._clickHandler = this._clickHandler.bind(this);
+
+    this._everythingButton = this.getElement().querySelector(FilterButton.EVERYTHING);
+    this._futureButton = this.getElement().querySelector(FilterButton.FUTURE);
+    this._pastButton = this.getElement().querySelector(FilterButton.PAST);
+
+    this._handleButtonClick = this._handleButtonClick.bind(this);
     this.disableButtons = this.disableButtons.bind(this);
   }
 
@@ -49,20 +56,20 @@ export default class Filter extends AbstractComponentView {
     return getFilterTemplate();
   }
 
-  _clickHandler(evt) {
-    if (evt.target.value && !evt.target.disabled) {
-      this._callback.click(evt.target.value);
-    }
-  }
-
   disableButtons({ isEverythingDisabled, isFutureDisabled, isPastDisabled }, disableAllButtons = false) {
     this._everythingButton.disabled = disableAllButtons ? true : isEverythingDisabled;
     this._futureButton.disabled = disableAllButtons ? true : isFutureDisabled;
     this._pastButton.disabled = disableAllButtons ? true : isPastDisabled;
   }
 
-  setClickHandler(callback) {
+  setButtonClickHandler(callback) {
     this._callback.click = callback;
-    this.getElement().addEventListener(EventName.CLICK, this._clickHandler);
+    this.getElement().addEventListener(EventName.CLICK, this._handleButtonClick);
+  }
+
+  _handleButtonClick(evt) {
+    if (evt.target.value && !evt.target.disabled) {
+      this._callback.click(evt.target.value);
+    }
   }
 }

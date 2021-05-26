@@ -1,24 +1,36 @@
+import { FiltersName } from '../constant.js';
 import Observer from '../utils/observer';
 import { filterData } from '../utils/common.js';
-import { FiltersName } from '../constant.js';
-
 
 export default class Event extends Observer {
 
   constructor() {
     super();
-    this._pastData = null;
-    this._futureData = null;
+
+    this._data = [];
+    this._pastData = [];
+    this._futureData = [];
+    this._destinations = [];
+    this._offers = [];
+    this._availableDestintionNames = [];
+
+    this.setAvailableDestintionNames = this.setAvailableDestintionNames.bind(this);
   }
 
   get data() {
     return this._data;
   }
 
-  set data(data) {
-    this._data = data.slice();
-    this._pastData = filterData(this._data, FiltersName.PAST);
-    this._futureData = filterData(this._data, FiltersName.FUTURE);
+  get offers() {
+    return this._offers;
+  }
+
+  get destinations() {
+    return this._destinations;
+  }
+
+  get availableDestintionNames() {
+    return this._availableDestintionNames;
   }
 
   get pastData() {
@@ -27,6 +39,33 @@ export default class Event extends Observer {
 
   get futureData() {
     return this._futureData;
+  }
+
+  set offers(offers) {
+    this._offers = offers;
+  }
+
+  set destinations(destinations) {
+    this._destinations = destinations;
+  }
+
+  setData(data, syncMode = false) {
+    this._data = data;
+    this.updateFilteredData();
+    if (!syncMode) {
+      this._notify();
+    }
+  }
+
+  setAvailableDestintionNames() {
+    this._destinations.forEach((destination) => {
+      this._availableDestintionNames.push(destination.destination);
+    });
+  }
+
+  updateFilteredData() {
+    this._pastData = filterData(this._data, FiltersName.PAST);
+    this._futureData = filterData(this._data, FiltersName.FUTURE);
   }
 
   update(changedData, updateType) {
@@ -39,8 +78,7 @@ export default class Event extends Observer {
         ...this._data.slice(index + 1),
       ];
     }
-    this._pastData = filterData(this._data, FiltersName.PAST);
-    this._futureData = filterData(this._data, FiltersName.FUTURE);
+    this.updateFilteredData();
     this._notify(changedData, updateType);
   }
 
@@ -49,8 +87,7 @@ export default class Event extends Observer {
       changedData,
       ...this._data,
     ];
-    this._pastData = filterData(this._data, FiltersName.PAST);
-    this._futureData = filterData(this._data, FiltersName.FUTURE);
+    this.updateFilteredData();
     this._notify(changedData, updateType);
   }
 
@@ -63,8 +100,7 @@ export default class Event extends Observer {
         ...this._data.slice(index + 1),
       ];
     }
-    this._pastData = filterData(this._data, FiltersName.PAST);
-    this._futureData = filterData(this._data, FiltersName.FUTURE);
+    this.updateFilteredData();
     this._notify(changedData, updateType);
   }
 }

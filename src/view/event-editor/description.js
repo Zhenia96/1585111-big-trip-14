@@ -1,5 +1,5 @@
-import { hasData } from '../../utils/common.js';
 import AbstractComponentView from '../abstract/companent.js';
+import { hasData } from '../../utils/common.js';
 
 const getPictureTemplate = ({ src, description }) => {
   return `<img class="event__photo" src="${src}" alt="${description}">`;
@@ -27,7 +27,6 @@ const getDescriptionTemplate = ({ title, pictures }) => {
   return `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${title}</p>
-
       ${pictureContainerTemplate}
     </section>`;
 };
@@ -35,6 +34,7 @@ const getDescriptionTemplate = ({ title, pictures }) => {
 export default class Description extends AbstractComponentView {
   constructor(data) {
     super();
+
     this._data = data;
   }
 

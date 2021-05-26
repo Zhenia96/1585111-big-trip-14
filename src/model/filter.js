@@ -1,10 +1,10 @@
-import Observer from '../utils/observer';
-
 import { FiltersName } from '../constant.js';
+import Observer from '../utils/observer';
 
 export default class Filter extends Observer {
   constructor() {
     super();
+
     this._currentFilter = FiltersName.EVERYTHING;
   }
 
@@ -17,4 +17,3 @@ export default class Filter extends Observer {
     this._notify();
   }
 }
-

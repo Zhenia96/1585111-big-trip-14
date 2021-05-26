@@ -1,62 +1,101 @@
-import MenuView from './view/menu.js';
-import { generateEventDataList } from './mock/event.js';
-import { CssClassName, FiltersName, SortMode } from './constant.js';
-import { render } from './utils/component.js';
+import { CssClassName, ServerPath, StoreKey, EventName, OFFLINE } from './constant.js';
+import { adaptPointsToClient, adaptEditorDestinationsToClient, adaptEditorOffersToClient } from './utils/adapter.js';
+import { isOnline } from './utils/common.js';
 import TourPresenter from './presenter/tour.js';
 import StatisticsPresenter from './presenter/statistics.js';
 import InfoPresenter from './presenter/info.js';
 import FilterPresenter from './presenter/filter.js';
+import MenuPresenter from './presenter/menu.js';
 import EventModel from './model/event.js';
 import FilterModel from './model/filter.js';
+import Api from './api/api.js';
+import BasedApi from './api/based-api.js';
+import Storage from './api/storage.js';
 
 const tripMainElement = document.querySelector(CssClassName.TRIP_MAIN);
 const navigationElement = tripMainElement.querySelector(CssClassName.NAVIGATION);
 const filterContainer = tripMainElement.querySelector(CssClassName.FILTER);
 const contentContainer = document.querySelector('.page-body__page-main .page-body__container');
 const addEventButton = tripMainElement.querySelector('.trip-main__event-add-btn');
-const eventDataList = generateEventDataList(20);
+
+const basedApi = new BasedApi();
+const storage = new Storage(window.localStorage);
+const api = new Api(basedApi, storage);
 
 const eventModel = new EventModel();
-eventModel.data = eventDataList;
 
 const filterModel = new FilterModel();
 
 const infoPresenter = new InfoPresenter(tripMainElement, eventModel, filterModel);
 infoPresenter.init();
 
-const tourPresenter = new TourPresenter(contentContainer, eventModel, filterModel);
-tourPresenter.init();
+const tourPresenter = new TourPresenter(contentContainer, eventModel, filterModel, api);
 
 const statisticsPresenter = new StatisticsPresenter(contentContainer, eventModel);
 statisticsPresenter.init();
 
-const menu = new MenuView();
-render(menu, navigationElement);
-
 const filterPresenter = new FilterPresenter(filterContainer, eventModel, filterModel);
 filterPresenter.init();
 
-const handleOpenTourClick = () => {
-  filterPresenter.disableNeedlessButtons();
-  addEventButton.disabled = false;
-  statisticsPresenter.statistics.hideElement();
-  if (filterModel.currentFilter !== FiltersName.EVERYTHING || tourPresenter.currentSortMode !== SortMode.DATE) {
-    filterModel.currentFilter = FiltersName.EVERYTHING;
-    tourPresenter.init();
-  }
-  tourPresenter.tour.showElement();
+const menuPresenter = new MenuPresenter({ navigationElement, filterPresenter, statisticsPresenter, tourPresenter, filterModel, addEventButton });
+menuPresenter.init();
+
+const initPointsData = () => {
+  return api.getData(ServerPath.POINTS, StoreKey.POINTS)
+    .then((response) => {
+      eventModel.setData(adaptPointsToClient(response));
+    });
 };
 
-const handleOpenStatisticsClick = () => {
-  addEventButton.disabled = true;
-  filterPresenter.filter.disableButtons({}, true);
-  tourPresenter.tour.hideElement();
-  tourPresenter._closeAllEditors();
-  if (statisticsPresenter.dataChangedStatus) {
-    statisticsPresenter.init();
-  }
-  statisticsPresenter.statistics.showElement();
+const initDestinationsData = () => {
+  return basedApi.getData(ServerPath.DESTINATIONS)
+    .then((response) => {
+      eventModel.destinations = adaptEditorDestinationsToClient(response);
+      eventModel.setAvailableDestintionNames();
+    });
 };
 
-menu.setOpenStatisticsClickHandler(handleOpenStatisticsClick);
-menu.setOpenTourClickHandler(handleOpenTourClick);
+const initOffersData = () => {
+  return api.getData(ServerPath.OFFERS, StoreKey.OFFERS)
+    .then((response) => {
+      eventModel.offers = adaptEditorOffersToClient(response);
+    });
+};
+
+const initApplicationData = () => {
+  Promise.all([
+    initPointsData(),
+    initOffersData(),
+    initDestinationsData(),
+  ])
+    .catch(() => {
+      if (!isOnline()) {
+        document.title += OFFLINE;
+      }
+    })
+    .finally(() => {
+      tourPresenter.init();
+    });
+};
+
+initApplicationData();
+
+window.addEventListener(EventName.LOAD, () => {
+  window.navigator.serviceWorker.register('./sw.js');
+});
+
+window.addEventListener(EventName.ONLINE, () => {
+  api.sync(ServerPath.SYNC, StoreKey.POINTS)
+    .then((points) => {
+      eventModel.setData(adaptPointsToClient(points), true);
+
+      if (eventModel.destinations.length === 0) {
+        initDestinationsData();
+      }
+    });
+  document.title = document.title.replace(OFFLINE, '');
+});
+
+window.addEventListener(EventName.OFFLINE, () => {
+  document.title += OFFLINE;
+});

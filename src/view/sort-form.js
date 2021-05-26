@@ -1,10 +1,10 @@
 import AbstractComponentView from './abstract/companent.js';
-import { EventName } from '../constant';
+import { EventName, SortMode } from '../constant';
 
-const getSortFormTemplate = () => {
+const getSortFormTemplate = (sortMode) => {
   return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
       <div class="trip-sort__item  trip-sort__item--day">
-        <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" data-sort-type="date" value="sort-day" checked>
+        <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" data-sort-type="date" value="sort-day" ${sortMode === SortMode.DATE ? 'checked' : ''}>
         <label class="trip-sort__btn" for="sort-day">Day</label>
       </div>
 
@@ -14,12 +14,12 @@ const getSortFormTemplate = () => {
       </div>
 
       <div class="trip-sort__item  trip-sort__item--time">
-        <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" data-sort-type="time" value="sort-time">
+        <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" data-sort-type="time" value="sort-time" ${sortMode === SortMode.TIME ? 'checked' : ''}>
         <label class="trip-sort__btn" for="sort-time">Time</label>
       </div>
 
       <div class="trip-sort__item  trip-sort__item--price">
-        <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" data-sort-type="price" value="sort-price">
+        <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" data-sort-type="price" value="sort-price" ${sortMode === SortMode.PRICE ? 'checked' : ''}>
         <label class="trip-sort__btn" for="sort-price">Price</label>
       </div>
 
@@ -31,24 +31,28 @@ const getSortFormTemplate = () => {
 };
 
 export default class SortForm extends AbstractComponentView {
-
   constructor() {
     super();
-    this._clickHandler = this._clickHandler.bind(this);
+    this._handleClick = this._handleClick.bind(this);
+    this._currentMode = SortMode.DATE;
   }
 
   getTemplate() {
-    return getSortFormTemplate();
+    return getSortFormTemplate(this._currentMode);
   }
 
-  _clickHandler(evt) {
+  changeMode(mode) {
+    this._currentMode = mode;
+  }
+
+  setButtonClickHandler(callback) {
+    this._callback.clickButton = callback;
+    this.getElement().addEventListener(EventName.CLICK, this._handleClick);
+  }
+
+  _handleClick(evt) {
     if (evt.target.dataset.sortType) {
-      this._callback.clickSortButtons(evt.target.dataset.sortType);
+      this._callback.clickButton(evt.target.dataset.sortType);
     }
-  }
-
-  setClickHandler(callback) {
-    this._callback.clickSortButtons = callback;
-    this.getElement().addEventListener(EventName.CLICK, this._clickHandler);
   }
 }

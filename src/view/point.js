@@ -1,5 +1,6 @@
-import { formatDate, getDuration } from '../utils/common.js';
-import { DateFormat, CssClassName, PATH_TO_ICONS, typeIcon, EventName } from '../constant';
+import { formatDate, getDuration, isOnline } from '../utils/common.js';
+import { toast } from '../utils/toast.js';
+import { DateFormat, CssClassName, PATH_TO_ICONS, typeIcon, EventName, ErrorMessage } from '../constant';
 import AbstractComponentView from './abstract/companent.js';
 
 const { MONTH_DAY, HOUR_MINUTE, SPECIAL_FULL, YEAR_MONTH_DAY } = DateFormat;
@@ -16,7 +17,9 @@ const getOffersListTemplate = (offersData) => {
   let offersFragment = '';
 
   offersData.forEach((offerData) => {
-    offersFragment += getOfferTemplate(offerData);
+    if (offerData.isChecked) {
+      offersFragment += getOfferTemplate(offerData);
+    }
   });
 
   return `<ul class="event__selected-offers">
@@ -67,30 +70,35 @@ export default class Point extends AbstractComponentView {
   constructor(data) {
     super();
     this._data = data;
-    this._openEditorButtonClickHandler = this._openEditorButtonClickHandler.bind(this);
-    this._favoriteButtonClickHandler = this._favoriteButtonClickHandler.bind(this);
+    this._handleOpenButtonClick = this._handleOpenButtonClick.bind(this);
+    this._handleFavoriteButtonClick = this._handleFavoriteButtonClick.bind(this);
   }
 
   getTemplate() {
     return getPointTemplate(this._data);
   }
 
-  _openEditorButtonClickHandler() {
-    this._callback.clickOpenEditorButton();
-  }
-
-  _favoriteButtonClickHandler() {
-    this._callback.clickFavoriteButton();
-  }
-
-  setOpenEditorButtonClickHandler(callback) {
+  setOpenButtonClickHandler(callback) {
     this._callback.clickOpenEditorButton = callback;
-    this.getElement().querySelector(CssClassName.OPEN_EVENT_EDITOR_BUTTON).addEventListener(EventName.CLICK, this._openEditorButtonClickHandler);
+    this.getElement().querySelector(CssClassName.EVENT_EDITOR_OPEN_BUTTON).addEventListener(EventName.CLICK, this._handleOpenButtonClick);
   }
 
   setFavoriteButtonClickHandler(callback) {
     this._callback.clickFavoriteButton = callback;
-    this.getElement().querySelector(CssClassName.FAVORITE_EVENT_BUTTON).addEventListener(EventName.CLICK, this._favoriteButtonClickHandler);
+    this.getElement().querySelector(CssClassName.EVENT_FAVORITE_BUTTON).addEventListener(EventName.CLICK, this._handleFavoriteButtonClick);
+  }
+
+  _handleOpenButtonClick() {
+    if (!isOnline()) {
+      toast(ErrorMessage.NO_INTERNET);
+      this.shake();
+      return;
+    }
+    this._callback.clickOpenEditorButton();
+  }
+
+  _handleFavoriteButtonClick() {
+    this._callback.clickFavoriteButton();
   }
 }
 

@@ -15,7 +15,6 @@ export default class Smart extends AbstractComponentView {
     );
 
     if (haveRequirementToUpdateElement) {
-
       this._updateElement();
     }
   }
@@ -25,7 +24,6 @@ export default class Smart extends AbstractComponentView {
     this.removeElement();
 
     const newElement = this.getElement();
-
     replace(newElement, prevElement);
 
     this._restoreHandlers();
