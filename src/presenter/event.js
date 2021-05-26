@@ -1,11 +1,10 @@
-import { ActionType, EditorMode, UpdateType, ErrorMessage, ShowMode } from '../constant.js';
+import { ActionType, EditorMode, UpdateType, ShowMode } from '../constant.js';
 import EventItemView from '../view/event-list/event-item.js';
 import EventEditorView from '../view/event-editor/event-editor.js';
 import PointView from '../view/point.js';
 import { render, replace, remove } from '../utils/component.js';
-import { addAvailableOffers, getOffers, isOnline } from '../utils/common.js';
+import { addAvailableOffers, getOffers } from '../utils/common.js';
 import { lockApplicationt, unlockApplicationt } from '../utils/lock-application.js';
-import { toast } from '../utils/toast.js';
 
 export default class Event {
   constructor(container, closeAllEditors, handleUserAction, eventModel) {
@@ -107,12 +106,6 @@ export default class Event {
   }
 
   _eventEditorSubmitCallback(updateData) {
-    if (!isOnline()) {
-      toast(ErrorMessage.NO_INTERNET);
-      this._eventEditor.shake();
-      return;
-    }
-
     this._eventEditor.setSaveButtonState(true);
     lockApplicationt();
     this._handleUserAction(updateData, ActionType.UPDATE, UpdateType.MAJOR_WITHOUT_SORT_RESET)
@@ -134,12 +127,6 @@ export default class Event {
   }
 
   _eventEditorDeleteCallback(deletedData) {
-    if (!isOnline()) {
-      toast(ErrorMessage.NO_INTERNET);
-      this._eventEditor.shake();
-      return;
-    }
-
     this._eventEditor.setDeleteButtonState(true);
     lockApplicationt();
     this._handleUserAction(deletedData, ActionType.DELETE, UpdateType.MAJOR_WITHOUT_SORT_RESET)
@@ -153,12 +140,6 @@ export default class Event {
   }
 
   _pointOpenEditorCallback() {
-    if (!isOnline()) {
-      toast(ErrorMessage.NO_INTERNET);
-      this._point.shake();
-      return;
-    }
-
     this._closeAllEditors();
     this._replaceFromPointToEditor();
   }

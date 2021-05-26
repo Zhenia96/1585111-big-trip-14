@@ -1,5 +1,6 @@
-import { DateFormat, typeIcon, PATH_TO_ICONS, EventName, CssClassName, EditorMode } from '../../constant';
-import { formatDate, hasData, getOffers, getDescription, cloneObjects } from '../../utils/common.js';
+import { DateFormat, typeIcon, PATH_TO_ICONS, EventName, CssClassName, EditorMode, ErrorMessage } from '../../constant';
+import { formatDate, hasData, getOffers, getDescription, cloneObjects, isOnline } from '../../utils/common.js';
+import { toast } from '../../utils/toast.js';
 import DetailsView from './details.js';
 import SmartView from '../smart.js';
 import flatpickr from 'flatpickr';
@@ -384,6 +385,11 @@ export default class EventEditor extends SmartView {
 
   _handleSubmit(evt) {
     evt.preventDefault();
+    if (!isOnline()) {
+      toast(ErrorMessage.NO_INTERNET);
+      this.shake();
+      return;
+    }
 
     this._startTimeDatepicker.destroy();
     this._endTimeDatepicker.destroy();
@@ -399,18 +405,36 @@ export default class EventEditor extends SmartView {
   }
 
   _handleDeleteClick() {
+    if (!isOnline()) {
+      toast(ErrorMessage.NO_INTERNET);
+      this.shake();
+      return;
+    }
+
     this._callback.delete(this._data);
   }
 
   _handleDestinationChange(evt) {
-    if (this._availableDestintionNames.includes(evt.target.value)) {
-      this._updateData(
-        {
-          destination: evt.target.value,
-          description: getDescription(evt.target.value, this._destinations),
-        },
-      );
+    if (!isOnline()) {
+      this.shake();
+      toast(ErrorMessage.NO_INTERNET);
+      return;
     }
+
+    if (!this._availableDestintionNames.includes(evt.target.value)) {
+      this.shake();
+      toast(ErrorMessage.INCORRECT_DESTINATION_NAME);
+      evt.target.value = this._data.destination;
+      return;
+    }
+
+    this._updateData(
+      {
+        destination: evt.target.value,
+        description: getDescription(evt.target.value, this._destinations),
+      },
+    );
+
   }
 
   _handleTypeChange(evt) {
@@ -452,7 +476,6 @@ export default class EventEditor extends SmartView {
           }, false,
         );
       }
-
     }
   }
 

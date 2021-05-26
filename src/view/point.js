@@ -1,5 +1,6 @@
-import { formatDate, getDuration } from '../utils/common.js';
-import { DateFormat, CssClassName, PATH_TO_ICONS, typeIcon, EventName } from '../constant';
+import { formatDate, getDuration, isOnline } from '../utils/common.js';
+import { toast } from '../utils/toast.js';
+import { DateFormat, CssClassName, PATH_TO_ICONS, typeIcon, EventName, ErrorMessage } from '../constant';
 import AbstractComponentView from './abstract/companent.js';
 
 const { MONTH_DAY, HOUR_MINUTE, SPECIAL_FULL, YEAR_MONTH_DAY } = DateFormat;
@@ -88,6 +89,11 @@ export default class Point extends AbstractComponentView {
   }
 
   _handleOpenButtonClick() {
+    if (!isOnline()) {
+      toast(ErrorMessage.NO_INTERNET);
+      this.shake();
+      return;
+    }
     this._callback.clickOpenEditorButton();
   }
 
