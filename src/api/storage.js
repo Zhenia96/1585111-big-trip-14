@@ -39,4 +39,16 @@ export default class Storage {
   setItems(data, storeKey) {
     this._storage.setItem(storeKey, getDataForStorage(data));
   }
+
+  deleteItem(key, storeKey) {
+    const store = JSON.parse(this._storage.getItem(storeKey));
+
+    delete store[key];
+
+    this._storage.setItem(storeKey,
+      JSON.stringify(Object.assign({},
+        store,
+      )),
+    );
+  }
 }

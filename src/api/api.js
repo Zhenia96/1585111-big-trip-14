@@ -38,12 +38,22 @@ export default class Api {
     return Promise.resolve(adaptPointToServer(data));
   }
 
-  addData(path, data) {
-    return this._basedApi.addData(path, data);
+  addData(path, data, storeKey) {
+    return this._basedApi.addData(path, data)
+      .then((response) => {
+        this._store.setItem(response.id, response, storeKey);
+
+        return response;
+      });
   }
 
-  deleteData(path) {
-    return this._basedApi.deleteData(path);
+  deleteData(path, data, storeKey) {
+    return this._basedApi.deleteData(path)
+      .then((response) => {
+        this._store.deleteItem(data.id, storeKey);
+
+        return response;
+      });
   }
 
   sync(path, storeKey) {

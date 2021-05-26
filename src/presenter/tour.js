@@ -235,13 +235,13 @@ export default class Tour {
 
     switch (actionType) {
       case ActionType.ADD:
-        return this._api.addData(ServerPath.POINTS, changedData)
+        return this._api.addData(ServerPath.POINTS, changedData, StoreKey.POINTS)
           .then((response) => {
             this._eventModel.add(adaptPointToClient(response), updateType);
           });
 
       case ActionType.DELETE:
-        return this._api.deleteData(`${ServerPath.POINTS}/${changedData.id}`)
+        return this._api.deleteData(`${ServerPath.POINTS}/${changedData.id}`, changedData, StoreKey.POINTS)
           .then(() => {
             this._eventModel.delete(changedData, updateType);
           });
