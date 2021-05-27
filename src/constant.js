@@ -109,6 +109,7 @@ export const ErrorMessage = {
   NO_INTERNET: 'No internet',
   FAILED_REQUEST: 'Failed request',
   INCORRECT_DESTINATION_NAME: 'Incorrect destination name. The destination has not been changed',
+  INVALID_TIME: 'Invalid time field. Start time cannot be more than end time',
 };
 
 export const StoreKey = {

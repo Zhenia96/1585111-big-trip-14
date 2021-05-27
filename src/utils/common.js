@@ -4,36 +4,6 @@ import dayjs from 'dayjs';
 
 export const getRandomIntegerRange = (min = 0, max = 10) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-export const getRandomArrayValue = (array) => {
-  const lastIndex = array.length - 1;
-  const randomIndex = getRandomIntegerRange(0, lastIndex);
-
-  return array[randomIndex];
-};
-
-export const getRandomText = (sentencesCount) => {
-  const PLACEHOLDER = [
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    'Cras aliquet varius magna,',
-    'non porta ligula feugiat eget.',
-    'Fusce tristique felis at fermentum pharetra.',
-    'Aliquam id orci ut lectus varius viverra.',
-    'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
-    'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.',
-    'Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.',
-    'Sed sed nisi sed augue convallis suscipit in sed felis.',
-    'Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus.',
-    'In rutrum ac purus sit amet tempus.'];
-  const placeholderLastIndex = PLACEHOLDER.length - 1;
-  let text = '';
-
-  for (let i = 1; i <= sentencesCount; i++) {
-    text += PLACEHOLDER[getRandomIntegerRange(0, placeholderLastIndex)];
-    text += ' ';
-  }
-  return text;
-};
-
 export const formatDate = (date, format) => date.format(format);
 
 export const getDuration = (start, end) => {
@@ -56,20 +26,6 @@ export const getDuration = (start, end) => {
   }
 
   return `${formatedDay}${formatedHour}${formatedMinute}`;
-};
-
-export const updateData = (dataList, updatedData) => {
-  const index = dataList.findIndex((data) => data.id === updatedData.id);
-
-  if (index === -1) {
-    return dataList;
-  }
-
-  return [
-    ...dataList.slice(0, index),
-    updatedData,
-    ...dataList.slice(index + 1),
-  ];
 };
 
 export const hasData = (object) => Boolean(Object.keys(object).length || object.length);
@@ -231,3 +187,5 @@ export const cloneObjects = (objects) => {
 export const isOnline = () => {
   return window.navigator.onLine;
 };
+
+export const isTimeValid = (startTime, endTime) => endTime.diff(startTime, 'second') < 0;

@@ -1,10 +1,10 @@
-import { nanoid } from 'nanoid';
+import { generateId } from '../utils/common.js';
 
 const getDataForStorage = (data) => {
   const result = {};
 
   data.forEach((dataItem) => {
-    const id = dataItem.id ? dataItem.id : nanoid();
+    const id = dataItem.id ? dataItem.id : generateId();
     result[id] = Object.assign({}, dataItem);
   });
 

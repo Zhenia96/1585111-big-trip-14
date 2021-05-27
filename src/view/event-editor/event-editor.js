@@ -1,5 +1,5 @@
 import { DateFormat, typeIcon, PATH_TO_ICONS, EventName, CssClassName, EditorMode, ErrorMessage } from '../../constant';
-import { formatDate, hasData, getOffers, getDescription, cloneObjects, isOnline } from '../../utils/common.js';
+import { formatDate, hasData, getOffers, getDescription, cloneObjects, isOnline, isTimeValid } from '../../utils/common.js';
 import { toast } from '../../utils/toast.js';
 import DetailsView from './details.js';
 import SmartView from '../smart.js';
@@ -391,6 +391,12 @@ export default class EventEditor extends SmartView {
       return;
     }
 
+    if (isTimeValid(this._data.time.start, this._data.time.end)) {
+      toast(ErrorMessage.INVALID_TIME);
+      this.shake();
+      return;
+    }
+
     this._startTimeDatepicker.destroy();
     this._endTimeDatepicker.destroy();
     this._callback.submit(this._data);
@@ -450,32 +456,27 @@ export default class EventEditor extends SmartView {
     if (evt.target.name === TimeFieldName.START) {
       const startTime = dayjs(evt.target.value, FULL);
 
-      if (this._data.time.end.diff(startTime, 'second') > 0) {
-        this._updateData(
-          {
-            time: {
-              start: startTime,
-              end: this._data.time.end,
-            },
-          }, false,
-        );
-      }
-
+      this._updateData(
+        {
+          time: {
+            start: startTime,
+            end: this._data.time.end,
+          },
+        }, false,
+      );
     }
 
     if (evt.target.name === TimeFieldName.END) {
       const endTime = dayjs(evt.target.value, FULL);
 
-      if (endTime.diff(this._data.time.start, 'second') > 0) {
-        this._updateData(
-          {
-            time: {
-              start: this._data.time.start,
-              end: endTime,
-            },
-          }, false,
-        );
-      }
+      this._updateData(
+        {
+          time: {
+            start: this._data.time.start,
+            end: endTime,
+          },
+        }, false,
+      );
     }
   }
 
