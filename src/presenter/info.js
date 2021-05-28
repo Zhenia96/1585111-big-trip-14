@@ -20,7 +20,7 @@ export default class Info {
   }
 
   init() {
-    if (this._modalEvent.data.length === 0) {
+    if (!this._modalEvent.data.length) {
       remove(this._info);
       this._info = null;
       return;
@@ -46,11 +46,11 @@ export default class Info {
   }
 
   _changeTotalPrice() {
-    if (this._modalEvent.data.length === 0) {
+    if (!this._modalEvent.data.length) {
       return;
     }
     let currentData;
-    const costField = this._info.getElement().querySelector('.trip-info__cost-value');
+
     if (this._modalFilter.currentFilter === FiltersName.EVERYTHING) {
       currentData = this._modalEvent.data;
     }
@@ -61,6 +61,6 @@ export default class Info {
       currentData = this._modalEvent.pastData;
     }
 
-    costField.textContent = calcTotalPrice(currentData);
+    this._info.setTotalPrice(calcTotalPrice(currentData));
   }
 }

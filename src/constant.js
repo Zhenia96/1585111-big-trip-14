@@ -18,11 +18,16 @@ export const CssClassName = {
   EVENT_EDITOR_TIME: '.event__field-group--time',
   EVENT_EDITOR_PRICE: '.event__input--price',
   EVENT_EDITOR_CLOSE_BUTTON: '.event__rollup-btn',
+  STATISTICS_MONEY: '.statistics__chart--money',
+  STATISTICS_TYPE: '.statistics__chart--transport',
+  STATISTICS_TIME: '.statistics__chart--time',
   TRIP_MAIN: '.trip-main',
-  EVENT_ADD_BUTTON: '.trip-main__event-add-btn',
+  ADD_EVENT_BUTTON: '.trip-main__event-add-btn',
   NAVIGATION: '.trip-controls__navigation',
   FILTER: '.trip-controls__filters',
   AVAILABLE_OFFERS: '.event__available-offers',
+  TOTAL_PRICE: '.trip-info__cost-value',
+  CONTENT_CONTAINER: '.page-body__page-main .page-body__container',
 };
 
 export const SortMode = {
@@ -45,6 +50,9 @@ export const EventName = {
 export const Position = {
   AFTER_BEGIN: 'afterbegin',
   BEFORE_END: 'beforeend',
+  START: 'start',
+  END: 'end',
+  LEFT: 'left',
 };
 
 export const DateFormat = {
@@ -110,6 +118,8 @@ export const ErrorMessage = {
   FAILED_REQUEST: 'Failed request',
   INCORRECT_DESTINATION_NAME: 'Incorrect destination name. The destination has not been changed',
   INVALID_TIME: 'Invalid time field. Start time cannot be more than end time',
+  CLASS_IS_NOT_FOR_INSTANTIATE: 'The class is not for instantiate. Create extended class by this class and use it',
+  METHOD_HAS_NOT_BEEN_IMPLEMENTED: 'The method has not been implemented. Implement it in an extended class',
 };
 
 export const StoreKey = {
@@ -120,5 +130,10 @@ export const StoreKey = {
 export const ShowMode = {
   POINT: 'point',
   EDITOR: 'editor',
+};
+
+export const Color = {
+  WHITE: '#ffffff',
+  BLACK: '#000000',
 };
 

@@ -1,11 +1,12 @@
+import { ErrorMessage } from '../../constant.js';
 import { createElement } from '../../utils/component.js';
 
 const ANIMATION_TIMEOUT = 600;
 
-export default class Companent {
+export default class Component {
   constructor() {
-    if (new.target === 'AbstarctCompanent') {
-      throw new Error('The class is not for instantiate. Create extended class by this class and use it');
+    if (new.target === 'AbstarctComponent') {
+      throw new Error(ErrorMessage.CLASS_IS_NOT_FOR_INSTANTIATE);
     }
 
     this._element = null;
@@ -13,7 +14,7 @@ export default class Companent {
   }
 
   getTemplate() {
-    throw new Error('The method has not been implemented. Implement it in an extended class');
+    throw new Error(ErrorMessage.METHOD_HAS_NOT_BEEN_IMPLEMENTED);
   }
 
   getElement() {

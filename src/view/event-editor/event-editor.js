@@ -10,6 +10,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 dayjs.extend(customParseFormat);
 
+const TIME_FORMAT_24 = 'time_24hr';
 const { FULL } = DateFormat;
 
 const SaveButtonState = {
@@ -350,7 +351,7 @@ export default class EventEditor extends SmartView {
       dateFormat: DateFormat.CALENDAR_FULL,
       enableTime: true,
       minuteIncrement: 1,
-      time_24hr: true,
+      [TIME_FORMAT_24]: true,
     });
   }
 
@@ -365,7 +366,7 @@ export default class EventEditor extends SmartView {
       dateFormat: DateFormat.CALENDAR_FULL,
       enableTime: true,
       minuteIncrement: 1,
-      time_24hr: true,
+      [TIME_FORMAT_24]: true,
     });
   }
 

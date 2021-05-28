@@ -1,5 +1,6 @@
-import AbstractComponentView from './abstract/companent.js';
+import AbstractComponentView from './abstract/component.js';
 import { replace } from '../utils/component.js';
+import { ErrorMessage } from '../constant';
 
 export default class Smart extends AbstractComponentView {
   constructor() {
@@ -30,6 +31,6 @@ export default class Smart extends AbstractComponentView {
   }
 
   _restoreHandlers() {
-    throw new Error('This method has not been implemented. Implement it in an extended class');
+    throw new Error(ErrorMessage.METHOD_HAS_NOT_BEEN_IMPLEMENTED);
   }
 }

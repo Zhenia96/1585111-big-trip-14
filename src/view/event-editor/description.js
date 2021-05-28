@@ -1,4 +1,4 @@
-import AbstractComponentView from '../abstract/companent.js';
+import AbstractComponentView from '../abstract/component.js';
 import { hasData } from '../../utils/common.js';
 
 const getPictureTemplate = ({ src, description }) => {

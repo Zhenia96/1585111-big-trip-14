@@ -1,28 +1,30 @@
-import { DASH, NON_BREAKING_SPACE, ELLIPSIS, DateFormat } from '../constant.js';
+import { DASH, NON_BREAKING_SPACE, ELLIPSIS, DateFormat, CssClassName } from '../constant.js';
 import { formatDate, calcTotalPrice } from '../utils/common.js';
-import AbstractComponentView from './abstract/companent.js';
+import AbstractComponentView from './abstract/component.js';
 
-const getRoute = (dataList) => {
-  const routeTemporary = [];
-  let route;
+const TRIP_INFO_TITLE_MAX_RANGE = 3;
+
+const getTitle = (dataList) => {
+  const titleTemporary = [];
+  let title;
   dataList.forEach(({ destination }) => {
-    const routeLastValue = routeTemporary[routeTemporary.length - 1];
+    const titleLastValue = titleTemporary[titleTemporary.length - 1];
 
-    if (destination !== routeLastValue) {
-      routeTemporary.push(destination);
+    if (destination !== titleLastValue) {
+      titleTemporary.push(destination);
     }
   });
 
-  if (routeTemporary.length <= 3) {
-    route = routeTemporary.join(` ${DASH} `);
+  if (titleTemporary.length <= TRIP_INFO_TITLE_MAX_RANGE) {
+    title = titleTemporary.join(` ${DASH} `);
   } else {
-    const firstPoint = routeTemporary[0];
-    const lastPoint = routeTemporary[routeTemporary.length - 1];
+    const firstPoint = titleTemporary[0];
+    const lastPoint = titleTemporary[titleTemporary.length - 1];
 
-    route = `${firstPoint} ${DASH} ${ELLIPSIS} ${DASH} ${lastPoint}`;
+    title = `${firstPoint} ${DASH} ${ELLIPSIS} ${DASH} ${lastPoint}`;
   }
 
-  return route;
+  return title;
 };
 
 const getDistance = (dataList) => {
@@ -47,12 +49,12 @@ const getDistance = (dataList) => {
 
 const getTripInfoTemplate = (dataList) => {
   const totalPrice = calcTotalPrice(dataList);
-  const route = getRoute(dataList);
+  const title = getTitle(dataList);
   const distance = getDistance(dataList);
 
   return `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
-        <h1 class="trip-info__title">${route}</h1>
+        <h1 class="trip-info__title">${title}</h1>
 
         <p class="trip-info__dates">${distance}</p>
       </div>
@@ -67,9 +69,14 @@ export default class TripInfo extends AbstractComponentView {
   constructor(dataList) {
     super();
     this._dataList = dataList;
+    this._totalPrice = this.getElement().querySelector(CssClassName.TOTAL_PRICE);
   }
 
   getTemplate() {
     return getTripInfoTemplate(this._dataList);
+  }
+
+  setTotalPrice(price) {
+    this._totalPrice.textContent = price;
   }
 }

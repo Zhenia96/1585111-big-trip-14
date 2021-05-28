@@ -1,4 +1,4 @@
-import AbstractComponentView from './abstract/companent.js';
+import AbstractComponentView from './abstract/component.js';
 
 const getEmptyEventListMessageTemplate = () => {
   return '<p class="trip-events__msg">Click New Event to create your first point</p>';

@@ -1,4 +1,4 @@
-import AbstractComponentView from '../abstract/companent.js';
+import AbstractComponentView from '../abstract/component.js';
 
 const getEventListTemplate = () => {
   return '<ul class="trip-events__list"></ul>';

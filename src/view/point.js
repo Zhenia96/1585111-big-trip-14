@@ -1,7 +1,7 @@
 import { formatDate, getDuration, isOnline } from '../utils/common.js';
 import { toast } from '../utils/toast.js';
 import { DateFormat, CssClassName, PATH_TO_ICONS, typeIcon, EventName, ErrorMessage } from '../constant';
-import AbstractComponentView from './abstract/companent.js';
+import AbstractComponentView from './abstract/component.js';
 
 const { MONTH_DAY, HOUR_MINUTE, SPECIAL_FULL, YEAR_MONTH_DAY } = DateFormat;
 

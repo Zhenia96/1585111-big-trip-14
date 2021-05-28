@@ -1,4 +1,4 @@
-import AbstractComponentView from './abstract/companent.js';
+import AbstractComponentView from './abstract/component.js';
 
 const getStatisticsTemplate = () => {
   return `<section class="statistics" hidden>

@@ -3,7 +3,11 @@ import EventItemView from '../view/event-list/event-item.js';
 import EventEditorView from '../view/event-editor/event-editor.js';
 import { render, remove } from '../utils/component.js';
 import { getOffers, getDescription, generateTimeData } from '../utils/common.js';
-import { lockApplicationt, unlockApplicationt } from '../utils/lock-application.js';
+import { lockApplication, unlockApplication } from '../utils/lock-application.js';
+
+const DEFAULT_TYPE = 'Taxi';
+const DEFAULT_DESTINATION = 'Amsterdam';
+const DEFAULT_PRICE = 500;
 
 export default class EventNew {
   constructor(handleUserAction, addEventButton, handleEventEditorCancel, eventModel) {
@@ -52,12 +56,12 @@ export default class EventNew {
 
   _getDefaultData() {
     return {
-      type: 'Taxi',
-      destination: 'Amsterdam',
+      type: DEFAULT_TYPE,
+      destination: DEFAULT_DESTINATION,
       time: generateTimeData(),
-      price: 500,
-      offers: getOffers('Taxi', this._eventModel.offers),
-      description: getDescription('Amsterdam', this._eventModel.destinations),
+      price: DEFAULT_PRICE,
+      offers: getOffers(DEFAULT_TYPE, this._eventModel.offers),
+      description: getDescription(DEFAULT_DESTINATION, this._eventModel.destinations),
       isFavorite: false,
     };
   }
@@ -69,14 +73,14 @@ export default class EventNew {
 
   _submitCallback(addedData) {
     this._eventEditor.setSaveButtonState(true);
-    lockApplicationt();
+    lockApplication();
     this._handleUserAction(addedData, ActionType.ADD, UpdateType.MAJOR)
       .catch(() => {
         this._eventEditor.shake();
       })
       .finally(() => {
         this._eventEditor.setSaveButtonState(false);
-        unlockApplicationt();
+        unlockApplication();
       });
   }
 }

@@ -12,11 +12,13 @@ import Api from './api/api.js';
 import BasedApi from './api/based-api.js';
 import Storage from './api/storage.js';
 
+const PATH_FOR_SERVICE_WORKER = './sw.js';
+
 const tripMainElement = document.querySelector(CssClassName.TRIP_MAIN);
 const navigationElement = tripMainElement.querySelector(CssClassName.NAVIGATION);
 const filterContainer = tripMainElement.querySelector(CssClassName.FILTER);
-const contentContainer = document.querySelector('.page-body__page-main .page-body__container');
-const addEventButton = tripMainElement.querySelector('.trip-main__event-add-btn');
+const contentContainer = document.querySelector(CssClassName.CONTENT_CONTAINER);
+const addEventButton = tripMainElement.querySelector(CssClassName.ADD_EVENT_BUTTON);
 
 const basedApi = new BasedApi();
 const storage = new Storage(window.localStorage);
@@ -81,7 +83,7 @@ const initApplicationData = () => {
 initApplicationData();
 
 window.addEventListener(EventName.LOAD, () => {
-  window.navigator.serviceWorker.register('./sw.js');
+  window.navigator.serviceWorker.register(PATH_FOR_SERVICE_WORKER);
 });
 
 window.addEventListener(EventName.ONLINE, () => {
@@ -89,7 +91,7 @@ window.addEventListener(EventName.ONLINE, () => {
     .then((points) => {
       eventModel.setData(adaptPointsToClient(points), true);
 
-      if (eventModel.destinations.length === 0) {
+      if (!eventModel.destinations.length) {
         initDestinationsData();
       }
     });

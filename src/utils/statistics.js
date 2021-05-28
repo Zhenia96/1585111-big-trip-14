@@ -1,6 +1,9 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { ChartType } from '../constant.js';
+import { ChartType, Position, Color } from '../constant.js';
+
+const BAR_TYPE = 'horizontalBar';
+const EURO = '€';
 
 const sortChartData = (chartData) => {
   const sortedChartData = Object.entries(chartData).sort((firstChartData, secondChartData) => {
@@ -103,14 +106,14 @@ export const getChart = (type, chartData, container) => {
 
   return new Chart(container, {
     plugins: [ChartDataLabels],
-    type: 'horizontalBar',
+    type: BAR_TYPE,
     data: {
       labels,
       datasets: [{
         data,
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
-        anchor: 'start',
+        backgroundColor: Color.WHITE,
+        hoverBackgroundColor: Color.WHITE,
+        anchor: Position.START,
         barThickness: 44,
         minBarLength: 120,
       }],
@@ -121,23 +124,23 @@ export const getChart = (type, chartData, container) => {
           font: {
             size: 13,
           },
-          color: '#000000',
-          anchor: 'end',
-          align: 'start',
-          formatter: (val) => `${type === ChartType.MONEY ? '€' : ''} ${type === ChartType.TIME ? getTime(val) : val}`,
+          color: Color.BLACK,
+          anchor: Position.END,
+          align: Position.START,
+          formatter: (val) => `${type === ChartType.MONEY ? EURO : ''} ${type === ChartType.TIME ? getTime(val) : val}`,
         },
       },
       title: {
         display: true,
         text: type.toUpperCase(),
-        fontColor: '#000000',
+        fontColor: Color.BLACK,
         fontSize: 23,
-        position: 'left',
+        position: Position.LEFT,
       },
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: '#000000',
+            fontColor: Color.BLACK,
             padding: 5,
             fontSize: 13,
           },

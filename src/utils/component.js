@@ -1,4 +1,5 @@
-import AbstractComponentView from '../view/abstract/companent.js';
+import { Position } from '../constant';
+import AbstractComponentView from '../view/abstract/component.js';
 
 export const createElement = (template) => {
   const container = document.createElement('div');
@@ -7,7 +8,7 @@ export const createElement = (template) => {
   return container.firstChild;
 };
 
-export const render = (element, container, position = 'beforeend') => {
+export const render = (element, container, position = Position.BEFORE_END) => {
   if (element instanceof AbstractComponentView) {
     element = element.getElement();
   }
@@ -16,11 +17,11 @@ export const render = (element, container, position = 'beforeend') => {
     container = container.getElement();
   }
 
-  if (position === 'beforeend') {
+  if (position === Position.BEFORE_END) {
     container.append(element);
   }
 
-  if (position === 'afterbegin') {
+  if (position === Position.AFTER_BEGIN) {
     container.prepend(element);
   }
 };

@@ -1,7 +1,12 @@
-import AbstractComponentView from './abstract/companent.js';
+import AbstractComponentView from './abstract/component.js';
 import { EventName } from '../constant';
 
 const ACTIVE_BUTTON = 'trip-tabs__btn--active';
+
+const MENU_BUTTON = {
+  TABLE: '[data-type=table]',
+  STATISTICS: '[data-type=stats]',
+};
 
 const getMenuTemplate = () => {
   return `<nav class="trip-controls__trip-tabs  trip-tabs">
@@ -13,8 +18,8 @@ const getMenuTemplate = () => {
 export default class Menu extends AbstractComponentView {
   constructor() {
     super();
-    this._tableButton = this.getElement().querySelector('[data-type=table]');
-    this._statisticsButton = this.getElement().querySelector('[data-type=stats]');
+    this._tableButton = this.getElement().querySelector(MENU_BUTTON.TABLE);
+    this._statisticsButton = this.getElement().querySelector(MENU_BUTTON.STATISTICS);
 
     this._handleTourButtonClick = this._handleTourButtonClick.bind(this);
     this._handleStatisticsButtonClick = this._handleStatisticsButtonClick.bind(this);

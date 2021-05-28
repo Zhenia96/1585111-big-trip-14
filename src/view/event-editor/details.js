@@ -1,4 +1,4 @@
-import AbstractComponentView from '../abstract/companent.js';
+import AbstractComponentView from '../abstract/component.js';
 import { hasData } from '../../utils/common.js';
 import OffersView from './offer.js';
 import DescriptionView from './description.js';

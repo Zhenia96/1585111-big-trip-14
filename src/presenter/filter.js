@@ -44,9 +44,9 @@ export default class Filter {
 
   disableButtons() {
     const config = {
-      isEverythingDisabled: this._eventModel.data.length === 0,
-      isFutureDisabled: this._eventModel.futureData.length === 0,
-      isPastDisabled: this._eventModel.pastData.length === 0,
+      isEverythingDisabled: !this._eventModel.data.length,
+      isFutureDisabled: !this._eventModel.futureData.length,
+      isPastDisabled: !this._eventModel.pastData.length,
     };
 
     this._filter.disableButtons(config);

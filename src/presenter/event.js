@@ -4,7 +4,7 @@ import EventEditorView from '../view/event-editor/event-editor.js';
 import PointView from '../view/point.js';
 import { render, replace, remove } from '../utils/component.js';
 import { addAvailableOffers, getOffers } from '../utils/common.js';
-import { lockApplicationt, unlockApplicationt } from '../utils/lock-application.js';
+import { lockApplication, unlockApplication } from '../utils/lock-application.js';
 
 export default class Event {
   constructor(container, closeAllEditors, handleUserAction, eventModel) {
@@ -96,18 +96,18 @@ export default class Event {
   }
 
   _changeFavoriteStatus() {
-    lockApplicationt();
+    lockApplication();
     this._handleUserAction(Object.assign({},
       this._eventData,
       { isFavorite: !this._eventData.isFavorite }), ActionType.UPDATE, UpdateType.MINOR)
       .finally(() => {
-        unlockApplicationt();
+        unlockApplication();
       });
   }
 
   _eventEditorSubmitCallback(updateData) {
     this._eventEditor.setSaveButtonState(true);
-    lockApplicationt();
+    lockApplication();
     this._handleUserAction(updateData, ActionType.UPDATE, UpdateType.MAJOR_WITHOUT_SORT_RESET)
       .then(() => {
         this.replaceFromEditorToPoint();
@@ -117,7 +117,7 @@ export default class Event {
       })
       .finally(() => {
         this._eventEditor.setSaveButtonState(false);
-        unlockApplicationt();
+        unlockApplication();
       });
   }
 
@@ -128,14 +128,14 @@ export default class Event {
 
   _eventEditorDeleteCallback(deletedData) {
     this._eventEditor.setDeleteButtonState(true);
-    lockApplicationt();
+    lockApplication();
     this._handleUserAction(deletedData, ActionType.DELETE, UpdateType.MAJOR_WITHOUT_SORT_RESET)
       .catch(() => {
         this._eventEditor.shake();
       })
       .finally(() => {
         this._eventEditor.setDeleteButtonState(false);
-        unlockApplicationt();
+        unlockApplication();
       });
   }
 

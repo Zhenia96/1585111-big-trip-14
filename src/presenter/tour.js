@@ -3,8 +3,8 @@ import TourView from '../view/tour.js';
 import LoadingView from '../view/loading.js';
 import EventListView from '../view/event-list/event-list.js';
 import EmptyEventListMessageView from '../view/empty-event-list-message.js';
-import EventPresentor from './event.js';
-import EventNewPresentor from './eventNew.js';
+import EventPresenter from './event.js';
+import EventNewPresenter from './event-new.js';
 import { remove, render } from '../utils/component.js';
 import { adaptPointToClient } from '../utils/adapter.js';
 import { sortData, isOnline } from '../utils/common.js';
@@ -18,9 +18,9 @@ export default class Tour {
     this._filterModel = filterModel;
     this._data = null;
     this._currentSortMode = null;
-    this._eventPresentor = {};
+    this._eventPresenter = {};
     this._api = api;
-    this._addEventButton = document.querySelector(CssClassName.EVENT_ADD_BUTTON);
+    this._addEventButton = document.querySelector(CssClassName.ADD_EVENT_BUTTON);
 
     this._sortFormClickCallback = this._sortFormClickCallback.bind(this);
     this.closeAllEditors = this.closeAllEditors.bind(this);
@@ -36,7 +36,7 @@ export default class Tour {
     this._eventList = new EventListView();
     this._emptyEventListMessage = new EmptyEventListMessageView();
     this._loading = new LoadingView();
-    this._eventNewPresentor = new EventNewPresentor(this._handleUserAction, this._addEventButton, this._eventEditorCancelClickCallback, this._eventModel);
+    this._eventNewPresenter = new EventNewPresenter(this._handleUserAction, this._addEventButton, this._eventEditorCancelClickCallback, this._eventModel);
 
     this._renderLoading();
     render(this._tour, this._container);
@@ -58,7 +58,7 @@ export default class Tour {
 
     this._sortForm.setButtonClickHandler(this._sortFormClickCallback);
 
-    if (this._data.length === 0) {
+    if (!this._data.length) {
       this._renderEmptyEventListMessage();
       return;
     }
@@ -103,7 +103,7 @@ export default class Tour {
     remove(this._sortForm);
     remove(this._eventList);
     remove(this._emptyEventListMessage);
-    this._eventPresentor = {};
+    this._eventPresenter = {};
   }
 
   destroy() {
@@ -116,7 +116,7 @@ export default class Tour {
 
   _updateView(data, updateType = UpdateType.MAJOR) {
     if (updateType === UpdateType.MINOR) {
-      this._eventPresentor[data.id].init(data);
+      this._eventPresenter[data.id].init(data);
     }
 
     if (updateType === UpdateType.MAJOR) {
@@ -161,9 +161,9 @@ export default class Tour {
   }
 
   _renderEvent(data) {
-    const event = new EventPresentor(this._eventList, this.closeAllEditors, this._handleUserAction, this._eventModel);
+    const event = new EventPresenter(this._eventList, this.closeAllEditors, this._handleUserAction, this._eventModel);
     event.init(data);
-    this._eventPresentor[data.id] = event;
+    this._eventPresenter[data.id] = event;
   }
 
   _renderAllEvents() {
@@ -177,22 +177,22 @@ export default class Tour {
   }
 
   _removeAllEvents() {
-    Object.values(this._eventPresentor).forEach((currentPresentor) => {
-      currentPresentor.remove();
+    Object.values(this._eventPresenter).forEach((currentPresenter) => {
+      currentPresenter.remove();
     });
-    this._eventPresentor = {};
+    this._eventPresenter = {};
   }
 
   closeAllEditors() {
-    Object.values(this._eventPresentor).forEach((presentor) => {
-      const event = presentor.event.getElement();
-      const editor = presentor.eventEditor.getElement();
+    Object.values(this._eventPresenter).forEach((presenter) => {
+      const event = presenter.event.getElement();
+      const editor = presenter.eventEditor.getElement();
       if (event.contains(editor)) {
-        presentor.eventEditor.reset(presentor.eventData);
-        presentor.replaceFromEditorToPoint();
+        presenter.eventEditor.reset(presenter.eventData);
+        presenter.replaceFromEditorToPoint();
       }
     });
-    this._eventNewPresentor.remove();
+    this._eventNewPresenter.remove();
   }
 
   _sortFormClickCallback(sortMode) {
@@ -203,7 +203,7 @@ export default class Tour {
   }
 
   _eventEditorCancelClickCallback() {
-    if (this._data.length === 0) {
+    if (!this._data.length) {
       this._renderEmptyEventListMessage();
     }
   }
@@ -215,17 +215,17 @@ export default class Tour {
     }
     this.closeAllEditors();
     this._filterModel.currentFilter = FiltersName.EVERYTHING;
-    if (this._data.length === 0) {
+    if (!this._data.length) {
       remove(this._emptyEventListMessage);
       this._renderEventList();
     }
-    this._eventNewPresentor.init(this._eventList);
+    this._eventNewPresenter.init(this._eventList);
   }
 
   _handleEscKeydown(evt) {
     if (evt.code === ESCAPE_BUTTON) {
       this.closeAllEditors();
-      if (this._data.length === 0) {
+      if (!this._data.length) {
         this._renderEmptyEventListMessage();
       }
     }
