@@ -11,10 +11,6 @@ export default class Statistics {
     this._eventModel = eventModel;
     this._dataChangedStatus = true;
 
-    this._moneyCtx = null;
-    this._typeCtx = null;
-    this._timeCtx = null;
-
     this._moneyChart = null;
     this._typeChart = null;
     this._timeChart = null;
@@ -32,16 +28,10 @@ export default class Statistics {
     this._destroy();
     this._statistics = new StatisticsView();
 
-    this._moneyCtx = this._statistics.getElement().querySelector('.statistics__chart--money');
-    this._typeCtx = this._statistics.getElement().querySelector('.statistics__chart--transport');
-    this._timeCtx = this._statistics.getElement().querySelector('.statistics__chart--time');
-
     this._labels = getLabels(this._eventModel.data);
     this._barHeight = BAR_HEIGHT * this._labels.length;
 
-    this._moneyCtx.height = this._barHeight;
-    this._typeCtx.height = this._barHeight;
-    this._timeCtx.height = this._barHeight;
+    this._statistics.setChartHeight(this._barHeight);
 
     this._moneyChartData = getMoneyChartData(this._eventModel.data, this._labels);
     this._typeChartData = getTypeChartData(this._eventModel.data, this._labels);
@@ -50,19 +40,19 @@ export default class Statistics {
     this._moneyChart = getChart(
       ChartType.MONEY,
       this._moneyChartData,
-      this._moneyCtx,
+      this._statistics.moneyCtx,
     );
 
     this._typeChart = getChart(
       ChartType.TYPE,
       this._typeChartData,
-      this._typeCtx,
+      this._statistics.typeCtx,
     );
 
     this._timeChart = getChart(
       ChartType.TIME,
       this._timeChartData,
-      this._timeCtx,
+      this._statistics.timeCtx,
     );
 
     render(this._statistics, this._container);

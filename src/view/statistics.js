@@ -1,3 +1,4 @@
+import { CssClassName } from '../constant.js';
 import AbstractComponentView from './abstract/component.js';
 
 const getStatisticsTemplate = () => {
@@ -19,8 +20,33 @@ const getStatisticsTemplate = () => {
 };
 
 export default class Statistics extends AbstractComponentView {
+  constructor() {
+    super();
+
+    this._moneyCtx = this.getElement().querySelector(CssClassName.STATISTICS_MONEY);
+    this._typeCtx = this.getElement().querySelector(CssClassName.STATISTICS_TYPE);
+    this._timeCtx = this.getElement().querySelector(CssClassName.STATISTICS_TIME);
+  }
+
+  get moneyCtx() {
+    return this._moneyCtx;
+  }
+
+  get typeCtx() {
+    return this._typeCtx;
+  }
+
+  get timeCtx() {
+    return this._timeCtx;
+  }
 
   getTemplate() {
     return getStatisticsTemplate();
+  }
+
+  setChartHeight(height) {
+    this._moneyCtx.height = height;
+    this._typeCtx.height = height;
+    this._timeCtx.height = height;
   }
 }
